@@ -24,9 +24,16 @@ function resolveProductImages(product) {
   return found.length ? found : ['/img/placeholder-perfume.webp'];
 }
 
+// Solo pre-generamos bestsellers para mantener el build dentro de los límites
+// de CloudLinux/Hostinger. El resto usa ISR (Incremental Static Regeneration).
 export async function generateStaticParams() {
-  return products.map(p => ({ slug: p.slug }));
+  return products.filter(p => p.bestseller).map(p => ({ slug: p.slug }));
 }
+
+// Permitir generación on-demand de páginas no pre-generadas
+export const dynamicParams = true;
+// Re-generar páginas cada hora
+export const revalidate = 3600;
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
