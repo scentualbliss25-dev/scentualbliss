@@ -17,11 +17,29 @@ jobs:
           port: 65002
           username: u158360749
           password: ${{ secrets.SSH_PASSWORD }}
-          command_timeout: 10m
+          command_timeout: 15m
           script: |
             set -e
             APP_DIR=/home/u158360749/domains/scentualbliss.com.co/nodejs
             REPO="https://${{ secrets.GH_PAT }}@github.com/scentualbliss25-dev/scentualbliss.git"
+
+            # === Cargar entorno Node.js de Hostinger (CloudLinux Node.js Selector) ===
+            source ~/.bashrc 2>/dev/null || true
+
+            # Buscar instalación de Node.js
+            for v in 22 20 18; do
+              if [ -d "/opt/alt/alt-nodejs$v/root/usr/bin" ]; then
+                export PATH="/opt/alt/alt-nodejs$v/root/usr/bin:$PATH"
+                echo "✅ Node.js $v cargado desde /opt/alt/alt-nodejs$v"
+                break
+              fi
+            done
+
+            # Verificar
+            which node || { echo "❌ Node no encontrado"; exit 1; }
+            which npm || { echo "❌ NPM no encontrado"; exit 1; }
+            node -v
+            npm -v
 
             echo "📂 Directorio: $APP_DIR"
 
@@ -49,6 +67,8 @@ jobs:
               pm2 restart all 2>/dev/null || pm2 start npm --name "scentualbliss" -- start
               echo "✅ Reiniciado con PM2"
             else
+              # Hostinger Node.js Selector: tocar el archivo restart
+              touch ~/.lsphp_restart.txt 2>/dev/null || true
               echo "ℹ️ Hostinger reinicia automáticamente"
             fi
 
