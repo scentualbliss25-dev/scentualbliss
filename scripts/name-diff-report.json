@@ -1,0 +1,1384 @@
+{
+  "ok": [
+    {
+      "slug": "hugo-boss-bottled",
+      "brand": "Hugo Boss",
+      "currentName": "BOSS Bottled",
+      "canonicalTitle": "Hugo Boss BOSS Bottled",
+      "suggestedName": "BOSS Bottled",
+      "localFull": "Hugo Boss BOSS Bottled",
+      "match": true
+    },
+    {
+      "slug": "hugo-boss-bottled-night",
+      "brand": "Hugo Boss",
+      "currentName": "Boss Bottled Night",
+      "canonicalTitle": "Hugo Boss BOSS Bottled Night",
+      "suggestedName": "BOSS Bottled Night",
+      "localFull": "Hugo Boss Boss Bottled Night",
+      "match": true
+    },
+    {
+      "slug": "hugo-boss-bottled-parfum",
+      "brand": "Hugo Boss",
+      "currentName": "Boss Bottled Parfum",
+      "canonicalTitle": "Hugo Boss BOSS Bottled Parfum",
+      "suggestedName": "BOSS Bottled Parfum",
+      "localFull": "Hugo Boss Boss Bottled Parfum",
+      "match": true
+    },
+    {
+      "slug": "hugo-boss-bottled-tonic",
+      "brand": "Hugo Boss",
+      "currentName": "Boss Bottled Tonic",
+      "canonicalTitle": "Hugo Boss BOSS Bottled Tonic",
+      "suggestedName": "BOSS Bottled Tonic",
+      "localFull": "Hugo Boss Boss Bottled Tonic",
+      "match": true
+    },
+    {
+      "slug": "hugo-boss-bottled-triumph-elixir",
+      "brand": "Hugo Boss",
+      "currentName": "Bottled Triumph Elixir",
+      "canonicalTitle": "Hugo Boss Bottled Triumph Elixir",
+      "suggestedName": "Bottled Triumph Elixir",
+      "localFull": "Hugo Boss Bottled Triumph Elixir",
+      "match": true
+    },
+    {
+      "slug": "hugo-boss-bottled-infinite",
+      "brand": "Hugo Boss",
+      "currentName": "Boss Bottled Infinite",
+      "canonicalTitle": "Hugo Boss BOSS Bottled Infinite",
+      "suggestedName": "BOSS Bottled Infinite",
+      "localFull": "Hugo Boss Boss Bottled Infinite",
+      "match": true
+    },
+    {
+      "slug": "hugo-boss-the-scent-magnetic",
+      "brand": "Hugo Boss",
+      "currentName": "The Scent Magnetic For Him",
+      "canonicalTitle": "Hugo Boss The Scent Magnetic For Him",
+      "suggestedName": "The Scent Magnetic For Him",
+      "localFull": "Hugo Boss The Scent Magnetic For Him",
+      "match": true
+    },
+    {
+      "slug": "hugo-boss-bottled-pacific",
+      "brand": "Hugo Boss",
+      "currentName": "Bottled Pacific",
+      "canonicalTitle": "Hugo Boss Bottled Pacific",
+      "suggestedName": "Bottled Pacific",
+      "localFull": "Hugo Boss Bottled Pacific",
+      "match": true
+    },
+    {
+      "slug": "hugo-boss-dark-blue",
+      "brand": "Hugo Boss",
+      "currentName": "Dark Blue",
+      "canonicalTitle": "Hugo Boss Dark Blue",
+      "suggestedName": "Dark Blue",
+      "localFull": "Hugo Boss Dark Blue",
+      "match": true
+    },
+    {
+      "slug": "hugo-boss-femme",
+      "brand": "Hugo Boss",
+      "currentName": "Boss Femme",
+      "canonicalTitle": "Hugo Boss BOSS Femme",
+      "suggestedName": "BOSS Femme",
+      "localFull": "Hugo Boss Boss Femme",
+      "match": true
+    },
+    {
+      "slug": "hugo-boss-hugo-man",
+      "brand": "Hugo Boss",
+      "currentName": "Hugo Man",
+      "canonicalTitle": "Hugo Boss HUGO Man",
+      "suggestedName": "HUGO Man",
+      "localFull": "Hugo Boss Hugo Man",
+      "match": true
+    },
+    {
+      "slug": "hugo-boss-energise",
+      "brand": "Hugo Boss",
+      "currentName": "Energise",
+      "canonicalTitle": "Hugo Boss Energise",
+      "suggestedName": "Energise",
+      "localFull": "Hugo Boss Energise",
+      "match": true
+    },
+    {
+      "slug": "hugo-boss-bottled-eau-de-parfum",
+      "brand": "Hugo Boss",
+      "currentName": "Boss Bottled Eau de Parfum",
+      "canonicalTitle": "HUGO BOSS Boss Bottled Eau de Parfum",
+      "suggestedName": "Boss Bottled Eau de Parfum",
+      "localFull": "Hugo Boss Boss Bottled Eau de Parfum",
+      "match": true
+    },
+    {
+      "slug": "xerjoff-alexandria-ii",
+      "brand": "Xerjoff",
+      "currentName": "Alexandria II",
+      "canonicalTitle": "Xerjoff Alexandria II",
+      "suggestedName": "Alexandria II",
+      "localFull": "Xerjoff Alexandria II",
+      "match": true
+    },
+    {
+      "slug": "xerjoff-casamorati-1888-lira",
+      "brand": "Xerjoff",
+      "currentName": "Casamorati 1888 Lira",
+      "canonicalTitle": "Xerjoff Casamorati 1888 Lira",
+      "suggestedName": "Casamorati 1888 Lira",
+      "localFull": "Xerjoff Casamorati 1888 Lira",
+      "match": true
+    },
+    {
+      "slug": "xerjoff-40-knots",
+      "brand": "Xerjoff",
+      "currentName": "40 Knots",
+      "canonicalTitle": "Xerjoff 40 Knots",
+      "suggestedName": "40 Knots",
+      "localFull": "Xerjoff 40 Knots",
+      "match": true
+    },
+    {
+      "slug": "xerjoff-erba-pura",
+      "brand": "Xerjoff",
+      "currentName": "Erba Pura",
+      "canonicalTitle": "Xerjoff Erba Pura",
+      "suggestedName": "Erba Pura",
+      "localFull": "Xerjoff Erba Pura",
+      "match": true
+    },
+    {
+      "slug": "lattafa-badee-al-oud-honor-glory",
+      "brand": "Lattafa",
+      "currentName": "Badee Al Oud Honor & Glory",
+      "canonicalTitle": "Lattafa Badee Al Oud Honor & Glory",
+      "suggestedName": "Badee Al Oud Honor & Glory",
+      "localFull": "Lattafa Badee Al Oud Honor & Glory",
+      "match": true
+    },
+    {
+      "slug": "lattafa-fakhar-gold",
+      "brand": "Lattafa",
+      "currentName": "Fakhar Gold",
+      "canonicalTitle": "Lattafa Fakhar Gold",
+      "suggestedName": "Fakhar Gold",
+      "localFull": "Lattafa Fakhar Gold",
+      "match": true
+    },
+    {
+      "slug": "lattafa-khamrah",
+      "brand": "Lattafa",
+      "currentName": "Khamrah",
+      "canonicalTitle": "Lattafa Khamrah",
+      "suggestedName": "Khamrah",
+      "localFull": "Lattafa Khamrah",
+      "match": true
+    },
+    {
+      "slug": "lattafa-khamrah-dukhan",
+      "brand": "Lattafa",
+      "currentName": "Khamrah Dukhan",
+      "canonicalTitle": "Lattafa Khamrah Dukhan",
+      "suggestedName": "Khamrah Dukhan",
+      "localFull": "Lattafa Khamrah Dukhan",
+      "match": true
+    },
+    {
+      "slug": "lattafa-pride-masa",
+      "brand": "Lattafa",
+      "currentName": "Pride Masa",
+      "canonicalTitle": "Lattafa Pride Masa",
+      "suggestedName": "Pride Masa",
+      "localFull": "Lattafa Pride Masa",
+      "match": true
+    },
+    {
+      "slug": "lattafa-rave-now",
+      "brand": "Lattafa",
+      "currentName": "Rave Now For Men",
+      "canonicalTitle": "Lattafa Rave Now For Men",
+      "suggestedName": "Rave Now For Men",
+      "localFull": "Lattafa Rave Now For Men",
+      "match": true
+    },
+    {
+      "slug": "lattafa-his-confession",
+      "brand": "Lattafa",
+      "currentName": "His Confession",
+      "canonicalTitle": "Lattafa His Confession",
+      "suggestedName": "His Confession",
+      "localFull": "Lattafa His Confession",
+      "match": true
+    },
+    {
+      "slug": "lattafa-mayar",
+      "brand": "Lattafa",
+      "currentName": "Mayar",
+      "canonicalTitle": "Lattafa Mayar",
+      "suggestedName": "Mayar",
+      "localFull": "Lattafa Mayar",
+      "match": true
+    },
+    {
+      "slug": "lattafa-al-noble-ameer",
+      "brand": "Lattafa",
+      "currentName": "Al Noble Ameer",
+      "canonicalTitle": "Lattafa Al Noble Ameer",
+      "suggestedName": "Al Noble Ameer",
+      "localFull": "Lattafa Al Noble Ameer",
+      "match": true
+    },
+    {
+      "slug": "lattafa-pride-blue-sapphire",
+      "brand": "Lattafa",
+      "currentName": "Pride Blue Sapphire",
+      "canonicalTitle": "Lattafa Pride Blue Sapphire",
+      "suggestedName": "Pride Blue Sapphire",
+      "localFull": "Lattafa Pride Blue Sapphire",
+      "match": true
+    },
+    {
+      "slug": "lattafa-pride-ishq-al-shuyukh-silver",
+      "brand": "Lattafa",
+      "currentName": "Pride Ishq Al Shuyukh Silver",
+      "canonicalTitle": "Lattafa Pride Ishq Al Shuyukh Silver",
+      "suggestedName": "Pride Ishq Al Shuyukh Silver",
+      "localFull": "Lattafa Pride Ishq Al Shuyukh Silver",
+      "match": true
+    },
+    {
+      "slug": "lattafa-qaed-al-fursan-untamed",
+      "brand": "Lattafa",
+      "currentName": "Qaed Al Fursan Untamed",
+      "canonicalTitle": "Lattafa Qaed Al fursan Untamed",
+      "suggestedName": "Qaed Al fursan Untamed",
+      "localFull": "Lattafa Qaed Al Fursan Untamed",
+      "match": true
+    },
+    {
+      "slug": "lattafa-niche-emarati-khanjar",
+      "brand": "Lattafa",
+      "currentName": "Niche Emarati Khanjar",
+      "canonicalTitle": "Lattafa Niche Emarati Khanjar",
+      "suggestedName": "Niche Emarati Khanjar",
+      "localFull": "Lattafa Niche Emarati Khanjar",
+      "match": true
+    },
+    {
+      "slug": "armaf-odyssey-mandarin-sky",
+      "brand": "Armaf",
+      "currentName": "Odyssey Mandarin Sky Elixir",
+      "canonicalTitle": "Armaf Odyssey Mandarin Sky Elixir",
+      "suggestedName": "Odyssey Mandarin Sky Elixir",
+      "localFull": "Armaf Odyssey Mandarin Sky Elixir",
+      "match": true
+    },
+    {
+      "slug": "armaf-odyssey-mega",
+      "brand": "Armaf",
+      "currentName": "Odyssey Mega",
+      "canonicalTitle": "Armaf Odyssey Mega",
+      "suggestedName": "Odyssey Mega",
+      "localFull": "Armaf Odyssey Mega",
+      "match": true
+    },
+    {
+      "slug": "armaf-club-de-nuit-intense-man-edt",
+      "brand": "Armaf",
+      "currentName": "Club De Nuit Intense Man EDT",
+      "canonicalTitle": "Armaf Club De Nuit Intense Man EDT",
+      "suggestedName": "Club De Nuit Intense Man EDT",
+      "localFull": "Armaf Club De Nuit Intense Man EDT",
+      "match": true
+    },
+    {
+      "slug": "armaf-club-de-nuit-intense-extrait",
+      "brand": "Armaf",
+      "currentName": "Club de Nuit Intense Extrait",
+      "canonicalTitle": "Armaf Club de nuit intense extrait",
+      "suggestedName": "Club de nuit intense extrait",
+      "localFull": "Armaf Club de Nuit Intense Extrait",
+      "match": true
+    },
+    {
+      "slug": "armaf-club-de-nuit-untold",
+      "brand": "Armaf",
+      "currentName": "Club de Nuit Untold",
+      "canonicalTitle": "Armaf Club de Nuit Untold",
+      "suggestedName": "Club de Nuit Untold",
+      "localFull": "Armaf Club de Nuit Untold",
+      "match": true
+    },
+    {
+      "slug": "armaf-club-de-nuit-iconic",
+      "brand": "Armaf",
+      "currentName": "Club de Nuit Iconic",
+      "canonicalTitle": "Armaf Club de Nuit Iconic",
+      "suggestedName": "Club de Nuit Iconic",
+      "localFull": "Armaf Club de Nuit Iconic",
+      "match": true
+    },
+    {
+      "slug": "armaf-club-de-nuit-milestone",
+      "brand": "Armaf",
+      "currentName": "Club de Nuit Milestone",
+      "canonicalTitle": "Armaf Club de Nuit Milestone",
+      "suggestedName": "Club de Nuit Milestone",
+      "localFull": "Armaf Club de Nuit Milestone",
+      "match": true
+    },
+    {
+      "slug": "armaf-club-de-nuit-woman",
+      "brand": "Armaf",
+      "currentName": "Club de Nuit Woman",
+      "canonicalTitle": "Armaf Club de Nuit Woman",
+      "suggestedName": "Club de Nuit Woman",
+      "localFull": "Armaf Club de Nuit Woman",
+      "match": true
+    },
+    {
+      "slug": "armaf-club-de-nuit-precieux-1",
+      "brand": "Armaf",
+      "currentName": "Club de Nuit Precieux 1",
+      "canonicalTitle": "Armaf Club de Nuit Precieux 1",
+      "suggestedName": "Club de Nuit Precieux 1",
+      "localFull": "Armaf Club de Nuit Precieux 1",
+      "match": true
+    },
+    {
+      "slug": "armaf-club-de-nuit-lionheart-man",
+      "brand": "Armaf",
+      "currentName": "Club de Nuit Lionheart Man",
+      "canonicalTitle": "Armaf Club de Nuit Lionheart Man",
+      "suggestedName": "Club de Nuit Lionheart Man",
+      "localFull": "Armaf Club de Nuit Lionheart Man",
+      "match": true
+    },
+    {
+      "slug": "armaf-club-de-nuit-lionheart-woman",
+      "brand": "Armaf",
+      "currentName": "Club de Nuit Lionheart Woman",
+      "canonicalTitle": "Armaf Club de Nuit Lionheart Woman",
+      "suggestedName": "Club de Nuit Lionheart Woman",
+      "localFull": "Armaf Club de Nuit Lionheart Woman",
+      "match": true
+    },
+    {
+      "slug": "lacoste-essential",
+      "brand": "Lacoste",
+      "currentName": "Essential",
+      "canonicalTitle": "Lacoste Essential",
+      "suggestedName": "Essential",
+      "localFull": "Lacoste Essential",
+      "match": true
+    },
+    {
+      "slug": "lacoste-blanc",
+      "brand": "Lacoste",
+      "currentName": "Blanc",
+      "canonicalTitle": "Lacoste Blanc",
+      "suggestedName": "Blanc",
+      "localFull": "Lacoste Blanc",
+      "match": true
+    },
+    {
+      "slug": "lacoste-blanc-eau-de-parfum",
+      "brand": "Lacoste",
+      "currentName": "Blanc Eau de Parfum",
+      "canonicalTitle": "Lacoste Blanc Eau de Parfum",
+      "suggestedName": "Blanc Eau de Parfum",
+      "localFull": "Lacoste Blanc Eau de Parfum",
+      "match": true
+    },
+    {
+      "slug": "lacoste-lhomme-intense",
+      "brand": "Lacoste",
+      "currentName": "L'Homme Lacoste Intense",
+      "canonicalTitle": "Lacoste L'Homme Lacoste Intense",
+      "suggestedName": "L'Homme Lacoste Intense",
+      "localFull": "Lacoste L'Homme Lacoste Intense",
+      "match": true
+    },
+    {
+      "slug": "lacoste-sparkling",
+      "brand": "Lacoste",
+      "currentName": "L.12.12 Rose Sparkling",
+      "canonicalTitle": "Lacoste L.12.12 Rose Sparkling",
+      "suggestedName": "L.12.12 Rose Sparkling",
+      "localFull": "Lacoste L.12.12 Rose Sparkling",
+      "match": true
+    },
+    {
+      "slug": "creed-aventus",
+      "brand": "Creed",
+      "currentName": "Aventus",
+      "canonicalTitle": "Creed Aventus",
+      "suggestedName": "Aventus",
+      "localFull": "Creed Aventus",
+      "match": true
+    },
+    {
+      "slug": "creed-absolu-aventus",
+      "brand": "Creed",
+      "currentName": "Absolu Aventus",
+      "canonicalTitle": "Creed Absolu Aventus",
+      "suggestedName": "Absolu Aventus",
+      "localFull": "Creed Absolu Aventus",
+      "match": true
+    },
+    {
+      "slug": "creed-aventus-cologne",
+      "brand": "Creed",
+      "currentName": "Aventus Cologne",
+      "canonicalTitle": "Creed Aventus Cologne",
+      "suggestedName": "Aventus Cologne",
+      "localFull": "Creed Aventus Cologne",
+      "match": true
+    },
+    {
+      "slug": "creed-aventus-for-her",
+      "brand": "Creed",
+      "currentName": "Aventus For Her",
+      "canonicalTitle": "Creed Aventus For Her",
+      "suggestedName": "Aventus For Her",
+      "localFull": "Creed Aventus For Her",
+      "match": true
+    },
+    {
+      "slug": "creed-silver-mountain-water",
+      "brand": "Creed",
+      "currentName": "Silver Mountain Water",
+      "canonicalTitle": "Creed Silver Mountain Water",
+      "suggestedName": "Silver Mountain Water",
+      "localFull": "Creed Silver Mountain Water",
+      "match": true
+    },
+    {
+      "slug": "creed-royal-oud",
+      "brand": "Creed",
+      "currentName": "Royal Oud",
+      "canonicalTitle": "Creed Royal Oud",
+      "suggestedName": "Royal Oud",
+      "localFull": "Creed Royal Oud",
+      "match": true
+    },
+    {
+      "slug": "creed-virgin-island-water",
+      "brand": "Creed",
+      "currentName": "Virgin Island Water",
+      "canonicalTitle": "Creed Virgin Island Water",
+      "suggestedName": "Virgin Island Water",
+      "localFull": "Creed Virgin Island Water",
+      "match": true
+    },
+    {
+      "slug": "creed-millesime-imperial",
+      "brand": "Creed",
+      "currentName": "Millesime Imperial",
+      "canonicalTitle": "Creed Millesime Imperial",
+      "suggestedName": "Millesime Imperial",
+      "localFull": "Creed Millesime Imperial",
+      "match": true
+    },
+    {
+      "slug": "creed-delphinus",
+      "brand": "Creed",
+      "currentName": "Delphinus",
+      "canonicalTitle": "Creed Delphinus",
+      "suggestedName": "Delphinus",
+      "localFull": "Creed Delphinus",
+      "match": true
+    },
+    {
+      "slug": "dior-sauvage-edt",
+      "brand": "Dior",
+      "currentName": "Sauvage EDT",
+      "canonicalTitle": "Dior Sauvage EDT",
+      "suggestedName": "Sauvage EDT",
+      "localFull": "Dior Sauvage EDT",
+      "match": true
+    },
+    {
+      "slug": "dior-sauvage-edp",
+      "brand": "Dior",
+      "currentName": "Sauvage EDP",
+      "canonicalTitle": "Dior Sauvage EDP",
+      "suggestedName": "Sauvage EDP",
+      "localFull": "Dior Sauvage EDP",
+      "match": true
+    },
+    {
+      "slug": "dior-sauvage-parfum",
+      "brand": "Dior",
+      "currentName": "Sauvage Parfum",
+      "canonicalTitle": "DIOR Sauvage Parfum",
+      "suggestedName": "Sauvage Parfum",
+      "localFull": "Dior Sauvage Parfum",
+      "match": true
+    },
+    {
+      "slug": "dior-sauvage-elixir",
+      "brand": "Dior",
+      "currentName": "Sauvage Elixir",
+      "canonicalTitle": "DIOR Sauvage Elixir",
+      "suggestedName": "Sauvage Elixir",
+      "localFull": "Dior Sauvage Elixir",
+      "match": true
+    },
+    {
+      "slug": "dior-poison-girl",
+      "brand": "Dior",
+      "currentName": "Poison Girl EDP",
+      "canonicalTitle": "DIOR Poison Girl EDP",
+      "suggestedName": "Poison Girl EDP",
+      "localFull": "Dior Poison Girl EDP",
+      "match": true
+    },
+    {
+      "slug": "dior-jadore-edp",
+      "brand": "Dior",
+      "currentName": "J'adore EDP",
+      "canonicalTitle": "Dior J'adore EDP",
+      "suggestedName": "J'adore EDP",
+      "localFull": "Dior J'adore EDP",
+      "match": true
+    },
+    {
+      "slug": "dior-homme-intense",
+      "brand": "Dior",
+      "currentName": "Homme Intense",
+      "canonicalTitle": "Dior Homme Intense",
+      "suggestedName": "Homme Intense",
+      "localFull": "Dior Homme Intense",
+      "match": true
+    },
+    {
+      "slug": "dior-homme-parfum",
+      "brand": "Dior",
+      "currentName": "Homme Parfum 2025",
+      "canonicalTitle": "Dior Homme Parfum 2025",
+      "suggestedName": "Homme Parfum 2025",
+      "localFull": "Dior Homme Parfum 2025",
+      "match": true
+    },
+    {
+      "slug": "ahli-karpos",
+      "brand": "AHLI",
+      "currentName": "Karpos",
+      "canonicalTitle": "AHLI Karpos",
+      "suggestedName": "Karpos",
+      "localFull": "AHLI Karpos",
+      "match": true
+    },
+    {
+      "slug": "ahli-vega",
+      "brand": "AHLI",
+      "currentName": "Vega",
+      "canonicalTitle": "AHLI VEGA",
+      "suggestedName": "VEGA",
+      "localFull": "AHLI Vega",
+      "match": true
+    },
+    {
+      "slug": "ahli-corvus",
+      "brand": "AHLI",
+      "currentName": "Corvus",
+      "canonicalTitle": "AHLI Corvus",
+      "suggestedName": "Corvus",
+      "localFull": "AHLI Corvus",
+      "match": true
+    },
+    {
+      "slug": "ahli-pegasus",
+      "brand": "AHLI",
+      "currentName": "Pegasus",
+      "canonicalTitle": "Ahli Pegasus",
+      "suggestedName": "Pegasus",
+      "localFull": "AHLI Pegasus",
+      "match": true
+    },
+    {
+      "slug": "ahli-canes",
+      "brand": "AHLI",
+      "currentName": "Canes",
+      "canonicalTitle": "Ahli Canes",
+      "suggestedName": "Canes",
+      "localFull": "AHLI Canes",
+      "match": true
+    },
+    {
+      "slug": "ahli-virgo",
+      "brand": "AHLI",
+      "currentName": "Virgo",
+      "canonicalTitle": "Ahli Virgo",
+      "suggestedName": "Virgo",
+      "localFull": "AHLI Virgo",
+      "match": true
+    },
+    {
+      "slug": "ahli-taurus",
+      "brand": "AHLI",
+      "currentName": "Taurus",
+      "canonicalTitle": "Ahli Taurus",
+      "suggestedName": "Taurus",
+      "localFull": "AHLI Taurus",
+      "match": true
+    },
+    {
+      "slug": "ahli-overdose",
+      "brand": "AHLI",
+      "currentName": "Overdose",
+      "canonicalTitle": "AHLI Overdose",
+      "suggestedName": "Overdose",
+      "localFull": "AHLI Overdose",
+      "match": true
+    },
+    {
+      "slug": "montale-arabians-tonka",
+      "brand": "Montale",
+      "currentName": "Arabians Tonka",
+      "canonicalTitle": "Montale Arabians Tonka",
+      "suggestedName": "Arabians Tonka",
+      "localFull": "Montale Arabians Tonka",
+      "match": true
+    },
+    {
+      "slug": "montale-sensual-instinct",
+      "brand": "Montale",
+      "currentName": "Sensual Instinct",
+      "canonicalTitle": "Montale Sensual Instinct",
+      "suggestedName": "Sensual Instinct",
+      "localFull": "Montale Sensual Instinct",
+      "match": true
+    },
+    {
+      "slug": "montale-dark-vanilla",
+      "brand": "Montale",
+      "currentName": "Dark Vanilla",
+      "canonicalTitle": "Montale Dark Vanilla",
+      "suggestedName": "Dark Vanilla",
+      "localFull": "Montale Dark Vanilla",
+      "match": true
+    },
+    {
+      "slug": "montale-intense-cafe",
+      "brand": "Montale",
+      "currentName": "Intense Cafe",
+      "canonicalTitle": "Montale Intense Cafe",
+      "suggestedName": "Intense Cafe",
+      "localFull": "Montale Intense Cafe",
+      "match": true
+    },
+    {
+      "slug": "montale-intense-roses-musk",
+      "brand": "Montale",
+      "currentName": "Intense Roses Musk",
+      "canonicalTitle": "Montale Intense Roses Musk",
+      "suggestedName": "Intense Roses Musk",
+      "localFull": "Montale Intense Roses Musk",
+      "match": true
+    },
+    {
+      "slug": "montale-crazy-in-love",
+      "brand": "Montale",
+      "currentName": "Crazy In Love",
+      "canonicalTitle": "Montale Crazy In Love",
+      "suggestedName": "Crazy In Love",
+      "localFull": "Montale Crazy In Love",
+      "match": true
+    },
+    {
+      "slug": "giardini-di-toscana-bianco-latte",
+      "brand": "Giardini di Toscana",
+      "currentName": "Bianco Latte",
+      "canonicalTitle": "Giardini Di Toscana Bianco Latte",
+      "suggestedName": "Bianco Latte",
+      "localFull": "Giardini di Toscana Bianco Latte",
+      "match": true
+    },
+    {
+      "slug": "giardini-di-toscana-blu-mare",
+      "brand": "Giardini di Toscana",
+      "currentName": "Blu Mare",
+      "canonicalTitle": "Giardini Di Toscana Blu Mare",
+      "suggestedName": "Blu Mare",
+      "localFull": "Giardini di Toscana Blu Mare",
+      "match": true
+    },
+    {
+      "slug": "giardini-di-toscana-celeste",
+      "brand": "Giardini di Toscana",
+      "currentName": "Celeste",
+      "canonicalTitle": "Giardini Di Toscana Celeste",
+      "suggestedName": "Celeste",
+      "localFull": "Giardini di Toscana Celeste",
+      "match": true
+    },
+    {
+      "slug": "giardini-di-toscana-rosso-rubino",
+      "brand": "Giardini di Toscana",
+      "currentName": "Rosso Rubino",
+      "canonicalTitle": "Giardini Di Toscana Rosso Rubino",
+      "suggestedName": "Rosso Rubino",
+      "localFull": "Giardini di Toscana Rosso Rubino",
+      "match": true
+    },
+    {
+      "slug": "tom-ford-oud-wood",
+      "brand": "Tom Ford",
+      "currentName": "Oud Wood",
+      "canonicalTitle": "Tom Ford Oud Wood",
+      "suggestedName": "Oud Wood",
+      "localFull": "Tom Ford Oud Wood",
+      "match": true
+    },
+    {
+      "slug": "tom-ford-noir-extreme",
+      "brand": "Tom Ford",
+      "currentName": "Noir Extreme EDP",
+      "canonicalTitle": "Tom Ford Noir Extreme EDP",
+      "suggestedName": "Noir Extreme EDP",
+      "localFull": "Tom Ford Noir Extreme EDP",
+      "match": true
+    },
+    {
+      "slug": "tom-ford-ombre-leather",
+      "brand": "Tom Ford",
+      "currentName": "Ombre Leather",
+      "canonicalTitle": "Tom Ford Ombre Leather",
+      "suggestedName": "Ombre Leather",
+      "localFull": "Tom Ford Ombre Leather",
+      "match": true
+    },
+    {
+      "slug": "tom-ford-black-orchid",
+      "brand": "Tom Ford",
+      "currentName": "Black Orchid EDP",
+      "canonicalTitle": "Tom Ford Black Orchid EDP",
+      "suggestedName": "Black Orchid EDP",
+      "localFull": "Tom Ford Black Orchid EDP",
+      "match": true
+    },
+    {
+      "slug": "tom-ford-costa-azzurra-parfum",
+      "brand": "Tom Ford",
+      "currentName": "Costa Azzurra Parfum",
+      "canonicalTitle": "Tom Ford Costa Azzurra Parfum",
+      "suggestedName": "Costa Azzurra Parfum",
+      "localFull": "Tom Ford Costa Azzurra Parfum",
+      "match": true
+    },
+    {
+      "slug": "versace-bright-crystal",
+      "brand": "Versace",
+      "currentName": "Bright Crystal",
+      "canonicalTitle": "Versace Bright Crystal",
+      "suggestedName": "Bright Crystal",
+      "localFull": "Versace Bright Crystal",
+      "match": true
+    },
+    {
+      "slug": "versace-eros-edt",
+      "brand": "Versace",
+      "currentName": "Eros EDT For Men",
+      "canonicalTitle": "Versace Eros EDT For Men",
+      "suggestedName": "Eros EDT For Men",
+      "localFull": "Versace Eros EDT For Men",
+      "match": true
+    },
+    {
+      "slug": "versace-eros-flame",
+      "brand": "Versace",
+      "currentName": "Eros Flame",
+      "canonicalTitle": "Versace Eros Flame",
+      "suggestedName": "Eros Flame",
+      "localFull": "Versace Eros Flame",
+      "match": true
+    },
+    {
+      "slug": "versace-eros-parfum",
+      "brand": "Versace",
+      "currentName": "Eros Parfum",
+      "canonicalTitle": "Versace Eros Parfum",
+      "suggestedName": "Eros Parfum",
+      "localFull": "Versace Eros Parfum",
+      "match": true
+    },
+    {
+      "slug": "carolina-herrera-good-girl",
+      "brand": "Carolina Herrera",
+      "currentName": "Good Girl",
+      "canonicalTitle": "Carolina Herrera Good Girl",
+      "suggestedName": "Good Girl",
+      "localFull": "Carolina Herrera Good Girl",
+      "match": true
+    },
+    {
+      "slug": "carolina-herrera-bad-boy-extreme",
+      "brand": "Carolina Herrera",
+      "currentName": "Bad Boy Extreme",
+      "canonicalTitle": "Carolina Herrera Bad Boy Extreme",
+      "suggestedName": "Bad Boy Extreme",
+      "localFull": "Carolina Herrera Bad Boy Extreme",
+      "match": true
+    },
+    {
+      "slug": "valentino-uomo-born-in-roma-intense",
+      "brand": "Valentino",
+      "currentName": "Uomo Born In Roma Intense",
+      "canonicalTitle": "Valentino Uomo Born In Roma Intense",
+      "suggestedName": "Uomo Born In Roma Intense",
+      "localFull": "Valentino Uomo Born In Roma Intense",
+      "match": true
+    },
+    {
+      "slug": "valentino-donna-born-in-roma",
+      "brand": "Valentino",
+      "currentName": "Donna Born In Roma",
+      "canonicalTitle": "Valentino Donna Born In Roma",
+      "suggestedName": "Donna Born In Roma",
+      "localFull": "Valentino Donna Born In Roma",
+      "match": true
+    },
+    {
+      "slug": "valentino-donna-born-in-roma-intense",
+      "brand": "Valentino",
+      "currentName": "Donna Born in roma Intense",
+      "canonicalTitle": "Valentino Donna Born in roma Intense",
+      "suggestedName": "Donna Born in roma Intense",
+      "localFull": "Valentino Donna Born in roma Intense",
+      "match": true
+    },
+    {
+      "slug": "valentino-donna-born-in-roma-coral-fantasy",
+      "brand": "Valentino",
+      "currentName": "Donna Born In Roma Coral Fantasy",
+      "canonicalTitle": "Valentino Donna Born In Roma Coral Fantasy",
+      "suggestedName": "Donna Born In Roma Coral Fantasy",
+      "localFull": "Valentino Donna Born In Roma Coral Fantasy",
+      "match": true
+    },
+    {
+      "slug": "louis-vuitton-ombre-nomade",
+      "brand": "Louis Vuitton",
+      "currentName": "Ombre Nomade",
+      "canonicalTitle": "Louis Vuitton Ombre Nomade",
+      "suggestedName": "Ombre Nomade",
+      "localFull": "Louis Vuitton Ombre Nomade",
+      "match": true
+    },
+    {
+      "slug": "chanel-coco-mademoiselle",
+      "brand": "Chanel",
+      "currentName": "Coco Mademoiselle",
+      "canonicalTitle": "Chanel Coco Mademoiselle",
+      "suggestedName": "Coco Mademoiselle",
+      "localFull": "Chanel Coco Mademoiselle",
+      "match": true
+    },
+    {
+      "slug": "hugo-boss-bottled-elixir",
+      "brand": "Hugo Boss",
+      "currentName": "Bottled Elixir",
+      "canonicalTitle": "Hugo Boss Bottled Elixir",
+      "suggestedName": "Bottled Elixir",
+      "localFull": "Hugo Boss Bottled Elixir",
+      "match": true
+    },
+    {
+      "slug": "lancome-la-vie-est-belle",
+      "brand": "Lancôme",
+      "currentName": "La Vie Est Belle",
+      "canonicalTitle": "Lancôme La Vie Est Belle",
+      "suggestedName": "La Vie Est Belle",
+      "localFull": "Lancôme La Vie Est Belle",
+      "match": true
+    },
+    {
+      "slug": "paco-rabanne-invictus-victory-elixir",
+      "brand": "Paco Rabanne",
+      "currentName": "Invictus Victory Elixir",
+      "canonicalTitle": "Paco Rabanne Invictus Victory Elixir",
+      "suggestedName": "Invictus Victory Elixir",
+      "localFull": "Paco Rabanne Invictus Victory Elixir",
+      "match": true
+    },
+    {
+      "slug": "lorenzo-pazzaglia-summer-hammer",
+      "brand": "Lorenzo Pazzaglia",
+      "currentName": "Summer Hammer",
+      "canonicalTitle": "Lorenzo Pazzaglia Summer Hammer",
+      "suggestedName": "Summer Hammer",
+      "localFull": "Lorenzo Pazzaglia Summer Hammer",
+      "match": true
+    },
+    {
+      "slug": "maison-crivelli-oud-maracuja",
+      "brand": "Maison Crivelli",
+      "currentName": "OUD MARACUJA",
+      "canonicalTitle": "Maison Crivelli OUD MARACUJA",
+      "suggestedName": "OUD MARACUJA",
+      "localFull": "Maison Crivelli OUD MARACUJA",
+      "match": true
+    },
+    {
+      "slug": "xerjoff-xj-1861-naxos",
+      "brand": "Xerjoff",
+      "currentName": "XJ 1861 Naxos",
+      "canonicalTitle": "Xerjoff XJ 1861 Naxos",
+      "suggestedName": "XJ 1861 Naxos",
+      "localFull": "Xerjoff XJ 1861 Naxos",
+      "match": true
+    },
+    {
+      "slug": "lattafa-yara-candy",
+      "brand": "Lattafa",
+      "currentName": "Yara Candy",
+      "canonicalTitle": "Lattafa Yara Candy",
+      "suggestedName": "Yara Candy",
+      "localFull": "Lattafa Yara Candy",
+      "match": true
+    },
+    {
+      "slug": "lattafa-yara-moi",
+      "brand": "Lattafa",
+      "currentName": "Yara Moi",
+      "canonicalTitle": "Lattafa Yara Moi",
+      "suggestedName": "Yara Moi",
+      "localFull": "Lattafa Yara Moi",
+      "match": true
+    },
+    {
+      "slug": "lattafa-yara-tous",
+      "brand": "Lattafa",
+      "currentName": "Yara Tous",
+      "canonicalTitle": "Lattafa Yara Tous",
+      "suggestedName": "Yara Tous",
+      "localFull": "Lattafa Yara Tous",
+      "match": true
+    },
+    {
+      "slug": "lattafa-emeer",
+      "brand": "Lattafa",
+      "currentName": "Emeer",
+      "canonicalTitle": "Lattafa Emeer",
+      "suggestedName": "Emeer",
+      "localFull": "Lattafa Emeer",
+      "match": true
+    },
+    {
+      "slug": "lattafa-pride-shaheen-silver",
+      "brand": "Lattafa",
+      "currentName": "Pride Shaheen Silver",
+      "canonicalTitle": "Lattafa Pride Shaheen Silver",
+      "suggestedName": "Pride Shaheen Silver",
+      "localFull": "Lattafa Pride Shaheen Silver",
+      "match": true
+    },
+    {
+      "slug": "lattafa-asad",
+      "brand": "Lattafa",
+      "currentName": "Asad Elixir",
+      "canonicalTitle": "Lattafa Asad Elixir",
+      "suggestedName": "Asad Elixir",
+      "localFull": "Lattafa Asad Elixir",
+      "match": true
+    },
+    {
+      "slug": "armaf-odyssey-candee",
+      "brand": "Armaf",
+      "currentName": "Odyssey Candee",
+      "canonicalTitle": "Armaf odyssey candee",
+      "suggestedName": "odyssey candee",
+      "localFull": "Armaf Odyssey Candee",
+      "match": true
+    },
+    {
+      "slug": "armaf-odyssey-aqua-edition",
+      "brand": "Armaf",
+      "currentName": "Odyssey Aqua Edition",
+      "canonicalTitle": "Armaf Odyssey Aqua Edition",
+      "suggestedName": "Odyssey Aqua Edition",
+      "localFull": "Armaf Odyssey Aqua Edition",
+      "match": true
+    },
+    {
+      "slug": "armaf-odyssey-wild-one-gold",
+      "brand": "Armaf",
+      "currentName": "Odyssey Wild One Gold Edition",
+      "canonicalTitle": "Armaf Odyssey Wild One Gold Edition",
+      "suggestedName": "Odyssey Wild One Gold Edition",
+      "localFull": "Armaf Odyssey Wild One Gold Edition",
+      "match": true
+    },
+    {
+      "slug": "armaf-odyssey-homme-white",
+      "brand": "Armaf",
+      "currentName": "Odyssey Homme White Edition",
+      "canonicalTitle": "Armaf Odyssey Homme White Edition",
+      "suggestedName": "Odyssey Homme White Edition",
+      "localFull": "Armaf Odyssey Homme White Edition",
+      "match": true
+    },
+    {
+      "slug": "nautica-voyage",
+      "brand": "Nautica",
+      "currentName": "Voyage",
+      "canonicalTitle": "Nautica Voyage",
+      "suggestedName": "Voyage",
+      "localFull": "Nautica Voyage",
+      "match": true
+    },
+    {
+      "slug": "nautica-voyage-sport",
+      "brand": "Nautica",
+      "currentName": "Voyage Sport",
+      "canonicalTitle": "Nautica Voyage Sport",
+      "suggestedName": "Voyage Sport",
+      "localFull": "Nautica Voyage Sport",
+      "match": true
+    },
+    {
+      "slug": "emper-stallion-53",
+      "brand": "Emper",
+      "currentName": "Stallion 53",
+      "canonicalTitle": "Emper Stallion 53",
+      "suggestedName": "Stallion 53",
+      "localFull": "Emper Stallion 53",
+      "match": true
+    },
+    {
+      "slug": "dolce-gabbana-pour-homme",
+      "brand": "Dolce & Gabbana",
+      "currentName": "Pour Homme",
+      "canonicalTitle": "Dolce & Gabbana Pour Homme",
+      "suggestedName": "Pour Homme",
+      "localFull": "Dolce & Gabbana Pour Homme",
+      "match": true
+    },
+    {
+      "slug": "hugo-boss-the-scent-for-men",
+      "brand": "Hugo Boss",
+      "currentName": "BOSS The Scent For Men",
+      "canonicalTitle": "Hugo Boss BOSS The Scent For Men",
+      "suggestedName": "BOSS The Scent For Men",
+      "localFull": "Hugo Boss BOSS The Scent For Men",
+      "match": true
+    },
+    {
+      "slug": "hugo-boss-the-scent-absolute",
+      "brand": "Hugo Boss",
+      "currentName": "Boss The Scent Absolute For Men",
+      "canonicalTitle": "Hugo Boss BOSS The Scent Absolute For Men",
+      "suggestedName": "BOSS The Scent Absolute For Men",
+      "localFull": "Hugo Boss Boss The Scent Absolute For Men",
+      "match": true
+    },
+    {
+      "slug": "afnan-9am-dive",
+      "brand": "Afnan",
+      "currentName": "9 AM Dive",
+      "canonicalTitle": "Afnan 9 AM Dive",
+      "suggestedName": "9 AM Dive",
+      "localFull": "Afnan 9 AM Dive",
+      "match": true
+    },
+    {
+      "slug": "afnan-9pm-rebel",
+      "brand": "Afnan",
+      "currentName": "9 PM Rebel",
+      "canonicalTitle": "Afnan 9 PM Rebel",
+      "suggestedName": "9 PM Rebel",
+      "localFull": "Afnan 9 PM Rebel",
+      "match": true
+    },
+    {
+      "slug": "ahli-octans",
+      "brand": "AHLI",
+      "currentName": "Octans",
+      "canonicalTitle": "Ahli Octans",
+      "suggestedName": "Octans",
+      "localFull": "AHLI Octans",
+      "match": true
+    },
+    {
+      "slug": "versace-eros-edp",
+      "brand": "Versace",
+      "currentName": "Eros Eau de Parfum",
+      "canonicalTitle": "Versace Eros Eau De Parfum",
+      "suggestedName": "Eros Eau De Parfum",
+      "localFull": "Versace Eros Eau de Parfum",
+      "match": true
+    },
+    {
+      "slug": "mfk-baccarat-rouge-540-extrait",
+      "brand": "Maison Francis Kurkdjian",
+      "currentName": "Baccarat Rouge 540 Extrait de Parfum",
+      "canonicalTitle": "Maison Francis Kurkdjian Baccarat Rouge 540 Extrait De Parfum",
+      "suggestedName": "Baccarat Rouge 540 Extrait De Parfum",
+      "localFull": "Maison Francis Kurkdjian Baccarat Rouge 540 Extrait de Parfum",
+      "match": true
+    },
+    {
+      "slug": "jpgaultier-le-male",
+      "brand": "Jean Paul Gaultier",
+      "currentName": "Le Male",
+      "canonicalTitle": "Jean Paul Gaultier Le Male",
+      "suggestedName": "Le Male",
+      "localFull": "Jean Paul Gaultier Le Male",
+      "match": true
+    },
+    {
+      "slug": "jpgaultier-le-male-le-parfum",
+      "brand": "Jean Paul Gaultier",
+      "currentName": "Le Male Le Parfum",
+      "canonicalTitle": "Jean Paul Gaultier Le Male Le Parfum",
+      "suggestedName": "Le Male Le Parfum",
+      "localFull": "Jean Paul Gaultier Le Male Le Parfum",
+      "match": true
+    },
+    {
+      "slug": "jpgaultier-le-male-elixir-absolu",
+      "brand": "Jean Paul Gaultier",
+      "currentName": "Le Male Elixir Absolu",
+      "canonicalTitle": "Jean Paul gaultier Le Male Elixir Absolu",
+      "suggestedName": "Le Male Elixir Absolu",
+      "localFull": "Jean Paul Gaultier Le Male Elixir Absolu",
+      "match": true
+    },
+    {
+      "slug": "jpgaultier-ultra-male",
+      "brand": "Jean Paul Gaultier",
+      "currentName": "Ultra Male",
+      "canonicalTitle": "Jean Paul Gaultier Ultra Male",
+      "suggestedName": "Ultra Male",
+      "localFull": "Jean Paul Gaultier Ultra Male",
+      "match": true
+    },
+    {
+      "slug": "jpgaultier-le-beau",
+      "brand": "Jean Paul Gaultier",
+      "currentName": "Le Beau",
+      "canonicalTitle": "Jean Paul Gaultier Le Beau",
+      "suggestedName": "Le Beau",
+      "localFull": "Jean Paul Gaultier Le Beau",
+      "match": true
+    },
+    {
+      "slug": "jpgaultier-le-beau-paradise-garden",
+      "brand": "Jean Paul Gaultier",
+      "currentName": "Le Beau Paradise Garden",
+      "canonicalTitle": "Jean Paul Gaultier Le Beau Paradise Garden",
+      "suggestedName": "Le Beau Paradise Garden",
+      "localFull": "Jean Paul Gaultier Le Beau Paradise Garden",
+      "match": true
+    },
+    {
+      "slug": "jpgaultier-scandal",
+      "brand": "Jean Paul Gaultier",
+      "currentName": "Scandal for her",
+      "canonicalTitle": "Jean Paul Gaultier Scandal for her",
+      "suggestedName": "Scandal for her",
+      "localFull": "Jean Paul Gaultier Scandal for her",
+      "match": true
+    },
+    {
+      "slug": "jpgaultier-scandal-le-parfum",
+      "brand": "Jean Paul Gaultier",
+      "currentName": "Scandal Le Parfum",
+      "canonicalTitle": "Jean Paul Gaultier Scandal Le Parfum",
+      "suggestedName": "Scandal Le Parfum",
+      "localFull": "Jean Paul Gaultier Scandal Le Parfum",
+      "match": true
+    },
+    {
+      "slug": "jpgaultier-scandal-so-scandal",
+      "brand": "Jean Paul Gaultier",
+      "currentName": "Scandal So Scandal!",
+      "canonicalTitle": "Jean Paul Gaultier Scandal So Scandal!",
+      "suggestedName": "Scandal So Scandal!",
+      "localFull": "Jean Paul Gaultier Scandal So Scandal!",
+      "match": true
+    },
+    {
+      "slug": "jpgaultier-scandal-pour-homme",
+      "brand": "Jean Paul Gaultier",
+      "currentName": "Scandal Pour Homme",
+      "canonicalTitle": "Jean Paul Gaultier Scandal Pour Homme",
+      "suggestedName": "Scandal Pour Homme",
+      "localFull": "Jean Paul Gaultier Scandal Pour Homme",
+      "match": true
+    },
+    {
+      "slug": "jpgaultier-scandal-le-parfum-pour-homme",
+      "brand": "Jean Paul Gaultier",
+      "currentName": "Scandal Le Parfum Pour Homme",
+      "canonicalTitle": "Jean Paul Gaultier Scandal Le Parfum pour Homme",
+      "suggestedName": "Scandal Le Parfum pour Homme",
+      "localFull": "Jean Paul Gaultier Scandal Le Parfum Pour Homme",
+      "match": true
+    },
+    {
+      "slug": "jpgaultier-scandal-pour-homme-absolu",
+      "brand": "Jean Paul Gaultier",
+      "currentName": "Scandal Pour Homme Absolu",
+      "canonicalTitle": "Jean Paul Gaultier Scandal Pour Homme Absolu",
+      "suggestedName": "Scandal Pour Homme Absolu",
+      "localFull": "Jean Paul Gaultier Scandal Pour Homme Absolu",
+      "match": true
+    },
+    {
+      "slug": "jpgaultier-gaultier-divine",
+      "brand": "Jean Paul Gaultier",
+      "currentName": "Gaultier Divine",
+      "canonicalTitle": "Jean Paul Gaultier Gaultier Divine",
+      "suggestedName": "Gaultier Divine",
+      "localFull": "Jean Paul Gaultier Gaultier Divine",
+      "match": true
+    },
+    {
+      "slug": "jpgaultier-gaultier-divine-le-parfum",
+      "brand": "Jean Paul Gaultier",
+      "currentName": "Gaultier Divine Le Parfum",
+      "canonicalTitle": "Jean Paul Gaultier Gaultier Divine le parfum",
+      "suggestedName": "Gaultier Divine le parfum",
+      "localFull": "Jean Paul Gaultier Gaultier Divine Le Parfum",
+      "match": true
+    },
+    {
+      "slug": "jpgaultier-la-belle-le-parfum",
+      "brand": "Jean Paul Gaultier",
+      "currentName": "La Belle Le Parfum",
+      "canonicalTitle": "Jean Paul Gaultier La Belle le parfum",
+      "suggestedName": "La Belle le parfum",
+      "localFull": "Jean Paul Gaultier La Belle Le Parfum",
+      "match": true
+    },
+    {
+      "slug": "jpgaultier-la-belle-paradise-garden",
+      "brand": "Jean Paul Gaultier",
+      "currentName": "La Belle Paradise Garden",
+      "canonicalTitle": "Jean Paul Gaultier La Belle Paradise Garden",
+      "suggestedName": "La Belle Paradise Garden",
+      "localFull": "Jean Paul Gaultier La Belle Paradise Garden",
+      "match": true
+    },
+    {
+      "slug": "hugo-boss-bottled-absolu",
+      "brand": "Hugo Boss",
+      "currentName": "Bottled absolu",
+      "canonicalTitle": "Hugo Boss Bottled absolu",
+      "suggestedName": "Bottled absolu",
+      "localFull": "Hugo Boss Bottled absolu",
+      "match": true
+    },
+    {
+      "slug": "hugo-boss-iced",
+      "brand": "Hugo Boss",
+      "currentName": "Iced Nuevo Diseño",
+      "canonicalTitle": "Hugo Boss Iced Nuevo Diseño",
+      "suggestedName": "Iced Nuevo Diseño",
+      "localFull": "Hugo Boss Iced Nuevo Diseño",
+      "match": true
+    },
+    {
+      "slug": "jpgaultier-le-male-elixir-parfum",
+      "brand": "Jean Paul Gaultier",
+      "currentName": "Le Male Elixir Parfum",
+      "canonicalTitle": "Jean Paul Gaultier Le Male Elixir Parfum",
+      "suggestedName": "Le Male Elixir Parfum",
+      "localFull": "Jean Paul Gaultier Le Male Elixir Parfum",
+      "match": true
+    },
+    {
+      "slug": "lattafa-khamrah-qahwa",
+      "brand": "Lattafa",
+      "currentName": "Khamrah Qahwa",
+      "canonicalTitle": "Lattafa Khamrah Qahwa",
+      "suggestedName": "Khamrah Qahwa",
+      "localFull": "Lattafa Khamrah Qahwa",
+      "match": true
+    },
+    {
+      "slug": "bharara-mast-velvet-rose",
+      "brand": "Bharara",
+      "currentName": "Mast Perfume Velvet Rose",
+      "canonicalTitle": "Bharara Mast Perfume Velvet Rose",
+      "suggestedName": "Mast Perfume Velvet Rose",
+      "localFull": "Bharara Mast Perfume Velvet Rose",
+      "match": true
+    }
+  ],
+  "diffs": [
+    {
+      "slug": "dior-miss-dior-edp",
+      "brand": "Dior",
+      "currentName": "Miss Dior EDP",
+      "canonicalTitle": "Miss Dior EDP",
+      "suggestedName": "Miss Dior EDP",
+      "localFull": "Dior Miss Dior EDP",
+      "match": false
+    },
+    {
+      "slug": "armani-acqua-di-gio-parfum",
+      "brand": "Giorgio Armani",
+      "currentName": "Acqua di Gio Parfum",
+      "canonicalTitle": "Armani Acqua di Gio Parfum",
+      "suggestedName": "Armani Acqua di Gio Parfum",
+      "localFull": "Giorgio Armani Acqua di Gio Parfum",
+      "match": false
+    },
+    {
+      "slug": "mfk-baccarat-rouge-540",
+      "brand": "Maison Francis Kurkdjian",
+      "currentName": "Baccarat Rouge 540",
+      "canonicalTitle": "Baccarat Rouge 540 Maison Francis Kurkdjian",
+      "suggestedName": "Baccarat Rouge 540 Maison Francis Kurkdjian",
+      "localFull": "Maison Francis Kurkdjian Baccarat Rouge 540",
+      "match": false
+    },
+    {
+      "slug": "lattafa-fakhar-black",
+      "brand": "Lattafa",
+      "currentName": "Fakhar Black",
+      "canonicalTitle": "Lattafa Fakhar Black (Alternativa de Yves Saint Laurent Y EDP)",
+      "suggestedName": "Fakhar Black (Alternativa de Yves Saint Laurent Y EDP)",
+      "localFull": "Lattafa Fakhar Black",
+      "match": false
+    },
+    {
+      "slug": "armani-acqua-di-gio-edp",
+      "brand": "Giorgio Armani",
+      "currentName": "Acqua di Gio Pour Homme EDP",
+      "canonicalTitle": "Armani Acqua di Gio Pour Homme Eau de Parfum",
+      "suggestedName": "Armani Acqua di Gio Pour Homme Eau de Parfum",
+      "localFull": "Giorgio Armani Acqua di Gio Pour Homme EDP",
+      "match": false
+    },
+    {
+      "slug": "dior-jadore-parfum-eau",
+      "brand": "Dior",
+      "currentName": "J'adore Parfum d'Eau",
+      "canonicalTitle": "DIOR J'adore Parfum d’Eau",
+      "suggestedName": "J'adore Parfum d’Eau",
+      "localFull": "Dior J'adore Parfum d'Eau",
+      "match": false
+    },
+    {
+      "slug": "afnan-9pm",
+      "brand": "Afnan",
+      "currentName": "9 PM",
+      "canonicalTitle": "Afnan 9 PM (Alternativa JPG Ultra Male)",
+      "suggestedName": "9 PM (Alternativa JPG Ultra Male)",
+      "localFull": "Afnan 9 PM",
+      "match": false
+    }
+  ],
+  "failed": []
+}

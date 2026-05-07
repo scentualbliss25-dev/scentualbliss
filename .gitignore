@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+
+# Production build
+build/
+
+# Environnment variables (NUNCA subir al repo)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.suo
+*.sw?
+
+# Vercel (por si se usa en el futuro)
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Claude Code (configuración local, no va al repo)
+.claude/
+
+# Archivos de diseño/referencia grandes
+ScentualBliss*Homepage*
+*.docx
+
+# Claude Code (configuración local, no va al repo)
+.claude/

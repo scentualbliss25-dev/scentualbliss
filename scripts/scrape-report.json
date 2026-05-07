@@ -1,0 +1,873 @@
+{
+  "ok": [
+    {
+      "status": "ok",
+      "slug": "hugo-boss-bottled",
+      "name": "Boss Bottled",
+      "brand": "Hugo Boss",
+      "sourceTitle": "Hugo Boss BOSS Bottled",
+      "via": "shopify-json",
+      "downloaded": [
+        {
+          "path": "/public/img/hugo-boss-bottled.webp",
+          "sourceUrl": "https://cdn.shopify.com/s/files/1/0847/7553/4899/products/Hugo-boss-bottled-2_1600x1600.jpg?v=1699805409",
+          "skipped": false,
+          "sizeKb": 10
+        },
+        {
+          "path": "/public/img/hugo-boss-bottled-2.webp",
+          "sourceUrl": "https://cdn.shopify.com/s/files/1/0847/7553/4899/files/Hugo-boss-bottled_1600x1600.jpg?v=1704491524",
+          "skipped": false,
+          "sizeKb": 16
+        }
+      ],
+      "foundUrls": 2
+    },
+    {
+      "status": "ok",
+      "slug": "lattafa-khamrah",
+      "name": "Khamrah",
+      "brand": "Lattafa",
+      "sourceTitle": "Lattafa Khamrah",
+      "via": "shopify-json",
+      "downloaded": [
+        {
+          "path": "/public/img/lattafa-khamrah.webp",
+          "sourceUrl": "https://cdn.shopify.com/s/files/1/0847/7553/4899/products/Lattafa-khamrah-2_1600x1600.png?v=1699807142",
+          "skipped": false,
+          "sizeKb": 22
+        },
+        {
+          "path": "/public/img/lattafa-khamrah-2.webp",
+          "sourceUrl": "https://cdn.shopify.com/s/files/1/0847/7553/4899/files/Lattafa-khamrah_1600x1600.png?v=1705442551",
+          "skipped": false,
+          "sizeKb": 44
+        }
+      ],
+      "foundUrls": 2
+    },
+    {
+      "status": "ok",
+      "slug": "hugo-boss-the-scent-for-men",
+      "name": "Boss The Scent For Men",
+      "brand": "Hugo Boss",
+      "sourceTitle": "Hugo Boss BOSS The Scent For Men",
+      "via": "shopify-json",
+      "downloaded": [
+        {
+          "path": "/public/img/hugo-boss-the-scent-for-men.webp",
+          "sourceUrl": "https://cdn.shopify.com/s/files/1/0847/7553/4899/products/Hugo-boss-the-scent-2_1600x1600.jpg?v=1699805406",
+          "skipped": false,
+          "sizeKb": 13
+        },
+        {
+          "path": "/public/img/hugo-boss-the-scent-for-men-2.webp",
+          "sourceUrl": "https://cdn.shopify.com/s/files/1/0847/7553/4899/files/The-scent_1600x1600.jpg?v=1702482075",
+          "skipped": false,
+          "sizeKb": 17
+        }
+      ],
+      "foundUrls": 2
+    }
+  ],
+  "partial": [
+    {
+      "status": "partial",
+      "slug": "dior-poison-girl",
+      "name": "Poison Girl",
+      "brand": "Dior",
+      "sourceTitle": "DIOR Poison Girl EDP",
+      "via": "shopify-json",
+      "downloaded": [
+        {
+          "path": "/public/img/dior-poison-girl.webp",
+          "sourceUrl": "https://cdn.shopify.com/s/files/1/0847/7553/4899/products/Dior-poison-girl_1600x1600.png?v=1699807302",
+          "skipped": true
+        }
+      ],
+      "foundUrls": 1
+    },
+    {
+      "status": "partial",
+      "slug": "ahli-pegasus",
+      "name": "Pegasus",
+      "brand": "AHLI",
+      "sourceTitle": "Ahli Pegasus",
+      "via": "shopify-json",
+      "downloaded": [
+        {
+          "path": "/public/img/ahli-pegasus.webp",
+          "sourceUrl": "https://cdn.shopify.com/s/files/1/0847/7553/4899/files/Ahli_Pegasus_1600x1600.png?v=1729114014",
+          "skipped": true
+        }
+      ],
+      "foundUrls": 1
+    },
+    {
+      "status": "partial",
+      "slug": "ahli-virgo",
+      "name": "Virgo",
+      "brand": "AHLI",
+      "sourceTitle": "Ahli Virgo",
+      "via": "shopify-json",
+      "downloaded": [
+        {
+          "path": "/public/img/ahli-virgo.webp",
+          "sourceUrl": "https://cdn.shopify.com/s/files/1/0847/7553/4899/products/Ahli-virgo_1600x1600.jpg?v=1699808462",
+          "skipped": true
+        }
+      ],
+      "foundUrls": 1
+    },
+    {
+      "status": "partial",
+      "slug": "ahli-overdose",
+      "name": "Overdose",
+      "brand": "AHLI",
+      "sourceTitle": "AHLI Overdose",
+      "via": "shopify-json",
+      "downloaded": [
+        {
+          "path": "/public/img/ahli-overdose.webp",
+          "sourceUrl": "https://cdn.shopify.com/s/files/1/0847/7553/4899/products/AHLI-OVERDOSE_1600x1600.jpg?v=1699806787",
+          "skipped": true
+        }
+      ],
+      "foundUrls": 1
+    }
+  ],
+  "skipped": [
+    {
+      "status": "skipped",
+      "slug": "hugo-boss-bottled-night",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "hugo-boss-bottled-parfum",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "hugo-boss-bottled-tonic",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "hugo-boss-bottled-triumph-elixir",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "hugo-boss-bottled-infinite",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "hugo-boss-the-scent-magnetic",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "hugo-boss-bottled-pacific",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "hugo-boss-dark-blue",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "hugo-boss-femme",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "hugo-boss-hugo-man",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "hugo-boss-energise",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "hugo-boss-bottled-eau-de-parfum",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "xerjoff-alexandria-ii",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "xerjoff-casamorati-1888-lira",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "xerjoff-40-knots",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "xerjoff-erba-pura",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "lattafa-badee-al-oud-honor-glory",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "lattafa-fakhar-gold",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "lattafa-khamrah-dukhan",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "lattafa-pride-masa",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "lattafa-rave-now",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "lattafa-his-confession",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "lattafa-mayar",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "lattafa-al-noble-ameer",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "lattafa-pride-blue-sapphire",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "lattafa-pride-ishq-al-shuyukh-silver",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "lattafa-qaed-al-fursan-untamed",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "lattafa-niche-emarati-khanjar",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "armaf-odyssey-mandarin-sky",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "armaf-odyssey-mega",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "armaf-club-de-nuit-intense-man-edt",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "armaf-club-de-nuit-intense-extrait",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "armaf-club-de-nuit-untold",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "armaf-club-de-nuit-iconic",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "armaf-club-de-nuit-milestone",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "armaf-club-de-nuit-woman",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "armaf-club-de-nuit-precieux-1",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "armaf-club-de-nuit-lionheart-man",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "armaf-club-de-nuit-lionheart-woman",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "lacoste-essential",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "lacoste-blanc",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "lacoste-blanc-eau-de-parfum",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "lacoste-lhomme-intense",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "lacoste-sparkling",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "creed-aventus",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "creed-absolu-aventus",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "creed-aventus-cologne",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "creed-aventus-for-her",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "creed-silver-mountain-water",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "creed-royal-oud",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "creed-virgin-island-water",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "creed-millesime-imperial",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "creed-delphinus",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "dior-sauvage-edt",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "dior-sauvage-edp",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "dior-sauvage-parfum",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "dior-sauvage-elixir",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "dior-jadore-edp",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "dior-miss-dior-edp",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "dior-homme-intense",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "dior-homme-parfum",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "ahli-karpos",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "ahli-vega",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "ahli-corvus",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "ahli-canes",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "ahli-taurus",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "montale-arabians-tonka",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "montale-sensual-instinct",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "montale-dark-vanilla",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "montale-intense-cafe",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "montale-intense-roses-musk",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "montale-crazy-in-love",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "giardini-di-toscana-bianco-latte",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "giardini-di-toscana-blu-mare",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "giardini-di-toscana-celeste",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "giardini-di-toscana-rosso-rubino",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "tom-ford-oud-wood",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "tom-ford-noir-extreme",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "tom-ford-ombre-leather",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "tom-ford-black-orchid",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "tom-ford-costa-azzurra-parfum",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "versace-bright-crystal",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "versace-eros-edt",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "versace-eros-flame",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "versace-eros-parfum",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "carolina-herrera-good-girl",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "carolina-herrera-bad-boy-extreme",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "valentino-uomo-born-in-roma-intense",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "valentino-donna-born-in-roma",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "valentino-donna-born-in-roma-intense",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "valentino-donna-born-in-roma-coral-fantasy",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "louis-vuitton-ombre-nomade",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "chanel-coco-mademoiselle",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "hugo-boss-bottled-elixir",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "lancome-la-vie-est-belle",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "paco-rabanne-invictus-victory-elixir",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "lorenzo-pazzaglia-summer-hammer",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "maison-crivelli-oud-maracuja",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "xerjoff-xj-1861-naxos",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "lattafa-yara-candy",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "lattafa-yara-moi",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "lattafa-yara-tous",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "lattafa-emeer",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "lattafa-pride-shaheen-silver",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "lattafa-asad",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "armaf-odyssey-candee",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "armaf-odyssey-aqua-edition",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "armaf-odyssey-wild-one-gold",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "armaf-odyssey-homme-white",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "nautica-voyage",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "nautica-voyage-sport",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "armani-acqua-di-gio-parfum",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "emper-stallion-53",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "dolce-gabbana-pour-homme",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "mfk-baccarat-rouge-540",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "hugo-boss-the-scent-absolute",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "lattafa-fakhar-black",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "afnan-9am-dive",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "afnan-9pm-rebel",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "armani-acqua-di-gio-edp",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "dior-jadore-parfum-eau",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "ahli-octans",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "versace-eros-edp",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "mfk-baccarat-rouge-540-extrait",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "jpgaultier-le-male",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "jpgaultier-le-male-le-parfum",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "jpgaultier-le-male-elixir-absolu",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "jpgaultier-ultra-male",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "jpgaultier-le-beau",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "jpgaultier-le-beau-paradise-garden",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "jpgaultier-scandal",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "jpgaultier-scandal-le-parfum",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "jpgaultier-scandal-so-scandal",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "jpgaultier-scandal-pour-homme",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "jpgaultier-scandal-le-parfum-pour-homme",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "jpgaultier-scandal-pour-homme-absolu",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "jpgaultier-gaultier-divine",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "jpgaultier-gaultier-divine-le-parfum",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "jpgaultier-la-belle-le-parfum",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "jpgaultier-la-belle-paradise-garden",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "afnan-9pm",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "hugo-boss-bottled-absolu",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "hugo-boss-iced",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "jpgaultier-le-male-elixir-parfum",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "lattafa-khamrah-qahwa",
+      "reason": "todas existen"
+    },
+    {
+      "status": "skipped",
+      "slug": "bharara-mast-velvet-rose",
+      "reason": "todas existen"
+    }
+  ],
+  "failed": [],
+  "mismatch": []
+}

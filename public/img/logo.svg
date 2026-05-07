@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 140" fill="none">
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E8CFA0"/>
+      <stop offset="50%" stop-color="#C9A96E"/>
+      <stop offset="100%" stop-color="#A07840"/>
+    </linearGradient>
+  </defs>
+
+  <!-- ICONO: Tulipán con llama (basado en la imagen del usuario) -->
+  <g transform="translate(20, 18)">
+    <!-- Llama superior -->
+    <path d="M 50 8 Q 42 28, 50 40 Q 58 28, 50 8 Z M 50 14 Q 46 26, 50 34 Q 54 26, 50 14 Z"
+          fill="url(#goldGrad)" stroke="url(#goldGrad)" stroke-width="1"/>
+    <!-- Hoja izquierda -->
+    <path d="M 50 50 Q 16 50, 12 80 Q 8 100, 30 102 Q 50 102, 50 80 Z"
+          fill="none" stroke="url(#goldGrad)" stroke-width="3.5" stroke-linejoin="round"/>
+    <!-- Hoja derecha -->
+    <path d="M 50 50 Q 84 50, 88 80 Q 92 100, 70 102 Q 50 102, 50 80 Z"
+          fill="none" stroke="url(#goldGrad)" stroke-width="3.5" stroke-linejoin="round"/>
+    <!-- Tallo central -->
+    <line x1="50" y1="42" x2="50" y2="80" stroke="url(#goldGrad)" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <!-- Texto principal SCENTUALBLISS -->
+  <text x="135" y="70"
+        font-family="'Inter', system-ui, sans-serif"
+        font-size="34"
+        font-weight="600"
+        letter-spacing="2"
+        fill="url(#goldGrad)">SCENTUALBLISS</text>
+
+  <!-- Subtítulo PERFUMERY -->
+  <text x="135" y="100"
+        font-family="'Inter', system-ui, sans-serif"
+        font-size="14"
+        font-weight="400"
+        letter-spacing="6"
+        fill="url(#goldGrad)">PERFUMERY</text>
+</svg>
