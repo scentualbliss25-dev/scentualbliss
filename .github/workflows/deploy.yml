@@ -44,26 +44,51 @@ jobs:
             --exclude "scripts/*"
           echo "Tamaño del zip: $(du -sh deploy.zip | cut -f1)"
 
-      - name: 🚀 Subir y desplegar en Hostinger
-        run: |
-          RESPONSE=$(curl -s -X POST \
-            -H "Authorization: Bearer ${{ secrets.HOSTINGER_API_TOKEN }}" \
-            -F "file=@deploy.zip" \
-            "https://developers.hostinger.com/api/hosting/v1/websites/scentualbliss.com.co/deployments" \
-            -w "\nHTTP_STATUS:%{http_code}")
+      - name: 📤 Subir zip al servidor
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: 212.85.6.22
+          port: 65002
+          username: u158360749
+          password: ${{ secrets.SSH_PASSWORD }}
+          source: deploy.zip
+          target: ~/deploy_temp/
 
-          HTTP_STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS:" | cut -d: -f2)
-          BODY=$(echo "$RESPONSE" | grep -v "HTTP_STATUS:")
+      - name: 🔄 Extraer y reiniciar en servidor
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 212.85.6.22
+          port: 65002
+          username: u158360749
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            set -e
 
-          echo "Respuesta: $BODY"
-          echo "HTTP Status: $HTTP_STATUS"
+            # Encontrar directorio de la app
+            APP_DIR=$(find ~ -maxdepth 3 -name "package.json" \
+              ! -path "*/node_modules/*" \
+              ! -path "*/deploy_temp/*" \
+              -exec dirname {} \; 2>/dev/null | head -1)
 
-          if [ "$HTTP_STATUS" != "200" ] && [ "$HTTP_STATUS" != "201" ] && [ "$HTTP_STATUS" != "202" ]; then
-            echo "❌ Error en el deploy: HTTP $HTTP_STATUS"
-            exit 1
-          fi
+            echo "Directorio de la app: $APP_DIR"
 
-          echo "✅ Deploy enviado correctamente"
+            # Extraer zip en el directorio correcto
+            cd $APP_DIR
+            unzip -o ~/deploy_temp/deploy.zip -d $APP_DIR
+            rm ~/deploy_temp/deploy.zip
 
-      - name: ✅ Deploy completado
+            # Instalar dependencias de producción
+            npm ci --production=false
+
+            # Build (por si acaso Hostinger lo requiere)
+            npm run build
+
+            # Reiniciar app con PM2 si está disponible
+            if command -v pm2 &> /dev/null; then
+              pm2 restart all || pm2 start npm --name "scentualbliss" -- start
+            fi
+
+            echo "✅ Deploy completado"
+
+      - name: ✅ Finalizado
         run: echo "¡Desplegado en https://scentualbliss.com.co!"
