@@ -42,27 +42,7 @@ jobs:
             --exclude "*.env*" \
             --exclude "*.docx" \
             --exclude "scripts/*"
-          echo "Tamaño del zip: $(du -sh deploy.zip | cut -f1)"
-
-      - name: 🔍 Explorar estructura del servidor
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: 212.85.6.22
-          port: 65002
-          username: u158360749
-          password: ${{ secrets.SSH_PASSWORD }}
-          script: |
-            echo "=== Contenido de home ==="
-            ls -la ~/
-
-            echo "=== Buscando package.json ==="
-            find ~ -maxdepth 5 -name "package.json" ! -path "*/node_modules/*" 2>/dev/null
-
-            echo "=== Buscando next.config ==="
-            find ~ -maxdepth 5 -name "next.config*" 2>/dev/null
-
-            echo "=== Procesos Node activos ==="
-            ps aux | grep node | grep -v grep || echo "Ninguno"
+          echo "Tamaño: $(du -sh deploy.zip | cut -f1)"
 
       - name: 📤 Subir zip al servidor
         uses: appleboy/scp-action@v0.1.7
@@ -74,7 +54,7 @@ jobs:
           source: deploy.zip
           target: ~/
 
-      - name: 🔄 Extraer y reiniciar en servidor
+      - name: 🔄 Desplegar en servidor
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: 212.85.6.22
@@ -83,36 +63,34 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
             set -e
+            APP_DIR=/home/u158360749/domains/scentualbliss.com.co/nodejs
 
-            # Directorio hardcodeado basado en diagnóstico
-            APP_DIR=~/scentualbliss
-
-            echo "Usando directorio: $APP_DIR"
-
-            # Crear directorio si no existe
-            mkdir -p $APP_DIR
-
-            # Extraer zip
+            echo "📂 Extrayendo en $APP_DIR..."
             unzip -o ~/deploy.zip -d $APP_DIR
             rm ~/deploy.zip
 
             cd $APP_DIR
 
-            # Instalar dependencias
+            echo "📦 Instalando dependencias..."
             npm ci --production=false
 
-            # Build
+            echo "🔨 Build..."
             npm run build
 
-            # Reiniciar
-            if command -v pm2 &> /dev/null; then
-              pm2 restart all 2>/dev/null || pm2 start npm --name "scentualbliss" -- start
-              echo "Reiniciado con PM2"
-            else
-              echo "PM2 no disponible — Hostinger reinicia automáticamente"
+            echo "🔄 Reiniciando app..."
+            # Leer token interno de Hostinger para reiniciar
+            if [ -f ~/.api_token ]; then
+              API_TOKEN=$(cat ~/.api_token)
+              curl -s -X POST "http://localhost/api/restart" \
+                -H "Authorization: Bearer $API_TOKEN" 2>/dev/null || true
             fi
 
-            echo "✅ Deploy completado"
+            # Intentar PM2 si existe
+            if command -v pm2 &> /dev/null; then
+              pm2 restart all 2>/dev/null && echo "✅ Reiniciado con PM2" || true
+            fi
+
+            echo "✅ Deploy completado en $APP_DIR"
 
       - name: ✅ Finalizado
-        run: echo "¡Desplegado en https://scentualbliss.com.co!"
+        run: echo "Deploy exitoso → https://scentualbliss.com.co"
