@@ -92,19 +92,32 @@ jobs:
             cd /tmp
             rm -f build.tar.gz
 
-            # Paso 1: obtener el asset_id del release
-            ASSET_ID=$(curl -sSL \
+            # Paso 1: obtener el asset_id del release (parsing con python3)
+            RELEASE_JSON=$(curl -sSL \
               -H "Authorization: token ${{ secrets.GH_PAT }}" \
               -H "Accept: application/vnd.github+json" \
-              "https://api.github.com/repos/scentualbliss25-dev/scentualbliss/releases/tags/$TAG" \
-              | grep -o '"id":[0-9]*' \
-              | head -2 | tail -1 \
-              | cut -d: -f2)
+              "https://api.github.com/repos/scentualbliss25-dev/scentualbliss/releases/tags/$TAG")
+
+            ASSET_ID=$(echo "$RELEASE_JSON" | python3 -c "
+            import sys, json
+            try:
+                data = json.load(sys.stdin)
+                assets = data.get('assets', [])
+                for a in assets:
+                    if a.get('name') == 'build.tar.gz':
+                        print(a['id'])
+                        break
+            except Exception as e:
+                sys.stderr.write(f'Error: {e}\n')
+                sys.exit(1)
+            ")
 
             echo "Asset ID: $ASSET_ID"
 
             if [ -z "$ASSET_ID" ]; then
               echo "❌ No se pudo obtener asset ID"
+              echo "Respuesta de GitHub:"
+              echo "$RELEASE_JSON" | head -50
               exit 1
             fi
 
