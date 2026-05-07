@@ -44,34 +44,26 @@ jobs:
             --exclude "scripts/*"
           echo "Tamaño del zip: $(du -sh deploy.zip | cut -f1)"
 
-      - name: 🌐 Obtener ID del sitio en Hostinger
-        id: get_website
-        run: |
-          RESPONSE=$(curl -s \
-            -H "Authorization: Bearer ${{ secrets.HOSTINGER_API_TOKEN }}" \
-            -H "Accept: application/json" \
-            "https://developers.hostinger.com/api/hosting/v1/websites")
-          echo "response=$RESPONSE" >> $GITHUB_OUTPUT
-          WEBSITE_ID=$(echo $RESPONSE | python3 -c "
-          import sys, json
-          data = json.load(sys.stdin)
-          sites = data if isinstance(data, list) else data.get('data', [])
-          for s in sites:
-              domain = s.get('domain','')
-              if 'scentualbliss' in domain:
-                  print(s.get('id',''))
-                  break
-          ")
-          echo "website_id=$WEBSITE_ID" >> $GITHUB_OUTPUT
-          echo "Website ID encontrado: $WEBSITE_ID"
-
       - name: 🚀 Subir y desplegar en Hostinger
         run: |
-          curl -X POST \
+          RESPONSE=$(curl -s -X POST \
             -H "Authorization: Bearer ${{ secrets.HOSTINGER_API_TOKEN }}" \
             -F "file=@deploy.zip" \
-            "https://developers.hostinger.com/api/hosting/v1/websites/${{ steps.get_website.outputs.website_id }}/deployments" \
-            -w "\nHTTP Status: %{http_code}\n"
+            "https://developers.hostinger.com/api/hosting/v1/websites/scentualbliss.com.co/deployments" \
+            -w "\nHTTP_STATUS:%{http_code}")
+
+          HTTP_STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS:" | cut -d: -f2)
+          BODY=$(echo "$RESPONSE" | grep -v "HTTP_STATUS:")
+
+          echo "Respuesta: $BODY"
+          echo "HTTP Status: $HTTP_STATUS"
+
+          if [ "$HTTP_STATUS" != "200" ] && [ "$HTTP_STATUS" != "201" ] && [ "$HTTP_STATUS" != "202" ]; then
+            echo "❌ Error en el deploy: HTTP $HTTP_STATUS"
+            exit 1
+          fi
+
+          echo "✅ Deploy enviado correctamente"
 
       - name: ✅ Deploy completado
-        run: echo "¡Desplegado exitosamente en https://scentualbliss.com.co!"
+        run: echo "¡Desplegado en https://scentualbliss.com.co!"
