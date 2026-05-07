@@ -1,0 +1,77 @@
+name: 🚀 Deploy a Hostinger
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Build y Deploy
+
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Configurar Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: 📦 Instalar dependencias
+        run: npm ci
+
+      - name: 🔨 Build producción
+        run: npm run build
+        env:
+          NODE_ENV: production
+          NEXT_PUBLIC_WOMPI_PUBLIC_KEY: ${{ secrets.NEXT_PUBLIC_WOMPI_PUBLIC_KEY }}
+          WOMPI_INTEGRITY_SECRET: ${{ secrets.WOMPI_INTEGRITY_SECRET }}
+          WOMPI_EVENTS_SECRET: ${{ secrets.WOMPI_EVENTS_SECRET }}
+          NEXT_PUBLIC_SITE_URL: https://scentualbliss.com.co
+          NEXT_PUBLIC_USD_TO_COP_RATE: 4000
+
+      - name: 🗜️ Crear zip para deploy
+        run: |
+          zip -r deploy.zip . \
+            --exclude "*.git*" \
+            --exclude "*.github*" \
+            --exclude "node_modules/*" \
+            --exclude ".next/cache/*" \
+            --exclude "*.env*" \
+            --exclude "*.docx" \
+            --exclude "scripts/*"
+          echo "Tamaño del zip: $(du -sh deploy.zip | cut -f1)"
+
+      - name: 🌐 Obtener ID del sitio en Hostinger
+        id: get_website
+        run: |
+          RESPONSE=$(curl -s \
+            -H "Authorization: Bearer ${{ secrets.HOSTINGER_API_TOKEN }}" \
+            -H "Accept: application/json" \
+            "https://developers.hostinger.com/api/hosting/v1/websites")
+          echo "response=$RESPONSE" >> $GITHUB_OUTPUT
+          WEBSITE_ID=$(echo $RESPONSE | python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)
+          sites = data if isinstance(data, list) else data.get('data', [])
+          for s in sites:
+              domain = s.get('domain','')
+              if 'scentualbliss' in domain:
+                  print(s.get('id',''))
+                  break
+          ")
+          echo "website_id=$WEBSITE_ID" >> $GITHUB_OUTPUT
+          echo "Website ID encontrado: $WEBSITE_ID"
+
+      - name: 🚀 Subir y desplegar en Hostinger
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.HOSTINGER_API_TOKEN }}" \
+            -F "file=@deploy.zip" \
+            "https://developers.hostinger.com/api/hosting/v1/websites/${{ steps.get_website.outputs.website_id }}/deployments" \
+            -w "\nHTTP Status: %{http_code}\n"
+
+      - name: ✅ Deploy completado
+        run: echo "¡Desplegado exitosamente en https://scentualbliss.com.co!"
