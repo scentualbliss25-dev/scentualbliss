@@ -83,19 +83,37 @@ const TOAST_STYLE = {
   iconTheme: { primary: '#B8905C', secondary: '#FAF8F3' },
 };
 
-// ---------- Reveal-on-scroll ----------
+// ---------- Reveal-on-scroll (con fallback para SSR/producción) ----------
 function Reveal({ children, delay = 0, as: Tag = 'div', className = '', style }) {
   const ref = useRef(null);
   const [shown, setShown] = useState(false);
+
   useEffect(() => {
-    if (!ref.current) return;
+    // Fallback: si IntersectionObserver no dispara, mostrar igual tras 200ms
+    const fallbackTimer = setTimeout(() => setShown(true), 200);
+
+    if (!ref.current || typeof IntersectionObserver === 'undefined') {
+      return () => clearTimeout(fallbackTimer);
+    }
+
     const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => { if (e.isIntersecting) { setShown(true); io.disconnect(); } }),
+      (entries) => entries.forEach((e) => {
+        if (e.isIntersecting) {
+          setShown(true);
+          clearTimeout(fallbackTimer);
+          io.disconnect();
+        }
+      }),
       { threshold: 0.12 }
     );
     io.observe(ref.current);
-    return () => io.disconnect();
+
+    return () => {
+      clearTimeout(fallbackTimer);
+      io.disconnect();
+    };
   }, []);
+
   return (
     <Tag ref={ref} className={`reveal ${shown ? 'in' : ''} ${className}`} style={{ ...(style || {}), transitionDelay: delay + 'ms' }}>
       {children}
