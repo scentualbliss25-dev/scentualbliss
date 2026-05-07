@@ -7,6 +7,11 @@ const nextConfig = {
       { protocol: 'https', hostname: 'i.pravatar.cc' },
     ],
   },
+  // Limita workers de build (CloudLinux/Hostinger NPROC limit)
+  experimental: {
+    workerThreads: false,
+    cpus: 1,
+  },
 };
 
 export default nextConfig;

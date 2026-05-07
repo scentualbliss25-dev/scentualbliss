@@ -59,7 +59,9 @@ jobs:
             echo "📦 Instalando dependencias..."
             npm ci --production=false
 
-            echo "🔨 Build..."
+            echo "🔨 Build (con límite de memoria/workers)..."
+            export NODE_OPTIONS='--max-old-space-size=1024'
+            export NEXT_PRIVATE_WORKER=1
             npm run build
 
             echo "🔄 Reiniciando app..."
