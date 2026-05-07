@@ -44,6 +44,26 @@ jobs:
             --exclude "scripts/*"
           echo "Tamaño del zip: $(du -sh deploy.zip | cut -f1)"
 
+      - name: 🔍 Explorar estructura del servidor
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 212.85.6.22
+          port: 65002
+          username: u158360749
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            echo "=== Contenido de home ==="
+            ls -la ~/
+
+            echo "=== Buscando package.json ==="
+            find ~ -maxdepth 5 -name "package.json" ! -path "*/node_modules/*" 2>/dev/null
+
+            echo "=== Buscando next.config ==="
+            find ~ -maxdepth 5 -name "next.config*" 2>/dev/null
+
+            echo "=== Procesos Node activos ==="
+            ps aux | grep node | grep -v grep || echo "Ninguno"
+
       - name: 📤 Subir zip al servidor
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -52,7 +72,7 @@ jobs:
           username: u158360749
           password: ${{ secrets.SSH_PASSWORD }}
           source: deploy.zip
-          target: ~/deploy_temp/
+          target: ~/
 
       - name: 🔄 Extraer y reiniciar en servidor
         uses: appleboy/ssh-action@v1.0.3
@@ -64,28 +84,32 @@ jobs:
           script: |
             set -e
 
-            # Encontrar directorio de la app
-            APP_DIR=$(find ~ -maxdepth 3 -name "package.json" \
-              ! -path "*/node_modules/*" \
-              ! -path "*/deploy_temp/*" \
-              -exec dirname {} \; 2>/dev/null | head -1)
+            # Directorio hardcodeado basado en diagnóstico
+            APP_DIR=~/scentualbliss
 
-            echo "Directorio de la app: $APP_DIR"
+            echo "Usando directorio: $APP_DIR"
 
-            # Extraer zip en el directorio correcto
+            # Crear directorio si no existe
+            mkdir -p $APP_DIR
+
+            # Extraer zip
+            unzip -o ~/deploy.zip -d $APP_DIR
+            rm ~/deploy.zip
+
             cd $APP_DIR
-            unzip -o ~/deploy_temp/deploy.zip -d $APP_DIR
-            rm ~/deploy_temp/deploy.zip
 
-            # Instalar dependencias de producción
+            # Instalar dependencias
             npm ci --production=false
 
-            # Build (por si acaso Hostinger lo requiere)
+            # Build
             npm run build
 
-            # Reiniciar app con PM2 si está disponible
+            # Reiniciar
             if command -v pm2 &> /dev/null; then
-              pm2 restart all || pm2 start npm --name "scentualbliss" -- start
+              pm2 restart all 2>/dev/null || pm2 start npm --name "scentualbliss" -- start
+              echo "Reiniciado con PM2"
+            else
+              echo "PM2 no disponible — Hostinger reinicia automáticamente"
             fi
 
             echo "✅ Deploy completado"
