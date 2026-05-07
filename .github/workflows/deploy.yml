@@ -91,23 +91,45 @@ jobs:
             echo "📥 Descargando build prebuilt: $TAG"
             cd /tmp
             rm -f build.tar.gz
-            curl -sSL \
+
+            # Paso 1: obtener el asset_id del release
+            ASSET_ID=$(curl -sSL \
+              -H "Authorization: token ${{ secrets.GH_PAT }}" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/scentualbliss25-dev/scentualbliss/releases/tags/$TAG" \
+              | grep -o '"id":[0-9]*' \
+              | head -2 | tail -1 \
+              | cut -d: -f2)
+
+            echo "Asset ID: $ASSET_ID"
+
+            if [ -z "$ASSET_ID" ]; then
+              echo "❌ No se pudo obtener asset ID"
+              exit 1
+            fi
+
+            # Paso 2: descargar binario del asset
+            curl -sSL -L \
               -H "Authorization: token ${{ secrets.GH_PAT }}" \
               -H "Accept: application/octet-stream" \
               -o build.tar.gz \
-              "https://api.github.com/repos/scentualbliss25-dev/scentualbliss/releases/tags/$TAG" \
-              | true
+              "https://api.github.com/repos/scentualbliss25-dev/scentualbliss/releases/assets/$ASSET_ID"
 
-            # Si el primer método falló, usar el endpoint directo
-            if [ ! -s build.tar.gz ]; then
-              echo "Intentando descarga directa..."
-              ASSET_URL=$(curl -s \
-                -H "Authorization: token ${{ secrets.GH_PAT }}" \
-                "https://api.github.com/repos/scentualbliss25-dev/scentualbliss/releases/tags/$TAG" \
-                | grep '"browser_download_url".*build.tar.gz' \
-                | cut -d '"' -f 4)
-              echo "URL: $ASSET_URL"
-              curl -sSL -o build.tar.gz "$ASSET_URL"
+            # Verificar que sea un tarball válido
+            FILE_SIZE=$(stat -c%s build.tar.gz)
+            echo "Tamaño descargado: $FILE_SIZE bytes"
+
+            if [ "$FILE_SIZE" -lt 1000 ]; then
+              echo "❌ Archivo muy pequeño, no es un tarball válido"
+              cat build.tar.gz | head -20
+              exit 1
+            fi
+
+            # Validar que sea gzip
+            if ! file build.tar.gz | grep -q gzip; then
+              echo "❌ El archivo no es gzip"
+              file build.tar.gz
+              exit 1
             fi
 
             ls -lh build.tar.gz
