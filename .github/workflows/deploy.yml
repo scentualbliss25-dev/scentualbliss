@@ -5,71 +5,114 @@ on:
     branches: [main]
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-    name: Deploy
+    name: Build en GitHub Actions
 
     steps:
-      - name: 🔄 Git pull y build en servidor
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Configurar Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: 📦 Instalar dependencias
+        run: npm ci
+
+      - name: 🔨 Build (standalone)
+        run: npm run build
+        env:
+          NODE_ENV: production
+          NEXT_PUBLIC_WOMPI_PUBLIC_KEY: ${{ secrets.NEXT_PUBLIC_WOMPI_PUBLIC_KEY }}
+          WOMPI_INTEGRITY_SECRET: ${{ secrets.WOMPI_INTEGRITY_SECRET }}
+          WOMPI_EVENTS_SECRET: ${{ secrets.WOMPI_EVENTS_SECRET }}
+          NEXT_PUBLIC_SITE_URL: https://scentualbliss.com.co
+          NEXT_PUBLIC_USD_TO_COP_RATE: 4000
+
+      - name: 📦 Empaquetar artefactos del build
+        run: |
+          # Copia public y .next/static dentro del standalone server
+          cp -r public .next/standalone/
+          cp -r .next/static .next/standalone/.next/
+
+          # Tarball de todo lo que necesita el servidor
+          tar -czf build.tar.gz -C .next/standalone .
+
+          ls -lh build.tar.gz
+
+      - name: 📤 Push artefactos a rama 'built'
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+
+          # Crear rama orphan limpia
+          git checkout --orphan built
+          git rm -rf --cached . 2>/dev/null || true
+          rm -rf node_modules .next public app components lib scripts .github
+          rm -f *.js *.json *.md *.html *.docx 2>/dev/null || true
+
+          # Solo dejamos el tarball
+          mv build.tar.gz /tmp/build.tar.gz
+          git clean -fdx
+          mv /tmp/build.tar.gz .
+
+          git add build.tar.gz
+          git commit -m "Build $(date +%Y-%m-%d_%H-%M-%S)"
+          git push origin built --force
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    name: Deploy en Hostinger
+
+    steps:
+      - name: 🔄 Pull artefactos y reiniciar
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: 212.85.6.22
           port: 65002
           username: u158360749
           password: ${{ secrets.SSH_PASSWORD }}
-          command_timeout: 15m
+          command_timeout: 5m
           script: |
             set -e
             APP_DIR=/home/u158360749/domains/scentualbliss.com.co/nodejs
             REPO="https://${{ secrets.GH_PAT }}@github.com/scentualbliss25-dev/scentualbliss.git"
 
-            # === Cargar entorno Node.js de Hostinger (CloudLinux Node.js Selector) ===
-            source ~/.bashrc 2>/dev/null || true
-
-            # Buscar instalación de Node.js
+            # Cargar Node.js
             for v in 22 20 18; do
               if [ -d "/opt/alt/alt-nodejs$v/root/usr/bin" ]; then
                 export PATH="/opt/alt/alt-nodejs$v/root/usr/bin:$PATH"
-                echo "✅ Node.js $v cargado desde /opt/alt/alt-nodejs$v"
                 break
               fi
             done
 
-            # Verificar
-            which node || { echo "❌ Node no encontrado"; exit 1; }
-            which npm || { echo "❌ NPM no encontrado"; exit 1; }
-            node -v
-            npm -v
+            echo "📥 Descargando artefactos prebuilt..."
+            cd /tmp
+            rm -rf build_pull
+            mkdir build_pull && cd build_pull
+            git init -q
+            git remote add origin $REPO
+            git fetch -q --depth=1 origin built
+            git checkout -q FETCH_HEAD -- build.tar.gz
 
-            echo "📂 Directorio: $APP_DIR"
+            echo "📂 Limpiando directorio de la app..."
+            mkdir -p $APP_DIR
+            find $APP_DIR -mindepth 1 -maxdepth 1 ! -name 'node_modules' -exec rm -rf {} + 2>/dev/null || true
 
-            if [ -d "$APP_DIR/.git" ]; then
-              echo "🔄 Actualizando repo..."
-              cd $APP_DIR
-              git remote set-url origin $REPO
-              git fetch origin main
-              git reset --hard origin/main
-            else
-              echo "📥 Clonando repo por primera vez..."
-              rm -rf $APP_DIR
-              git clone $REPO $APP_DIR
-              cd $APP_DIR
-            fi
-
-            echo "📦 Instalando dependencias..."
-            npm ci --production=false
-
-            echo "🔨 Build (con límite de memoria/workers)..."
-            export NODE_OPTIONS='--max-old-space-size=1024'
-            export NEXT_PRIVATE_WORKER=1
-            npm run build
+            echo "📦 Extrayendo build..."
+            tar -xzf build.tar.gz -C $APP_DIR
+            cd $APP_DIR
+            ls -la
 
             echo "🔄 Reiniciando app..."
             if command -v pm2 &> /dev/null; then
-              pm2 restart all 2>/dev/null || pm2 start npm --name "scentualbliss" -- start
+              pm2 restart all 2>/dev/null || pm2 start server.js --name "scentualbliss"
               echo "✅ Reiniciado con PM2"
             else
-              # Hostinger Node.js Selector: tocar el archivo restart
               touch ~/.lsphp_restart.txt 2>/dev/null || true
               echo "ℹ️ Hostinger reinicia automáticamente"
             fi
