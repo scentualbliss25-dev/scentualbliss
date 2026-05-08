@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
+import QuickView from '@/components/ui/QuickView';
 import {
   ArrowRight, ArrowLeft, ShoppingBag, Heart, Eye, Star,
   Truck, Shield, RotateCcw, Award, Sparkles, Flame,
@@ -801,19 +802,26 @@ function Newsletter() {
 // HOME PAGE CLIENT — root
 // ============================================================
 export default function HomePageClient() {
+  const [qvProduct, setQvProduct] = useState(null);
+
   return (
     <div className="sb-home">
       <main>
         <Hero />
         <TrustBar />
         <Families />
-        <Bestsellers />
+        <Bestsellers onQuick={setQvProduct} />
         <Featured />
         <Story />
         <Quiz />
         <Testimonials />
         <Newsletter />
       </main>
+      <QuickView
+        product={qvProduct}
+        isOpen={!!qvProduct}
+        onClose={() => setQvProduct(null)}
+      />
     </div>
   );
 }
