@@ -190,6 +190,9 @@ export default function CheckoutPageClient() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           amountUsd: grand,
+          discount,
+          shippingCost: shipping,
+          items,
           customer: { email: form.email, name: form.name, phone: form.phone },
           shipping: {
             address: `${form.address}${form.addressDetail ? ', ' + form.addressDetail : ''}`,
