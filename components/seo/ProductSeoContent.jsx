@@ -189,7 +189,7 @@ export default function ProductSeoContent({ product }) {
             Por qué elegir <em style={{ color: 'var(--gold)' }}>{product.name}</em>
           </h2>
           <ul style={{ color: 'var(--gray-light)', lineHeight: 2, fontSize: '.95rem', paddingLeft: '20px' }}>
-            <li><strong style={{ color: 'var(--white)' }}>Valoración de {product.rating}★</strong> avalada por {product.reviews}+ reseñas verificadas de compradores reales.</li>
+            <li><strong style={{ color: 'var(--white)' }}>100% auténtico y certificado</strong> — trabajamos directamente con distribuidores oficiales para garantizar la legitimidad de cada frasco.</li>
             <li><strong style={{ color: 'var(--white)' }}>Duración {product.longevity}</strong> con proyección {product.sillage.toLowerCase()}, manteniéndose perceptible durante toda la jornada.</li>
             <li><strong style={{ color: 'var(--white)' }}>Composición {cat?.toLowerCase()}</strong> con notas {product.notes.top.split(',')[0].trim().toLowerCase()} en salida y {product.notes.base.split(',')[0].trim().toLowerCase()} en fondo.</li>
             <li><strong style={{ color: 'var(--white)' }}>{product.brand}</strong> respalda la calidad y la consistencia de cada lote producido.</li>

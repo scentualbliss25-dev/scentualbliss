@@ -263,11 +263,11 @@ export default function ProductPageClient({ product, resolvedImages }) {
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
               <div style={{ display: 'flex', gap: '2px' }}>
                 {[1,2,3,4,5].map(s => (
-                  <Star key={s} size={15} style={{ color: 'var(--gold)' }} fill={s <= Math.round(product.rating) ? 'currentColor' : 'none'} />
+                  <Star key={s} size={15} style={{ color: 'var(--gold)' }} fill={s <= Math.round(Number(avgRating)) ? 'currentColor' : 'none'} />
                 ))}
               </div>
-              <span style={{ fontWeight: 700, color: 'var(--white)', fontSize: '.9rem' }}>{product.rating}</span>
-              <span style={{ color: 'var(--gray)', fontSize: '.85rem' }}>({product.reviews} reseñas verificadas)</span>
+              <span style={{ fontWeight: 700, color: 'var(--white)', fontSize: '.9rem' }}>{avgRating}</span>
+              <span style={{ color: 'var(--gray)', fontSize: '.85rem' }}>({reviewCount > 0 ? `${reviewCount} reseñas` : 'Sé el primero en opinar'})</span>
               <span style={{ marginLeft: '4px', fontSize: '.75rem', color: 'var(--success)', fontWeight: 600 }}>✓ Auténtico</span>
             </div>
 
