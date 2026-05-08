@@ -52,7 +52,19 @@ export default function Footer() {
       <div className="container sb-footer-inner">
         <div className="sb-footer-top">
           <div className="sb-footer-brand">
-            <h3>Scentual<em>Bliss</em></h3>
+            <div className="sb-footer-logo">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="#D4B68A" className="sb-footer-mark" aria-hidden="true">
+                <path d="M50 8 C 54 22, 62 32, 60 48 C 58 60, 53 70, 50 76 C 47 70, 42 60, 40 48 C 38 32, 46 22, 50 8 Z" />
+                <path d="M50 28 C 52 36, 56 44, 54 52 C 53 58, 51 64, 50 66 C 49 64, 47 58, 46 52 C 44 44, 48 36, 50 28 Z" fill="rgba(15,12,9,.4)" />
+                <path d="M42 64 C 28 66, 16 60, 12 50 C 22 60, 32 64, 44 68 Z" />
+                <path d="M58 64 C 72 66, 84 60, 88 50 C 78 60, 68 64, 56 68 Z" />
+                <path d="M48 70 L48 84 Q50 86 52 84 L52 70 Z" />
+              </svg>
+              <div className="sb-footer-logo-text">
+                <span className="sb-footer-logo-name">SCENTUALBLISS</span>
+                <span className="sb-footer-logo-tag">PERFUMERY</span>
+              </div>
+            </div>
             <p>
               Perfumería de lujo. Curación obsesiva de fragancias auténticas
               para quienes no se conforman con lo ordinario.
@@ -106,17 +118,37 @@ export default function Footer() {
           padding-bottom: 56px;
           border-bottom: 1px solid rgba(250,248,243,.08);
         }
-        .sb-footer-brand h3 {
-          font-family: var(--font-serif);
-          font-size: 1.7rem;
-          color: #FAF8F3;
-          margin-bottom: 14px;
-          font-weight: 500;
-          letter-spacing: -.01em;
+        .sb-footer-logo {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          margin-bottom: 18px;
         }
-        .sb-footer-brand h3 em {
+        .sb-footer-mark {
+          width: 44px;
+          height: 44px;
+          flex-shrink: 0;
+        }
+        .sb-footer-logo-text {
+          display: flex;
+          flex-direction: column;
+          line-height: 1;
+        }
+        .sb-footer-logo-name {
+          font-family: var(--font-serif);
+          font-size: 1.25rem;
+          font-weight: 500;
+          letter-spacing: .14em;
+          color: #FAF8F3;
+        }
+        .sb-footer-logo-tag {
+          font-family: var(--font-sans);
+          font-size: .62rem;
+          letter-spacing: .42em;
           color: #D4B68A;
-          font-style: italic;
+          font-weight: 500;
+          margin-top: 5px;
+          text-transform: uppercase;
         }
         .sb-footer-brand p {
           font-size: .88rem;

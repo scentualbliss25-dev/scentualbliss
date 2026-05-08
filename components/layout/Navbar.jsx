@@ -32,14 +32,41 @@ export default function Navbar() {
   );
 }
 
+function LogoMark() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 100 100"
+      fill="currentColor"
+      className="sb-logo-mark"
+      aria-hidden="true"
+    >
+      <path d="M50 8 C 54 22, 62 32, 60 48 C 58 60, 53 70, 50 76 C 47 70, 42 60, 40 48 C 38 32, 46 22, 50 8 Z" />
+      <path d="M50 28 C 52 36, 56 44, 54 52 C 53 58, 51 64, 50 66 C 49 64, 47 58, 46 52 C 44 44, 48 36, 50 28 Z" fill="rgba(31,26,18,.18)" />
+      <path d="M42 64 C 28 66, 16 60, 12 50 C 22 60, 32 64, 44 68 Z" />
+      <path d="M58 64 C 72 66, 84 60, 88 50 C 78 60, 68 64, 56 68 Z" />
+      <path d="M48 70 L48 84 Q50 86 52 84 L52 70 Z" />
+    </svg>
+  );
+}
+
+function BrandLogo() {
+  return (
+    <Link href="/" className="sb-nav-logo" aria-label="ScentualBliss inicio">
+      <LogoMark />
+      <span className="sb-logo-text">
+        <span className="sb-logo-name">SCENTUALBLISS</span>
+        <span className="sb-logo-tag">PERFUMERY</span>
+      </span>
+    </Link>
+  );
+}
+
 function NavbarShell() {
   return (
     <header className="sb-nav">
       <div className="container sb-nav-inner">
-        <Link href="/" className="sb-nav-logo" aria-label="ScentualBliss inicio">
-          Scentual<span className="amp">Bliss</span>
-          <span className="small">Perfumería</span>
-        </Link>
+        <BrandLogo />
       </div>
       <NavStyles />
     </header>
@@ -120,10 +147,7 @@ function NavbarInner() {
   return (
     <header className={`sb-nav ${scrolled ? 'scrolled' : ''}`}>
       <div className="container sb-nav-inner">
-        <Link href="/" className="sb-nav-logo" aria-label="ScentualBliss inicio">
-          Scentual<span className="amp">Bliss</span>
-          <span className="small">Perfumería</span>
-        </Link>
+        <BrandLogo />
 
         <nav className="sb-nav-links">
           {NAV_ITEMS.map(item => {
@@ -300,27 +324,50 @@ function NavStyles() {
         gap: 32px;
       }
       .sb-nav-logo {
-        font-family: var(--font-serif);
-        font-size: 1.75rem;
-        font-weight: 500;
-        letter-spacing: -.01em;
-        color: #1F1A14;
         display: flex;
-        flex-direction: column;
-        line-height: .95;
+        align-items: center;
+        gap: 12px;
+        color: #1F1A14;
         transition: color .25s;
         flex-shrink: 0;
       }
       .sb-nav-logo:hover { color: #8C6A40; }
-      .sb-nav-logo .amp { font-style: italic; color: #8C6A40; }
-      .sb-nav-logo .small {
-        font-family: var(--font-sans);
-        font-size: .55rem;
-        letter-spacing: .35em;
-        color: #7A6E5E;
-        text-transform: uppercase;
+      .sb-logo-mark {
+        width: 38px;
+        height: 38px;
+        color: #B8905C;
+        flex-shrink: 0;
+        transition: color .25s, transform .35s cubic-bezier(.16,1,.3,1);
+      }
+      .sb-nav-logo:hover .sb-logo-mark {
+        color: #8C6A40;
+        transform: scale(1.05);
+      }
+      .sb-logo-text {
+        display: flex;
+        flex-direction: column;
+        line-height: 1;
+      }
+      .sb-logo-name {
+        font-family: var(--font-serif);
+        font-size: 1.15rem;
         font-weight: 500;
-        margin-top: 2px;
+        letter-spacing: .12em;
+        color: inherit;
+      }
+      .sb-logo-tag {
+        font-family: var(--font-sans);
+        font-size: .58rem;
+        letter-spacing: .42em;
+        color: #B8905C;
+        font-weight: 500;
+        margin-top: 4px;
+        text-transform: uppercase;
+      }
+      @media (max-width: 480px) {
+        .sb-logo-mark { width: 32px; height: 32px; }
+        .sb-logo-name { font-size: .98rem; letter-spacing: .1em; }
+        .sb-logo-tag { font-size: .5rem; letter-spacing: .35em; }
       }
       .sb-nav-links {
         display: flex;
