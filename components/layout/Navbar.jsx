@@ -133,6 +133,14 @@ function NavbarInner() {
   return (
     <header className={`sb-nav ${scrolled ? 'scrolled' : ''}`}>
       <div className="container sb-nav-inner">
+        <button
+          className="sb-mobile-toggle-left"
+          onClick={() => setMenuOpen(m => !m)}
+          aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
+        >
+          {menuOpen ? <X size={22} /> : <Menu size={22} />}
+        </button>
+
         <nav className="sb-nav-links">
           {NAV_ITEMS.map(item => {
             const active = isItemActive(item);
@@ -210,13 +218,6 @@ function NavbarInner() {
             {count > 0 && (
               <span key={count} className="sb-nav-badge pop">{count}</span>
             )}
-          </button>
-          <button
-            className="sb-nav-icon-btn sb-mobile-toggle"
-            onClick={() => setMenuOpen(m => !m)}
-            aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
-          >
-            {menuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
       </div>
@@ -319,7 +320,7 @@ function NavStyles() {
       }
       .sb-nav-logo:hover { opacity: .85; }
       .sb-logo-img {
-        height: 52px;
+        height: 56px;
         width: auto;
         display: block;
         transition: transform .35s cubic-bezier(.16,1,.3,1);
@@ -327,15 +328,36 @@ function NavStyles() {
       .sb-nav-logo:hover .sb-logo-img {
         transform: scale(1.03);
       }
+      @media (max-width: 768px) {
+        .sb-logo-img { height: 52px; }
+      }
       @media (max-width: 480px) {
-        .sb-logo-img { height: 42px; }
+        .sb-logo-img { height: 48px; }
       }
       .sb-nav-links {
         display: flex;
         gap: 32px;
         align-items: center;
         justify-self: start;
+        grid-column: 1;
       }
+      .sb-mobile-toggle-left {
+        display: none;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        align-items: center;
+        justify-content: center;
+        color: #1F1A14;
+        background: transparent;
+        border: 0;
+        cursor: pointer;
+        transition: background .25s;
+        grid-column: 1;
+        justify-self: start;
+        margin-left: -10px;
+      }
+      .sb-mobile-toggle-left:hover { background: #F5EFE3; }
       .sb-nav-link-wrap {
         position: relative;
         display: flex;
@@ -474,7 +496,7 @@ function NavStyles() {
         100% { transform: scale(1); }
       }
 
-      .sb-mobile-toggle { display: none; }
+      .sb-mobile-toggle { display: none !important; }
 
       .sb-search-bar {
         position: absolute;
@@ -583,7 +605,7 @@ function NavStyles() {
       }
       @media (max-width: 900px) {
         .sb-nav-links { display: none; }
-        .sb-mobile-toggle { display: inline-flex; }
+        .sb-mobile-toggle-left { display: inline-flex; }
         .sb-nav-inner {
           grid-template-columns: 1fr auto 1fr;
           gap: 12px;
