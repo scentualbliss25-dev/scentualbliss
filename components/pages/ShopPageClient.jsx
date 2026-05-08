@@ -89,7 +89,7 @@ export default function ShopPageClient() {
             {/* Tipo */}
             <div style={{ marginBottom: 16 }}>
               <p style={{ fontSize: '.6rem', letterSpacing: '.28em', textTransform: 'uppercase', color: 'var(--gold)', fontWeight: 500, marginBottom: 10 }}>Tipo</p>
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              <div className="shop-filter-row">
                 {typeCats.map(t => (
                   <button key={t.id} onClick={() => setType(t.id)} style={{
                     padding: '6px 16px', fontSize: '.72rem', fontWeight: 500, letterSpacing: '.1em',
@@ -108,7 +108,7 @@ export default function ShopPageClient() {
             {/* Aroma */}
             <div>
               <p style={{ fontSize: '.6rem', letterSpacing: '.28em', textTransform: 'uppercase', color: 'var(--gold)', fontWeight: 500, marginBottom: 10 }}>Familia Olfativa</p>
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              <div className="shop-filter-row">
                 {aromaCats.map(c => (
                   <button key={c.id} onClick={() => setCat(c.id)} style={{
                     padding: '6px 16px', fontSize: '.72rem', fontWeight: 500, letterSpacing: '.1em',

@@ -170,14 +170,72 @@ button { cursor: pointer; border: none; background: none; font-family: var(--fon
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-6); }
 .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-5); }
 
+/* Wishlist button: oculto por default, visible en hover (desktop) o siempre en touch */
+.product-card-wishlist { opacity: 0; }
+.product-card-wishlist.is-hover { opacity: 1; }
+@media (hover: none) {
+  .product-card-wishlist { opacity: 1; }
+}
+
+/* Product detail page responsive */
+.product-main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; margin-bottom: 80px; align-items: start; }
+.product-thumb { width: 72px; height: 72px; }
 @media (max-width: 1024px) {
-  .grid-4 { grid-template-columns: repeat(2, 1fr); }
-  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .product-main-grid { gap: 48px; }
+}
+@media (max-width: 900px) {
+  .product-main-grid { grid-template-columns: 1fr; gap: 32px; margin-bottom: 56px; }
+  .product-gallery { position: static !important; }
+  .product-main-img { max-width: 480px; margin: 0 auto 12px !important; }
+}
+@media (max-width: 480px) {
+  .product-main-img { border-radius: 12px !important; }
+  .product-thumb { width: 56px; height: 56px; }
+}
+
+/* Shop filter row: wrap en desktop, scroll horizontal en mobile */
+.shop-filter-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 @media (max-width: 640px) {
-  .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+  .shop-filter-row {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+    margin: 0 calc(-1 * var(--sp-3));
+    padding-left: var(--sp-3);
+    padding-right: var(--sp-3);
+    scrollbar-width: none;
+  }
+  .shop-filter-row::-webkit-scrollbar { display: none; }
+  .shop-filter-row > button {
+    flex-shrink: 0;
+    scroll-snap-align: start;
+  }
+}
+
+/* Breakpoints estándar: 480 (xs), 640 (sm), 900 (md), 1024 (lg), 1280 (xl) */
+@media (max-width: 1024px) {
+  .grid-4 { grid-template-columns: repeat(3, 1fr); }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 900px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .grid-4, .grid-3 { grid-template-columns: repeat(2, 1fr); gap: var(--sp-3); }
+  .grid-2 { grid-template-columns: 1fr; }
   .container { padding: 0 var(--sp-4); }
   .section { padding: var(--sp-16) 0; }
+}
+@media (max-width: 480px) {
+  .container { padding: 0 var(--sp-3); }
+  .section { padding: var(--sp-12) 0; }
 }
 
 /* ================================

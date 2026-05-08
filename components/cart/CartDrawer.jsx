@@ -249,7 +249,7 @@ export default function CartDrawer() {
             overflow: hidden;
           }
           .sb-qty button {
-            width: 28px; height: 28px;
+            width: 36px; height: 36px;
             display: inline-flex; align-items: center; justify-content: center;
             background: transparent;
             border: 0;
@@ -260,12 +260,16 @@ export default function CartDrawer() {
           .sb-qty button:hover:not(:disabled) { background: #F5EFE3; }
           .sb-qty button:disabled { opacity: .35; cursor: not-allowed; }
           .sb-qty span {
-            padding: 0 10px;
-            font-size: .82rem;
+            padding: 0 12px;
+            font-size: .85rem;
             font-weight: 600;
-            min-width: 28px;
+            min-width: 32px;
             text-align: center;
             color: #1F1A14;
+          }
+          @media (max-width: 640px) {
+            .sb-qty button { width: 44px; height: 44px; }
+            .sb-qty span { padding: 0 14px; min-width: 36px; font-size: .92rem; }
           }
           .sb-cart-item-price {
             font-size: .9rem;

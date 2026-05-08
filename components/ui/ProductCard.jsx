@@ -55,19 +55,20 @@ export default function ProductCard({ product, onQuickView }) {
 
           {/* Wishlist */}
           <button
+            className={`product-card-wishlist ${hovered ? 'is-hover' : ''}`}
             onClick={e => { e.preventDefault(); e.stopPropagation(); toggleWishlist(product); }}
+            aria-label={wishlisted ? 'Quitar de favoritos' : 'Agregar a favoritos'}
             style={{
               position: 'absolute', top: 12, right: 12, zIndex: 2,
-              width: 34, height: 34, borderRadius: '50%',
+              width: 36, height: 36, borderRadius: '50%',
               background: 'rgba(246,243,238,.85)', backdropFilter: 'blur(8px)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               color: wishlisted ? '#C04A5C' : 'var(--gray)',
               border: 'none', cursor: 'pointer',
-              opacity: hovered ? 1 : 0,
               transition: 'opacity .25s',
             }}
           >
-            <Heart size={14} fill={wishlisted ? 'currentColor' : 'none'} />
+            <Heart size={15} fill={wishlisted ? 'currentColor' : 'none'} />
           </button>
 
           {/* Hover overlay + CTA */}

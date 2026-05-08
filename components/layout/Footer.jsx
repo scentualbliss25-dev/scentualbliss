@@ -176,12 +176,17 @@ export default function Footer() {
           letter-spacing: .04em;
         }
         .sb-footer-loc { color: rgba(250,248,243,.55); }
-        @media (max-width: 860px) {
-          .sb-footer-top { grid-template-columns: 1fr 1fr; gap: 36px; }
+        @media (max-width: 1024px) {
+          .sb-footer-top { grid-template-columns: 1fr 1fr 1fr; gap: 32px; }
+        }
+        @media (max-width: 768px) {
+          .sb-footer-top { grid-template-columns: 1fr 1fr; gap: 28px; padding-bottom: 40px; }
+          .sb-footer-inner { padding-left: 18px; padding-right: 18px; }
         }
         @media (max-width: 480px) {
-          .sb-footer-top { grid-template-columns: 1fr; gap: 28px; }
+          .sb-footer-top { grid-template-columns: 1fr; gap: 24px; }
           .sb-footer-bottom { flex-direction: column; align-items: flex-start; }
+          .sb-footer-inner { padding-left: 14px; padding-right: 14px; }
         }
       `}</style>
     </footer>

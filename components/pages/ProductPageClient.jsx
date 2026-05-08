@@ -137,11 +137,11 @@ export default function ProductPageClient({ product, resolvedImages }) {
         </nav>
 
         {/* MAIN GRID */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '64px', marginBottom: '80px', alignItems: 'start' }}>
+        <div className="product-main-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '64px', marginBottom: '80px', alignItems: 'start' }}>
 
           {/* LEFT: GALLERY */}
-          <div style={{ position: 'sticky', top: '100px' }}>
-            <div style={{ position: 'relative', aspectRatio: '4/5', borderRadius: '20px', overflow: 'hidden', background: 'var(--dark-2)', marginBottom: '12px' }}>
+          <div className="product-gallery" style={{ position: 'sticky', top: '100px' }}>
+            <div className="product-main-img" style={{ position: 'relative', aspectRatio: '4/5', borderRadius: '20px', overflow: 'hidden', background: 'var(--dark-2)', marginBottom: '12px' }}>
               <img
                 src={productImages[imgIdx]}
                 alt={`${product.name} ${product.brand} perfume`}
@@ -181,10 +181,10 @@ export default function ProductPageClient({ product, resolvedImages }) {
             </div>
             {/* Thumbnails */}
             {productImages.length > 1 && (
-              <div style={{ display: 'flex', gap: '10px' }}>
+              <div className="product-thumbs" style={{ display: 'flex', gap: '10px' }}>
                 {productImages.map((img, i) => (
-                  <button key={i} onClick={() => setImgIdx(i)} style={{
-                    width: 72, height: 72, borderRadius: '10px', overflow: 'hidden', flexShrink: 0,
+                  <button key={i} onClick={() => setImgIdx(i)} className="product-thumb" style={{
+                    borderRadius: '10px', overflow: 'hidden', flexShrink: 0,
                     border: `2px solid ${imgIdx === i ? 'var(--gold)' : 'var(--dark-4)'}`,
                     transition: 'border-color .2s', padding: 0, background: 'var(--dark-2)',
                   }}>

@@ -38,7 +38,7 @@ export default function AnnouncementBar() {
         }
         .sb-announce-track {
           display: flex;
-          gap: 56px;
+          gap: clamp(28px, 6vw, 56px);
           white-space: nowrap;
           animation: sb-announce-scroll 40s linear infinite;
           width: max-content;
@@ -46,7 +46,14 @@ export default function AnnouncementBar() {
         .sb-announce-item {
           display: inline-flex;
           align-items: center;
-          gap: 56px;
+          gap: clamp(28px, 6vw, 56px);
+        }
+        @media (max-width: 480px) {
+          .sb-announce {
+            font-size: .62rem;
+            letter-spacing: .18em;
+            padding: 7px 0;
+          }
         }
         .sb-announce-dot {
           display: inline-block;
