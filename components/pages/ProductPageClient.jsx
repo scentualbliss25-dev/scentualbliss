@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ShoppingBag, Heart, Star, Truck, Shield, RotateCcw, Zap, Check, ChevronDown, Users, Award, Clock } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cartStore';
@@ -64,6 +64,24 @@ export default function ProductPageClient({ product, resolvedImages }) {
   const { addItem } = useCartStore();
   const { items: wishlistItems, toggle: toggleWishlist } = useWishlistStore();
   const wishlisted = product ? wishlistItems.some(i => i.id === product.id) : false;
+
+  // Reviews reales desde Supabase
+  const [realReviews, setRealReviews] = useState([]);
+  useEffect(() => {
+    if (!product?.slug) return;
+    fetch(`/api/reviews?slug=${product.slug}`)
+      .then(r => r.ok ? r.json() : [])
+      .then(data => Array.isArray(data) && setRealReviews(data))
+      .catch(() => {});
+  }, [product?.slug]);
+
+  const reviewCount = realReviews.length || product?.reviews || 0;
+  const avgRating = realReviews.length
+    ? (realReviews.reduce((s, r) => s + r.rating, 0) / realReviews.length).toFixed(1)
+    : product?.rating || 0;
+  const recommendPct = realReviews.length
+    ? Math.round(realReviews.filter(r => r.rating >= 4).length / realReviews.length * 100)
+    : 98;
 
   if (!product) return (
     <div style={{ textAlign: 'center', padding: '120px 24px' }}>
@@ -196,17 +214,17 @@ export default function ProductPageClient({ product, resolvedImages }) {
             {/* Social Proof Below Image */}
             <div style={{ marginTop: '20px', display: 'flex', gap: '20px', padding: '16px', background: 'var(--dark-2)', borderRadius: '12px', border: '1px solid var(--dark-4)' }}>
               <div style={{ textAlign: 'center', flex: 1 }}>
-                <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', color: 'var(--gold)', fontWeight: 600 }}>{product.reviews}+</p>
+                <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', color: 'var(--gold)', fontWeight: 600 }}>{reviewCount}{reviewCount > 0 ? '+' : ''}</p>
                 <p style={{ fontSize: '.72rem', color: 'var(--gray)', letterSpacing: '.06em', textTransform: 'uppercase' }}>Reseñas</p>
               </div>
               <div style={{ width: 1, background: 'var(--dark-4)' }} />
               <div style={{ textAlign: 'center', flex: 1 }}>
-                <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', color: 'var(--gold)', fontWeight: 600 }}>{product.rating}★</p>
+                <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', color: 'var(--gold)', fontWeight: 600 }}>{avgRating}★</p>
                 <p style={{ fontSize: '.72rem', color: 'var(--gray)', letterSpacing: '.06em', textTransform: 'uppercase' }}>Valoración</p>
               </div>
               <div style={{ width: 1, background: 'var(--dark-4)' }} />
               <div style={{ textAlign: 'center', flex: 1 }}>
-                <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', color: 'var(--gold)', fontWeight: 600 }}>98%</p>
+                <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', color: 'var(--gold)', fontWeight: 600 }}>{recommendPct}%</p>
                 <p style={{ fontSize: '.72rem', color: 'var(--gray)', letterSpacing: '.06em', textTransform: 'uppercase' }}>Recomiendan</p>
               </div>
             </div>
@@ -441,8 +459,8 @@ export default function ProductPageClient({ product, resolvedImages }) {
         {/* REVIEWS */}
         <ProductReviews
           productSlug={product.slug}
-          initialRating={product.rating}
-          initialCount={product.reviews}
+          initialRating={Number(avgRating)}
+          initialCount={reviewCount}
         />
 
         {/* FAQ */}
