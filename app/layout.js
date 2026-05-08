@@ -8,6 +8,12 @@ import ToasterWrapper from '@/components/ui/ToasterWrapper';
 import WhatsAppFloat from '@/components/ui/WhatsAppFloat';
 import ScrollToTop from '@/components/ui/ScrollToTop';
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+};
+
 export const metadata = {
   metadataBase: new URL('https://scentualbliss.com'),
   title: {
