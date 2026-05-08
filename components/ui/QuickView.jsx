@@ -72,11 +72,11 @@ export default function QuickView({ product, isOpen, onClose }) {
               <X size={18} />
             </button>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', minHeight: '420px' }}>
-              <div style={{ position: 'relative', background: 'var(--dark-3)' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', maxHeight: '90vh' }}>
+              <div style={{ position: 'relative', background: 'var(--dark-3)', minHeight: '380px' }}>
                 <img src={productImages[imgIdx]} alt={product.name}
                   onError={e => { e.currentTarget.src = '/img/placeholder-perfume.webp'; }}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', minHeight: '400px' }} />
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', minHeight: '380px' }} />
                 {product.badge && (
                   <span className="badge" style={{ position: 'absolute', top: 16, left: 16, background: product.badgeColor }}>{product.badge}</span>
                 )}
@@ -94,7 +94,7 @@ export default function QuickView({ product, isOpen, onClose }) {
                 </div>
               </div>
 
-              <div style={{ padding: '32px 28px', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ padding: '32px 28px', display: 'flex', flexDirection: 'column', overflowY: 'auto', maxHeight: '90vh' }}>
                 <p style={{ fontSize: '.72rem', color: 'var(--gold)', fontWeight: 600, letterSpacing: '.14em', textTransform: 'uppercase', marginBottom: '6px' }}>{product.brand} · {product.gender}</p>
                 <h2 style={{ fontFamily: 'var(--font-serif)', fontWeight: 300, color: 'var(--white)', fontSize: '1.8rem', marginBottom: '12px' }}>{product.name}</h2>
 
@@ -107,9 +107,15 @@ export default function QuickView({ product, isOpen, onClose }) {
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '16px' }}>
-                  <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', color: 'var(--gold)' }}>${product.price.toFixed(2)}</span>
-                  {product.originalPrice && (
-                    <span style={{ fontSize: '1rem', color: 'var(--gray)', textDecoration: 'line-through' }}>${product.originalPrice.toFixed(2)}</span>
+                  {product.price > 0 ? (
+                    <>
+                      <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', color: 'var(--gold)' }}>${product.price.toFixed(2)}</span>
+                      {product.originalPrice && (
+                        <span style={{ fontSize: '1rem', color: 'var(--gray)', textDecoration: 'line-through' }}>${product.originalPrice.toFixed(2)}</span>
+                      )}
+                    </>
+                  ) : (
+                    <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', color: 'var(--gray)', fontStyle: 'italic' }}>Consultar precio</span>
                   )}
                 </div>
 
