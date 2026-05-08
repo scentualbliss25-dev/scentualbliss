@@ -28,6 +28,9 @@ export async function POST(req) {
     const currency = 'COP';
     const signature = generateSignature({ reference, amountInCents, currency });
 
+    // Wompi requiere teléfono solo con dígitos, sin +, espacios ni guiones
+    const cleanPhone = (customer.phone || '').replace(/\D/g, '').slice(-10);
+
     const origin = req.headers.get('origin')
       || process.env.NEXT_PUBLIC_SITE_URL
       || 'http://localhost:3000';
@@ -41,7 +44,7 @@ export async function POST(req) {
       currency,
       customerEmail: customer.email,
       customerFullName: customer.name,
-      customerPhoneNumber: customer.phone,
+      customerPhoneNumber: cleanPhone,
       shippingLine1: shipping.address,
       shippingCity: shipping.city,
       shippingRegion: shipping.department,
