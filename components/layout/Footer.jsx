@@ -53,11 +53,11 @@ export default function Footer() {
         <div className="sb-footer-top">
           <div className="sb-footer-brand">
             <img
-              src="/img/logo.jpg"
+              src="/img/logo-transparent.png"
               alt="ScentualBliss Perfumery"
               className="sb-footer-logo-img"
-              width="220"
-              height="132"
+              width="198"
+              height="70"
             />
             <p>
               Perfumería de lujo. Curación obsesiva de fragancias auténticas
@@ -113,10 +113,10 @@ export default function Footer() {
           border-bottom: 1px solid rgba(250,248,243,.08);
         }
         .sb-footer-logo-img {
-          height: 80px;
+          height: 60px;
           width: auto;
           display: block;
-          margin-bottom: 18px;
+          margin-bottom: 20px;
         }
         .sb-footer-brand p {
           font-size: .88rem;

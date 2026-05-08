@@ -36,11 +36,11 @@ function BrandLogo() {
   return (
     <Link href="/" className="sb-nav-logo" aria-label="ScentualBliss inicio">
       <img
-        src="/img/logo.jpg"
+        src="/img/logo.png"
         alt="ScentualBliss Perfumery"
         className="sb-logo-img"
-        width="200"
-        height="120"
+        width="198"
+        height="70"
       />
     </Link>
   );
@@ -315,17 +315,17 @@ function NavStyles() {
       }
       .sb-nav-logo:hover { opacity: .85; }
       .sb-logo-img {
-        height: 56px;
+        height: 48px;
         width: auto;
         display: block;
-        border-radius: 6px;
+        border-radius: 4px;
         transition: transform .35s cubic-bezier(.16,1,.3,1);
       }
       .sb-nav-logo:hover .sb-logo-img {
-        transform: scale(1.02);
+        transform: scale(1.03);
       }
       @media (max-width: 480px) {
-        .sb-logo-img { height: 44px; }
+        .sb-logo-img { height: 38px; }
       }
       .sb-nav-links {
         display: flex;

@@ -47,3 +47,5 @@ ScentualBliss*Homepage*
 
 # Claude Code (configuración local, no va al repo)
 .claude/
+
+.vercel
