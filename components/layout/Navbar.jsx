@@ -50,7 +50,9 @@ function NavbarShell() {
   return (
     <header className="sb-nav">
       <div className="container sb-nav-inner">
+        <div />
         <BrandLogo />
+        <div />
       </div>
       <NavStyles />
     </header>
@@ -131,8 +133,6 @@ function NavbarInner() {
   return (
     <header className={`sb-nav ${scrolled ? 'scrolled' : ''}`}>
       <div className="container sb-nav-inner">
-        <BrandLogo />
-
         <nav className="sb-nav-links">
           {NAV_ITEMS.map(item => {
             const active = isItemActive(item);
@@ -188,6 +188,8 @@ function NavbarInner() {
             );
           })}
         </nav>
+
+        <BrandLogo />
 
         <div className="sb-nav-actions">
           <button
@@ -300,22 +302,24 @@ function NavStyles() {
         box-shadow: 0 1px 0 rgba(31, 26, 20, .04), 0 8px 24px rgba(31,26,20,.04);
       }
       .sb-nav-inner {
-        display: flex;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
         align-items: center;
-        justify-content: space-between;
-        padding-top: 18px;
-        padding-bottom: 18px;
-        gap: 32px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        gap: 24px;
       }
       .sb-nav-logo {
         display: flex;
         align-items: center;
+        justify-content: center;
         flex-shrink: 0;
         transition: opacity .25s;
+        grid-column: 2;
       }
       .sb-nav-logo:hover { opacity: .85; }
       .sb-logo-img {
-        height: 64px;
+        height: 52px;
         width: auto;
         display: block;
         transition: transform .35s cubic-bezier(.16,1,.3,1);
@@ -324,12 +328,13 @@ function NavStyles() {
         transform: scale(1.03);
       }
       @media (max-width: 480px) {
-        .sb-logo-img { height: 50px; }
+        .sb-logo-img { height: 42px; }
       }
       .sb-nav-links {
         display: flex;
-        gap: 36px;
+        gap: 32px;
         align-items: center;
+        justify-self: start;
       }
       .sb-nav-link-wrap {
         position: relative;
@@ -424,6 +429,7 @@ function NavStyles() {
         display: flex;
         gap: 4px;
         align-items: center;
+        justify-self: end;
       }
       .sb-nav-icon-btn {
         position: relative;
@@ -578,7 +584,11 @@ function NavStyles() {
       @media (max-width: 900px) {
         .sb-nav-links { display: none; }
         .sb-mobile-toggle { display: inline-flex; }
-        .sb-nav-inner { gap: 12px; padding: 14px 0; }
+        .sb-nav-inner {
+          grid-template-columns: 1fr auto 1fr;
+          gap: 12px;
+          padding: 8px 0;
+        }
       }
     `}</style>
   );
