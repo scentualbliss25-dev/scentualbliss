@@ -21,7 +21,8 @@ export default function ProductCard({ product, onQuickView }) {
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    addItem(product, product.size?.[1] || product.size?.[0]);
+    const defaultSize = product.sizes?.[1]?.ml || product.sizes?.[0]?.ml;
+    addItem(product, defaultSize);
     toast.success(`${product.name} agregado`, TOAST);
   };
 

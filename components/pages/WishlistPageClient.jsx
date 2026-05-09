@@ -12,7 +12,7 @@ export default function WishlistPageClient() {
   const { addItem } = useCartStore();
 
   const handleAddAll = () => {
-    items.forEach(p => addItem(p, p.size[1] || p.size[0]));
+    items.forEach(p => addItem(p, p.sizes?.[1]?.ml || p.sizes?.[0]?.ml));
     toast.success(`${items.length} fragancias agregadas al carrito`, {
       style: { background: '#1A1A1A', color: '#fff', border: '1px solid rgba(201,169,110,.3)' },
       iconTheme: { primary: '#C9A96E', secondary: '#000' },

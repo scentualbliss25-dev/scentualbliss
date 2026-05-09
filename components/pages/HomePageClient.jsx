@@ -531,7 +531,7 @@ function Featured() {
 
   const handleAdd = () => {
     if (!product) return;
-    const size = product.size?.[0] || '100ml';
+    const size = product.sizes?.[0]?.ml || '100ml';
     addItem(product, size);
     toast.success(`${product.name} añadido al carrito`, { ...TOAST_STYLE, duration: 2400 });
   };

@@ -47,7 +47,7 @@ function buildFAQs(product) {
     },
     {
       q: `¿En qué tamaño viene ${product.name}?`,
-      a: `${product.name} de ${product.brand} está disponible en presentaciones de ${(product.size || []).join(', ')}. La elección del tamaño depende de tu frecuencia de uso y si buscas una fragancia para llevar de viaje o de uso diario en casa.`,
+      a: `${product.name} de ${product.brand} está disponible en presentaciones de ${(product.sizes || []).map(s => s.ml).join(', ')}. La elección del tamaño depende de tu frecuencia de uso y si buscas una fragancia para llevar de viaje o de uso diario en casa.`,
     },
   ];
 }
@@ -193,7 +193,7 @@ export default function ProductSeoContent({ product }) {
             <li><strong style={{ color: 'var(--white)' }}>Duración {product.longevity}</strong> con proyección {product.sillage.toLowerCase()}, manteniéndose perceptible durante toda la jornada.</li>
             <li><strong style={{ color: 'var(--white)' }}>Composición {cat?.toLowerCase()}</strong> con notas {product.notes.top.split(',')[0].trim().toLowerCase()} en salida y {product.notes.base.split(',')[0].trim().toLowerCase()} en fondo.</li>
             <li><strong style={{ color: 'var(--white)' }}>{product.brand}</strong> respalda la calidad y la consistencia de cada lote producido.</li>
-            <li><strong style={{ color: 'var(--white)' }}>Versión {product.type || 'EDP'}</strong> disponible en presentaciones de {(product.size || []).join(', ')}.</li>
+            <li><strong style={{ color: 'var(--white)' }}>Versión {product.type || 'EDP'}</strong> disponible en presentaciones de {(product.sizes || []).map(s => s.ml).join(', ')}.</li>
           </ul>
         </article>
 

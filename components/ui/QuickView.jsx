@@ -16,7 +16,10 @@ export default function QuickView({ product, isOpen, onClose }) {
   const productImages = product ? (hasRealImages ? product.images : [getImagePath(product)]) : [];
 
   useEffect(() => {
-    if (product) setSelSize(product.size[1] || product.size[0]);
+    if (product) {
+      const sizes = product.sizes || [];
+      setSelSize(sizes[1]?.ml || sizes[0]?.ml || null);
+    }
     setImgIdx(0);
   }, [product]);
 
@@ -37,8 +40,11 @@ export default function QuickView({ product, isOpen, onClose }) {
 
   if (!product) return null;
 
+  const sizes = product.sizes || [];
+  const selectedSize = sizes.find(s => s.ml === selSize) || sizes[0];
+  const displayPrice = selectedSize?.price ?? product.price ?? 0;
   const discount = product.originalPrice
-    ? Math.round((1 - product.price / product.originalPrice) * 100) : null;
+    ? Math.round((1 - displayPrice / product.originalPrice) * 100) : null;
 
   return (
     <AnimatePresence>
@@ -116,9 +122,9 @@ export default function QuickView({ product, isOpen, onClose }) {
                   </div>
 
                   <div style={{ marginBottom: '12px' }}>
-                    {product.price > 0 ? (
+                    {displayPrice > 0 ? (
                       <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
-                        <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', color: 'var(--gold)' }}>{formatCOP(product.price)}</span>
+                        <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', color: 'var(--gold)' }}>{formatCOP(displayPrice)}</span>
                         {product.originalPrice > 0 && (
                           <span style={{ fontSize: '.95rem', color: 'var(--gray)', textDecoration: 'line-through' }}>{formatCOP(product.originalPrice)}</span>
                         )}
@@ -152,14 +158,20 @@ export default function QuickView({ product, isOpen, onClose }) {
                   <div style={{ marginBottom: '12px' }}>
                     <label style={{ fontSize: '.68rem', fontWeight: 600, letterSpacing: '.08em', textTransform: 'uppercase', color: 'var(--gray)', marginBottom: '8px', display: 'block' }}>Tamaño</label>
                     <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                      {product.size.map(s => (
-                        <button key={s} onClick={() => setSelSize(s)} style={{
+                      {sizes.map(s => (
+                        <button key={s.ml} onClick={() => setSelSize(s.ml)} style={{
                           padding: '7px 14px', borderRadius: '6px', border: '1.5px solid',
-                          borderColor: selSize === s ? 'var(--gold)' : 'var(--dark-4)',
-                          background: selSize === s ? 'rgba(201,169,110,.1)' : 'transparent',
-                          color: selSize === s ? 'var(--gold)' : 'var(--gray-light)',
+                          borderColor: selSize === s.ml ? 'var(--gold)' : 'var(--dark-4)',
+                          background: selSize === s.ml ? 'rgba(201,169,110,.1)' : 'transparent',
+                          color: selSize === s.ml ? 'var(--gold)' : 'var(--gray-light)',
                           fontSize: '.8rem', fontWeight: 600, cursor: 'pointer', transition: 'all .2s',
-                        }}>{s}</button>
+                          display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1.15,
+                        }}>
+                          <span>{s.ml}</span>
+                          {s.price > 0 && (
+                            <span style={{ fontSize: '.65rem', fontWeight: 500, opacity: .85 }}>{formatCOP(s.price)}</span>
+                          )}
+                        </button>
                       ))}
                     </div>
                   </div>

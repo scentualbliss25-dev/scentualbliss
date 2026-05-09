@@ -58,7 +58,10 @@ function FaqItem({ q, a }) {
 }
 
 export default function ProductPageClient({ product, resolvedImages }) {
-  const [selSize, setSelSize] = useState(product?.size?.[1] || product?.size?.[0]);
+  const productSizes = product?.sizes || [];
+  const [selSize, setSelSize] = useState(productSizes[1]?.ml || productSizes[0]?.ml || null);
+  const selectedSizeObj = productSizes.find(s => s.ml === selSize) || productSizes[0];
+  const displayPrice = selectedSizeObj?.price ?? product?.price ?? 0;
   const [imgIdx, setImgIdx] = useState(0);
   const [qty, setQty] = useState(1);
   const [tab, setTab] = useState('descripcion');
@@ -275,7 +278,7 @@ export default function ProductPageClient({ product, resolvedImages }) {
             {/* Price */}
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '14px', marginBottom: '6px' }}>
               <span style={{ fontFamily: 'var(--font-serif)', fontSize: '2.4rem', color: 'var(--gold)', fontWeight: 400 }}>
-                {product.price > 0 ? formatCOP(product.price) : 'Consultar precio'}
+                {displayPrice > 0 ? formatCOP(displayPrice) : 'Consultar precio'}
               </span>
               {product.originalPrice > 0 && (
                 <span style={{ fontSize: '1.2rem', color: 'var(--gray)', textDecoration: 'line-through' }}>
@@ -310,14 +313,20 @@ export default function ProductPageClient({ product, resolvedImages }) {
                 </label>
               </div>
               <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                {(product.size || []).map(s => (
-                  <button key={s} onClick={() => setSelSize(s)} style={{
+                {productSizes.map(s => (
+                  <button key={s.ml} onClick={() => setSelSize(s.ml)} style={{
                     padding: '10px 22px', borderRadius: '8px', border: '1.5px solid',
-                    borderColor: selSize === s ? 'var(--gold)' : 'var(--dark-4)',
-                    background: selSize === s ? 'rgba(201,169,110,.12)' : 'transparent',
-                    color: selSize === s ? 'var(--gold)' : 'var(--gray-light)',
+                    borderColor: selSize === s.ml ? 'var(--gold)' : 'var(--dark-4)',
+                    background: selSize === s.ml ? 'rgba(201,169,110,.12)' : 'transparent',
+                    color: selSize === s.ml ? 'var(--gold)' : 'var(--gray-light)',
                     fontSize: '.88rem', fontWeight: 600, transition: 'all .2s', cursor: 'pointer',
-                  }}>{s}</button>
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', lineHeight: 1.2,
+                  }}>
+                    <span>{s.ml}</span>
+                    {s.price > 0 && (
+                      <span style={{ fontSize: '.72rem', fontWeight: 500, opacity: .85, marginTop: 2 }}>{formatCOP(s.price)}</span>
+                    )}
+                  </button>
                 ))}
               </div>
             </div>
