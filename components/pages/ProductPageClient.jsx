@@ -8,7 +8,7 @@ import { Reveal, StaggerContainer, StaggerItem } from '@/components/ui/ScrollAni
 import ProductCard from '@/components/ui/ProductCard';
 import ProductReviews from '@/components/ui/ProductReviews';
 import { products, getImagePath } from '@/lib/products';
-import { formatCOP } from '@/lib/wompi';
+import { formatCOP } from '@/lib/format';
 import toast from 'react-hot-toast';
 
 const CATEGORY_LABELS = {

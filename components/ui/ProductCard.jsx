@@ -5,7 +5,7 @@ import { ShoppingBag, Heart, Eye } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cartStore';
 import { useWishlistStore } from '@/lib/store/wishlistStore';
 import { getImagePath } from '@/lib/products';
-import { formatCOP } from '@/lib/wompi';
+import { formatCOP } from '@/lib/format';
 import toast from 'react-hot-toast';
 
 const TOAST = { style: { background: '#1A1610', color: '#F6F3EE', border: '1px solid rgba(184,144,92,.3)', fontFamily: 'DM Sans, sans-serif' }, iconTheme: { primary: '#B8905C', secondary: '#1A1610' } };

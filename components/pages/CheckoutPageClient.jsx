@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { PageTransition } from '@/components/ui/ScrollAnimations';
 import { useCartStore } from '@/lib/store/cartStore';
-import { formatCOP } from '@/lib/wompi';
+import { formatCOP } from '@/lib/format';
 
 const FREE_SHIPPING_THRESHOLD = 350000; // COP
 const SHIPPING_COST = 15000; // COP

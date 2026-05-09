@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, ShoppingBag, Star, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useCartStore } from '@/lib/store/cartStore';
-import { formatCOP } from '@/lib/wompi';
+import { formatCOP } from '@/lib/format';
 import { getImagePath } from '@/lib/products';
 import toast from 'react-hot-toast';
 
