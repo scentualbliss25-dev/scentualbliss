@@ -49,3 +49,7 @@ ScentualBliss*Homepage*
 .claude/
 
 .vercel
+
+# Tokens y secretos
+token*.txt
+*.token
