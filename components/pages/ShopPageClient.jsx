@@ -33,7 +33,6 @@ export default function ShopPageClient() {
   const [cat, setCat] = useState(searchParams.get('cat') || 'Todos');
   const [type, setType] = useState(searchParams.get('type') || 'Todos');
   const [sort, setSort] = useState(searchParams.get('sort') || 'featured');
-  const [priceMax, setPriceMax] = useState(500);
   const [filterOpen, setFilterOpen] = useState(false);
   const [qvProduct, setQvProduct] = useState(null);
   const q = searchParams.get('q') || '';
@@ -50,13 +49,12 @@ export default function ShopPageClient() {
     );
     if (type !== 'Todos') list = list.filter(p => p.productType === type);
     if (cat !== 'Todos') list = list.filter(p => p.category === cat);
-    list = list.filter(p => !p.price || p.price <= priceMax);
     if (sort === 'bestseller') list = list.filter(p => p.bestseller).concat(list.filter(p => !p.bestseller));
     else if (sort === 'price-asc') list.sort((a, b) => a.price - b.price);
     else if (sort === 'price-desc') list.sort((a, b) => b.price - a.price);
     else if (sort === 'rating') list.sort((a, b) => b.rating - a.rating);
     return list;
-  }, [cat, type, sort, priceMax, q]);
+  }, [cat, type, sort, q]);
 
   const heading = type !== 'Todos'
     ? productTypes.find(t => t.id === type)?.name
@@ -160,7 +158,7 @@ export default function ShopPageClient() {
         {filtered.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '100px 0' }}>
             <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', color: 'var(--gray)', fontWeight: 300, marginBottom: 20, fontStyle: 'italic' }}>Sin resultados</p>
-            <button onClick={() => { setCat('Todos'); setType('Todos'); setPriceMax(300); }} className="btn btn-outline btn-sm">Limpiar filtros</button>
+            <button onClick={() => { setCat('Todos'); setType('Todos'); }} className="btn btn-outline btn-sm">Limpiar filtros</button>
           </div>
         ) : (
           <div className="grid-4">
