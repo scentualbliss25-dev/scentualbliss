@@ -5,6 +5,7 @@ import { ShoppingBag, Heart, Eye } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cartStore';
 import { useWishlistStore } from '@/lib/store/wishlistStore';
 import { getImagePath } from '@/lib/products';
+import { formatCOP } from '@/lib/wompi';
 import toast from 'react-hot-toast';
 
 const TOAST = { style: { background: '#1A1610', color: '#F6F3EE', border: '1px solid rgba(184,144,92,.3)', fontFamily: 'DM Sans, sans-serif' }, iconTheme: { primary: '#B8905C', secondary: '#1A1610' } };
@@ -116,7 +117,7 @@ export default function ProductCard({ product, onQuickView }) {
           </h3>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ fontSize: '.95rem', fontWeight: 500, color: product.price > 0 ? 'var(--white)' : 'var(--gray)', letterSpacing: '.02em' }}>
-              {product.price > 0 ? `$${product.price.toFixed(2)}` : 'Consultar precio'}
+              {product.price > 0 ? formatCOP(product.price) : 'Consultar precio'}
             </span>
             <div style={{ display: 'flex', gap: 2 }}>
               {[1,2,3,4,5].map(s => (

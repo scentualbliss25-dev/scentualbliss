@@ -8,6 +8,7 @@ import { Reveal, StaggerContainer, StaggerItem } from '@/components/ui/ScrollAni
 import ProductCard from '@/components/ui/ProductCard';
 import ProductReviews from '@/components/ui/ProductReviews';
 import { products, getImagePath } from '@/lib/products';
+import { formatCOP } from '@/lib/wompi';
 import toast from 'react-hot-toast';
 
 const CATEGORY_LABELS = {
@@ -274,11 +275,11 @@ export default function ProductPageClient({ product, resolvedImages }) {
             {/* Price */}
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '14px', marginBottom: '6px' }}>
               <span style={{ fontFamily: 'var(--font-serif)', fontSize: '2.4rem', color: 'var(--gold)', fontWeight: 400 }}>
-                ${product.price?.toFixed(2)}
+                {product.price > 0 ? formatCOP(product.price) : 'Consultar precio'}
               </span>
-              {product.originalPrice && (
+              {product.originalPrice > 0 && (
                 <span style={{ fontSize: '1.2rem', color: 'var(--gray)', textDecoration: 'line-through' }}>
-                  ${product.originalPrice.toFixed(2)}
+                  {formatCOP(product.originalPrice)}
                 </span>
               )}
               {discount && (

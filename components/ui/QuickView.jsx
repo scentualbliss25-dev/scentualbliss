@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, ShoppingBag, Star, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useCartStore } from '@/lib/store/cartStore';
+import { formatCOP } from '@/lib/wompi';
 import { getImagePath } from '@/lib/products';
 import toast from 'react-hot-toast';
 
@@ -117,9 +118,9 @@ export default function QuickView({ product, isOpen, onClose }) {
                   <div style={{ marginBottom: '12px' }}>
                     {product.price > 0 ? (
                       <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
-                        <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', color: 'var(--gold)' }}>${product.price.toFixed(2)}</span>
-                        {product.originalPrice && (
-                          <span style={{ fontSize: '.95rem', color: 'var(--gray)', textDecoration: 'line-through' }}>${product.originalPrice.toFixed(2)}</span>
+                        <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', color: 'var(--gold)' }}>{formatCOP(product.price)}</span>
+                        {product.originalPrice > 0 && (
+                          <span style={{ fontSize: '.95rem', color: 'var(--gray)', textDecoration: 'line-through' }}>{formatCOP(product.originalPrice)}</span>
                         )}
                       </div>
                     ) : (

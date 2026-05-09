@@ -9,8 +9,10 @@ import {
 } from 'lucide-react';
 import { PageTransition } from '@/components/ui/ScrollAnimations';
 import { useCartStore } from '@/lib/store/cartStore';
+import { formatCOP } from '@/lib/wompi';
 
-const FREE_SHIPPING_THRESHOLD = 100;
+const FREE_SHIPPING_THRESHOLD = 350000; // COP
+const SHIPPING_COST = 15000; // COP
 const PHONE_WHATSAPP = '573169376436';
 
 const steps = ['Información', 'Pago'];
@@ -83,7 +85,7 @@ export default function CheckoutPageClient() {
   const codSurcharge = paymentMethod === 'cod' ? 8000 : 0;
   // Envio: gratis sobre threshold (en USD/COP indistinto, asumimos USD para el placeholder)
   const subtotalAfterDiscount = total - discount;
-  const shipping = subtotalAfterDiscount >= FREE_SHIPPING_THRESHOLD ? 0 : 9.99;
+  const shipping = subtotalAfterDiscount >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
   const grand = subtotalAfterDiscount + shipping + codSurcharge;
   const remainingForFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotalAfterDiscount);
 
@@ -154,10 +156,10 @@ export default function CheckoutPageClient() {
       `*Productos:*`,
       ...items.map(i => `• ${i.name} (${i.selectedSize}) ×${i.quantity} — $${(i.price * i.quantity).toFixed(2)}`),
       ``,
-      `*Subtotal:* $${total.toFixed(2)}`,
-      couponApplied ? `*Descuento BLISS15:* -$${discount.toFixed(2)}` : null,
-      `*Envío:* ${shipping === 0 ? 'GRATIS' : '$' + shipping.toFixed(2)}`,
-      `*Total:* $${grand.toFixed(2)}`,
+      `*Subtotal:* ${formatCOP(total)}`,
+      couponApplied ? `*Descuento BLISS15:* -${formatCOP(discount)}` : null,
+      `*Envío:* ${shipping === 0 ? 'GRATIS' : formatCOP(shipping)}`,
+      `*Total:* ${formatCOP(grand)}`,
       ``,
       form.name ? `*Nombre:* ${form.name}` : null,
       form.address ? `*Dirección:* ${form.address}, ${form.city}, ${form.department}` : null,
@@ -178,7 +180,7 @@ export default function CheckoutPageClient() {
       await new Promise(r => setTimeout(r, 800));
       clearCart();
       const orderId = 'SB-' + Date.now().toString(36).toUpperCase();
-      router.push(`/order-confirm?orderId=${orderId}&total=${grand.toFixed(2)}&method=cod`);
+      router.push(`/order-confirm?orderId=${orderId}&total=${grand}&method=cod`);
       return;
     }
 
@@ -189,7 +191,7 @@ export default function CheckoutPageClient() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amountUsd: grand,
+          amountUsd: grand, // COP value — toAmountInCents lo multiplica x100
           discount,
           shippingCost: shipping,
           items,
@@ -211,7 +213,7 @@ export default function CheckoutPageClient() {
           await new Promise(r => setTimeout(r, 1500));
           clearCart();
           const orderId = 'SB-' + Date.now().toString(36).toUpperCase();
-          router.push(`/order-confirm?orderId=${orderId}&total=${grand.toFixed(2)}&simulated=1`);
+          router.push(`/order-confirm?orderId=${orderId}&total=${grand}&simulated=1`);
           return;
         }
         throw new Error(data.error || 'Error al iniciar el pago');
@@ -548,7 +550,7 @@ export default function CheckoutPageClient() {
                 ) : paymentMethod === 'whatsapp' ? (
                   <><MessageCircle size={18} /> Continuar por WhatsApp</>
                 ) : (
-                  <><Lock size={16} /> Pagar ${grand.toFixed(2)}</>
+                  <><Lock size={16} /> Pagar {formatCOP(grand)}</>
                 )}
               </button>
             </div>
@@ -569,7 +571,7 @@ export default function CheckoutPageClient() {
               {remainingForFreeShipping > 0 ? (
                 <div style={{ marginBottom: '16px', padding: '12px', background: 'rgba(201,169,110,.08)', borderRadius: '10px', border: '1px solid rgba(201,169,110,.25)' }}>
                   <p style={{ fontSize: '.78rem', color: 'var(--white)', marginBottom: '8px' }}>
-                    🚚 Te faltan <strong style={{ color: 'var(--gold)' }}>${remainingForFreeShipping.toFixed(2)}</strong> para envío GRATIS
+                    🚚 Te faltan <strong style={{ color: 'var(--gold)' }}>{formatCOP(remainingForFreeShipping)}</strong> para envío GRATIS
                   </p>
                   <div style={{ height: '6px', background: 'var(--dark-4)', borderRadius: '99px', overflow: 'hidden' }}>
                     <div style={{
@@ -631,29 +633,29 @@ export default function CheckoutPageClient() {
               <div style={{ borderTop: '1px solid var(--dark-4)', paddingTop: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: 'var(--gray)', fontSize: '.88rem' }}>Subtotal</span>
-                  <span style={{ color: 'var(--white)' }}>${total.toFixed(2)}</span>
+                  <span style={{ color: 'var(--white)' }}>{formatCOP(total)}</span>
                 </div>
                 {couponApplied && (
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span style={{ color: 'var(--success)', fontSize: '.88rem' }}>Descuento BLISS15</span>
-                    <span style={{ color: 'var(--success)' }}>−${discount.toFixed(2)}</span>
+                    <span style={{ color: 'var(--success)' }}>−{formatCOP(discount)}</span>
                   </div>
                 )}
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: 'var(--gray)', fontSize: '.88rem' }}>Envío</span>
                   <span style={{ color: shipping === 0 ? 'var(--success)' : 'var(--white)', fontWeight: shipping === 0 ? 700 : 400 }}>
-                    {shipping === 0 ? 'GRATIS' : `$${shipping.toFixed(2)}`}
+                    {shipping === 0 ? 'GRATIS' : formatCOP(shipping)}
                   </span>
                 </div>
                 {codSurcharge > 0 && (
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span style={{ color: 'var(--gray)', fontSize: '.88rem' }}>Recargo COD</span>
-                    <span style={{ color: 'var(--white)' }}>+${(codSurcharge / 4000).toFixed(2)}</span>
+                    <span style={{ color: 'var(--white)' }}>+{formatCOP(codSurcharge)}</span>
                   </div>
                 )}
                 <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--dark-4)', paddingTop: '12px', marginTop: '4px' }}>
                   <span style={{ fontWeight: 700, color: 'var(--white)', fontSize: '1.05rem' }}>Total</span>
-                  <span style={{ fontWeight: 700, color: 'var(--gold)', fontSize: '1.4rem', fontFamily: 'var(--font-serif)' }}>${grand.toFixed(2)}</span>
+                  <span style={{ fontWeight: 700, color: 'var(--gold)', fontSize: '1.4rem', fontFamily: 'var(--font-serif)' }}>{formatCOP(grand)}</span>
                 </div>
               </div>
 
@@ -728,10 +730,10 @@ export default function CheckoutPageClient() {
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
           <span style={{ fontSize: '.78rem', color: 'var(--gray)' }}>Total</span>
-          <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', color: 'var(--gold-dark)', fontWeight: 700 }}>${grand.toFixed(2)}</span>
+          <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', color: 'var(--gold-dark)', fontWeight: 700 }}>{formatCOP(grand)}</span>
         </div>
         <button type="button" onClick={handleNext} className="btn btn-primary btn-full btn-lg" disabled={loading}>
-          {loading ? 'Procesando...' : step < steps.length - 1 ? 'Continuar al Pago' : paymentMethod === 'whatsapp' ? 'Continuar por WhatsApp' : `Pagar $${grand.toFixed(2)}`}
+          {loading ? 'Procesando...' : step < steps.length - 1 ? 'Continuar al Pago' : paymentMethod === 'whatsapp' ? 'Continuar por WhatsApp' : `Pagar ${formatCOP(grand)}`}
         </button>
       </div>
 
