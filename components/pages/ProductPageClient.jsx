@@ -109,6 +109,12 @@ export default function ProductPageClient({ product, resolvedImages }) {
     : (hasRealImages ? product.images : [getImagePath(product)]);
 
   const handleAdd = () => {
+    if (displayPrice <= 0) {
+      toast.error('Producto sin precio. Consúltanos por WhatsApp.', {
+        style: { background: '#1A1A1A', color: '#fff', border: '1px solid rgba(232,104,122,.4)' },
+      });
+      return;
+    }
     for (let i = 0; i < qty; i++) addItem(product, selSize);
     toast.success(`${product.name} agregado al carrito`, {
       style: { background: '#1A1A1A', color: '#fff', border: '1px solid rgba(201,169,110,.3)' },
@@ -117,6 +123,12 @@ export default function ProductPageClient({ product, resolvedImages }) {
   };
 
   const handleBuyNow = () => {
+    if (displayPrice <= 0) {
+      toast.error('Producto sin precio. Consúltanos por WhatsApp.', {
+        style: { background: '#1A1A1A', color: '#fff', border: '1px solid rgba(232,104,122,.4)' },
+      });
+      return;
+    }
     addItem(product, selSize);
     window.location.href = '/checkout';
   };
@@ -338,15 +350,22 @@ export default function ProductPageClient({ product, resolvedImages }) {
                 <span style={{ width: 44, textAlign: 'center', fontWeight: 700, color: 'var(--white)', background: 'var(--dark-3)', lineHeight: '56px' }}>{qty}</span>
                 <button onClick={() => setQty(q => q + 1)} style={{ width: 44, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--gray)', fontSize: '1.2rem', background: 'var(--dark-2)', cursor: 'pointer' }}>+</button>
               </div>
-              <button onClick={handleAdd} className="btn btn-primary" style={{ flex: 1, fontSize: '.95rem', height: '56px' }}>
-                <ShoppingBag size={18} /> Agregar al Carrito
+              <button
+                onClick={handleAdd}
+                disabled={displayPrice <= 0}
+                className="btn btn-primary"
+                style={{ flex: 1, fontSize: '.95rem', height: '56px', opacity: displayPrice <= 0 ? 0.55 : 1, cursor: displayPrice <= 0 ? 'not-allowed' : 'pointer' }}
+              >
+                <ShoppingBag size={18} /> {displayPrice > 0 ? 'Agregar al Carrito' : 'Consultar precio'}
               </button>
             </div>
 
             {/* Buy Now */}
-            <button onClick={handleBuyNow} className="btn btn-outline btn-full" style={{ marginBottom: '20px', height: '52px' }}>
-              Comprar Ahora — ${(product.price * qty).toFixed(2)}
-            </button>
+            {displayPrice > 0 && (
+              <button onClick={handleBuyNow} className="btn btn-outline btn-full" style={{ marginBottom: '20px', height: '52px' }}>
+                Comprar Ahora — {formatCOP(displayPrice * qty)}
+              </button>
+            )}
 
             {/* Trust Row */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginBottom: '24px' }}>
@@ -512,10 +531,15 @@ export default function ProductPageClient({ product, resolvedImages }) {
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
           <div style={{ flex: 1 }}>
             <p style={{ fontFamily: 'var(--font-serif)', color: 'var(--white)', fontSize: '1rem', marginBottom: '2px' }}>{product.name}</p>
-            <p style={{ color: 'var(--gold)', fontWeight: 700, fontSize: '1.1rem' }}>${product.price?.toFixed(2)}</p>
+            <p style={{ color: 'var(--gold)', fontWeight: 700, fontSize: '1.1rem' }}>{displayPrice > 0 ? formatCOP(displayPrice) : 'Consultar precio'}</p>
           </div>
-          <button onClick={handleAdd} className="btn btn-primary" style={{ flexShrink: 0, padding: '12px 24px' }}>
-            <ShoppingBag size={16} /> Agregar
+          <button
+            onClick={handleAdd}
+            disabled={displayPrice <= 0}
+            className="btn btn-primary"
+            style={{ flexShrink: 0, padding: '12px 24px', opacity: displayPrice <= 0 ? 0.55 : 1, cursor: displayPrice <= 0 ? 'not-allowed' : 'pointer' }}
+          >
+            <ShoppingBag size={16} /> {displayPrice > 0 ? 'Agregar' : 'Consultar'}
           </button>
         </div>
       </div>

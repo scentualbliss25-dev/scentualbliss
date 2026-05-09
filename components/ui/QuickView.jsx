@@ -30,6 +30,13 @@ export default function QuickView({ product, isOpen, onClose }) {
   }, [isOpen]);
 
   const handleAdd = () => {
+    const sObj = (product.sizes || []).find(s => s.ml === selSize);
+    if (!sObj || sObj.price <= 0) {
+      toast.error('Producto sin precio. Consúltanos por WhatsApp.', {
+        style: { background: '#1A1A1A', color: '#fff', border: '1px solid rgba(232,104,122,.4)' },
+      });
+      return;
+    }
     addItem(product, selSize);
     toast.success(`${product.name} agregado al carrito`, {
       style: { background: '#1A1A1A', color: '#fff', border: '1px solid rgba(201,169,110,.3)' },
@@ -176,8 +183,17 @@ export default function QuickView({ product, isOpen, onClose }) {
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    <button onClick={handleAdd} className="btn btn-primary" style={{ flex: 1, padding: '12px' }}>
-                      <ShoppingBag size={15} /> Agregar al Carrito
+                    <button
+                      onClick={handleAdd}
+                      disabled={displayPrice <= 0}
+                      className="btn btn-primary"
+                      style={{
+                        flex: 1, padding: '12px',
+                        opacity: displayPrice <= 0 ? 0.55 : 1,
+                        cursor: displayPrice <= 0 ? 'not-allowed' : 'pointer',
+                      }}
+                    >
+                      <ShoppingBag size={15} /> {displayPrice > 0 ? 'Agregar al Carrito' : 'Consultar precio'}
                     </button>
                     <Link href={`/perfume/${product.slug}`} onClick={onClose} className="btn btn-outline" style={{ flexShrink: 0, padding: '12px 16px' }}>
                       Ver Detalle

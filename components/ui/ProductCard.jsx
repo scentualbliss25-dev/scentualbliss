@@ -18,9 +18,15 @@ export default function ProductCard({ product, onQuickView }) {
   const { items: wishlistItems, toggle: toggleWishlist } = useWishlistStore();
   const wishlisted = wishlistItems.some(i => i.id === product.id);
 
+  const hasPrice = product.price > 0;
+
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!hasPrice) {
+      toast.error('Producto sin precio. Consúltanos por WhatsApp.', TOAST);
+      return;
+    }
     const defaultSize = product.sizes?.[1]?.ml || product.sizes?.[0]?.ml;
     addItem(product, defaultSize);
     toast.success(`${product.name} agregado`, TOAST);
@@ -79,16 +85,19 @@ export default function ProductCard({ product, onQuickView }) {
               <button
                 id={`add-to-cart-${product.id}`}
                 onClick={handleAddToCart}
+                disabled={!hasPrice}
                 style={{
                   flex: 1, padding: '11px 0',
-                  background: 'var(--gold)', color: '#FAF8F3',
+                  background: hasPrice ? 'var(--gold)' : 'rgba(122,110,94,.55)',
+                  color: '#FAF8F3',
                   fontSize: '.7rem', fontWeight: 600, letterSpacing: '.15em',
-                  textTransform: 'uppercase', border: 'none', cursor: 'pointer',
+                  textTransform: 'uppercase', border: 'none',
+                  cursor: hasPrice ? 'pointer' : 'not-allowed',
                   fontFamily: 'var(--font-sans)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                 }}
               >
-                <ShoppingBag size={13} /> Agregar
+                <ShoppingBag size={13} /> {hasPrice ? 'Agregar' : 'Consultar'}
               </button>
               {onQuickView && (
                 <button
