@@ -76,9 +76,20 @@ export function SyncAllPendingButton() {
         {isPending ? 'Sincronizando…' : '↻ Sincronizar pendientes'}
       </button>
       {msg && (
-        <span style={{ fontSize: '.78rem', color: msg.ok ? '#059669' : '#b91c1c' }}>
-          {msg.ok ? `${msg.synced} órdenes consultadas` : `✗ ${msg.error}`}
-        </span>
+        <div style={{ fontSize: '.78rem', color: msg.ok ? '#374151' : '#b91c1c' }}>
+          {msg.ok ? (
+            <details open>
+              <summary style={{ cursor: 'pointer' }}>{msg.synced} consultadas</summary>
+              <ul style={{ margin: '6px 0 0 0', padding: '0 0 0 16px' }}>
+                {msg.results.map((r, i) => (
+                  <li key={i} style={{ fontFamily: 'ui-monospace, monospace', fontSize: '.74rem' }}>
+                    <span>{r.ref}</span> → <strong>{r.status}</strong>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          ) : `✗ ${msg.error}`}
+        </div>
       )}
     </div>
   );
