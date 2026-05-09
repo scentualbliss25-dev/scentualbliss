@@ -5,7 +5,12 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ShoppingBag, Search, Menu, X, Heart, ChevronDown } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cartStore';
 import { useWishlistStore } from '@/lib/store/wishlistStore';
-import { collections } from '@/lib/products';
+import { collections, products } from '@/lib/products';
+
+// Marcas únicas ordenadas alfabéticamente
+const allBrands = [...new Set(products.map(p => p.brand))].sort((a, b) =>
+  a.localeCompare(b, 'es', { sensitivity: 'base' })
+);
 
 const NAV_ITEMS = [
   { label: 'Inicio', to: '/' },
@@ -20,6 +25,16 @@ const NAV_ITEMS = [
       color: c.color,
       catId: c.id,
     })),
+  },
+  {
+    label: 'Marcas',
+    to: '/tienda',
+    submenu: allBrands.map(b => ({
+      label: b,
+      to: `/tienda?brand=${encodeURIComponent(b)}`,
+      brandId: b,
+    })),
+    isBrandMenu: true,
   },
   { label: 'Bestsellers', to: '/tienda?sort=bestseller' },
 ];
@@ -90,6 +105,7 @@ function NavbarInner() {
   const searchParams = useSearchParams();
   const activeType = searchParams?.get('type');
   const activeCat = searchParams?.get('cat');
+  const activeBrand = searchParams?.get('brand');
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
@@ -124,9 +140,12 @@ function NavbarInner() {
 
   const isItemActive = (item) => {
     if (item.label === 'Inicio') return pathname === '/';
-    if (item.submenu) return !!activeCat && item.submenu.some(s => s.catId === activeCat);
+    if (item.submenu) {
+      if (item.isBrandMenu) return !!activeBrand && item.submenu.some(s => s.brandId === activeBrand);
+      return !!activeCat && item.submenu.some(s => s.catId === activeCat);
+    }
     if (item.to.includes('sort=bestseller')) return searchParams?.get('sort') === 'bestseller';
-    if (item.to === '/tienda') return pathname === '/tienda' && !activeType && !activeCat;
+    if (item.to === '/tienda') return pathname === '/tienda' && !activeType && !activeCat && !activeBrand;
     return pathname === item.to.split('?')[0];
   };
 
@@ -172,9 +191,22 @@ function NavbarInner() {
                     onMouseEnter={() => openMenu(item.label)}
                     onMouseLeave={scheduleClose}
                   >
-                    <div className="sb-dropdown-card">
+                    <div className={`sb-dropdown-card ${item.isBrandMenu ? 'sb-dropdown-card--brands' : ''}`}>
                       {item.submenu.map(sub => {
-                        const subActive = activeCat === sub.catId;
+                        const subActive = item.isBrandMenu
+                          ? activeBrand === sub.brandId
+                          : activeCat === sub.catId;
+                        if (item.isBrandMenu) {
+                          return (
+                            <Link
+                              key={sub.label}
+                              href={sub.to}
+                              className={`sb-dropdown-brand ${subActive ? 'active' : ''}`}
+                            >
+                              {sub.label}
+                            </Link>
+                          );
+                        }
                         return (
                           <Link
                             key={sub.label}
@@ -445,6 +477,31 @@ function NavStyles() {
         color: #7A6E5E;
         line-height: 1.4;
         margin: 0;
+      }
+      .sb-dropdown-card--brands {
+        grid-template-columns: repeat(3, 1fr);
+        min-width: 480px;
+        gap: 2px;
+        padding: 14px;
+      }
+      .sb-dropdown-brand {
+        display: block;
+        padding: 8px 12px;
+        font-family: var(--font-sans);
+        font-size: .78rem;
+        color: #1F1A14;
+        border-radius: 6px;
+        transition: background .18s, color .18s;
+        text-decoration: none;
+      }
+      .sb-dropdown-brand:hover {
+        background: #FAF6EE;
+        color: #8C6A40;
+      }
+      .sb-dropdown-brand.active {
+        background: #FAF6EE;
+        color: #8C6A40;
+        font-weight: 600;
       }
 
       .sb-nav-actions {
