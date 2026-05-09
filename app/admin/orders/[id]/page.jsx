@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { supabaseAdmin } from '@/lib/supabase';
 import { formatCOP } from '@/lib/format';
+import { SyncOrderButton } from '../SyncButtons';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -39,7 +40,7 @@ export default async function OrderDetailPage({ params }) {
     <main style={{ padding: '32px 24px', maxWidth: 980, margin: '0 auto', fontFamily: 'system-ui, -apple-system, sans-serif', color: '#1f2937' }}>
       <Link href="/admin/orders" style={{ fontSize: '.82rem', color: '#2563eb', textDecoration: 'none', display: 'inline-block', marginBottom: 14 }}>← Volver a órdenes</Link>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 24 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 16 }}>
         <div>
           <h1 style={{ fontSize: '1.4rem', fontWeight: 700, margin: 0, fontFamily: 'ui-monospace, monospace' }}>{order.reference}</h1>
           <p style={{ fontSize: '.85rem', color: '#6b7280', marginTop: 4 }}>
@@ -52,6 +53,10 @@ export default async function OrderDetailPage({ params }) {
           fontSize: '.78rem', fontWeight: 600,
           textTransform: 'uppercase', letterSpacing: '.06em',
         }}>{status.label}</span>
+      </div>
+
+      <div style={{ marginBottom: 24 }}>
+        <SyncOrderButton orderId={order.id} />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
