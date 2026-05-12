@@ -235,10 +235,10 @@ function Hero() {
           </div>
 
           <div className="fx-specs">
-            <div><span className="k">300+</span><span className="v">Fragancias</span></div>
+            <div><span className="k">155</span><span className="v">Fragancias</span></div>
             <div><span className="k">24h</span><span className="v">Envío</span></div>
             <div><span className="k">100%</span><span className="v">Auténticas</span></div>
-            <div><span className="k">4.9★</span><span className="v">+2.4K reseñas</span></div>
+            <div><span className="k">28</span><span className="v">Marcas</span></div>
           </div>
         </div>
 
@@ -604,25 +604,25 @@ function Story() {
           <Reveal delay={200}>
             <div className="story-content">
               <p className="eyebrow">Nuestra historia</p>
-              <h2>Curaduría <em>obsesiva</em>.</h2>
+              <h2>Una obsesión <em>hecha tienda</em>.</h2>
               <p>
-                ScentualBliss nació en 2019 de una obsesión: democratizar el lujo olfativo en Colombia.
-                Cansados de pagar precios inflados por fragancias auténticas, empezamos a importar
-                directamente de las casas perfumeras y atelieres de nicho.
+                ScentualBliss nació de la obsesión de dos amigos que querían hacer algo diferente.
+                Vieron en la perfumería una oportunidad: abrir las puertas de un mundo que siempre
+                pareció exclusivo y acercarlo a quienes saben apreciar lo auténtico.
               </p>
               <p>
-                Hoy curamos más de 300 fragancias —diseñador, nicho y árabe— probadas, validadas y
-                garantizadas. Cada botella llega con su sello de origen. Cada cliente, con un servicio
-                que entiende que un perfume es mucho más que un olor.
+                Porque creemos que una fragancia excepcional no debería ser un privilegio.
+                Hoy reunimos 155 fragancias —de diseñador, nicho y árabe— curadas, verificadas
+                y garantizadas, para que el mundo de la perfumería sea un poco más democrático.
               </p>
               <div className="story-stats">
                 <div>
-                  <span className="stat-num"><em>50K</em>+</span>
-                  <span className="stat-label">Clientes</span>
+                  <span className="stat-num"><em>155</em></span>
+                  <span className="stat-label">Fragancias</span>
                 </div>
                 <div>
-                  <span className="stat-num"><em>300</em>+</span>
-                  <span className="stat-label">Fragancias</span>
+                  <span className="stat-num"><em>28</em></span>
+                  <span className="stat-label">Marcas</span>
                 </div>
                 <div>
                   <span className="stat-num">4.9<em>★</em></span>
