@@ -3,11 +3,10 @@ import { useEffect } from 'react';
 import { X, ShoppingBag, Plus, Minus, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { useCartStore } from '@/lib/store/cartStore';
-import { formatCOP } from '@/lib/format';
 
 const FREE_SHIPPING = 350000;
 const SHIPPING_FEE = 15000;
-const COP = (n) => formatCOP(n) || '$0';
+const COP = (n) => 'COP $' + Number(n || 0).toLocaleString('es-CO');
 
 export default function CartDrawer() {
   const { items, isOpen, closeCart, removeItem, updateQuantity } = useCartStore();

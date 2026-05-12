@@ -22,7 +22,6 @@ export default function WhatsAppFloat() {
   return (
     <>
       <div
-        className="wa-float-wrapper"
         style={{
           position: 'fixed',
           bottom: '24px',
@@ -31,7 +30,7 @@ export default function WhatsAppFloat() {
           display: 'flex',
           alignItems: 'center',
           gap: '12px',
-          flexDirection: 'row-reverse',
+          flexDirection: 'row-reverse', // tooltip aparece a la derecha del boton
         }}
       >
         {/* Tooltip */}
@@ -123,12 +122,8 @@ export default function WhatsAppFloat() {
           0% { transform: scale(1); opacity: .6; }
           100% { transform: scale(1.6); opacity: 0; }
         }
-        /* En móvil, subir el botón por encima del sticky bar del producto
-           y respetar el safe area de iOS (home indicator) */
-        @media (max-width: 768px) {
-          .wa-float-wrapper {
-            bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
-          }
+        @media (max-width: 640px) {
+          .wa-tooltip { display: none; }
         }
       `}</style>
     </>
