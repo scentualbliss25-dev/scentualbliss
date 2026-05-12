@@ -338,27 +338,55 @@ function Hero() {
 // ============================================================
 function TrustBar() {
   return (
-    <section style={{ borderTop: '1px solid var(--line)', borderBottom: '1px solid var(--line)', background: 'var(--bg-3)', padding: '36px 0' }}>
-      <div className="container" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 28 }}>
+    <section style={{ borderTop: '1px solid var(--line)', borderBottom: '1px solid var(--line)', background: 'var(--bg-3)', padding: '28px 0' }}>
+      <div className="container trust-bar-grid">
         {TRUST.map((it, i) => (
           <Reveal key={it.title} delay={i * 80}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div className="trust-bar-item">
               <div style={{
-                width: 46, height: 46, borderRadius: 12,
+                width: 42, height: 42, borderRadius: 10,
                 background: 'rgba(184,144,92,.1)', border: '1px solid rgba(184,144,92,.25)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                 color: 'var(--gold-deep)',
               }}>
-                <it.Icon size={20} />
+                <it.Icon size={18} />
               </div>
               <div>
-                <p style={{ fontWeight: 600, color: 'var(--ink)', fontSize: '.92rem', marginBottom: 2 }}>{it.title}</p>
-                <p style={{ fontSize: '.78rem', color: 'var(--ink-3)' }}>{it.desc}</p>
+                <p style={{ fontWeight: 600, color: 'var(--ink)', fontSize: '.88rem', marginBottom: 2 }}>{it.title}</p>
+                <p style={{ fontSize: '.74rem', color: 'var(--ink-3)' }}>{it.desc}</p>
               </div>
             </div>
           </Reveal>
         ))}
       </div>
+      <style>{`
+        .trust-bar-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 20px;
+        }
+        .trust-bar-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+        @media (max-width: 768px) {
+          .trust-bar-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+          }
+        }
+        @media (max-width: 400px) {
+          .trust-bar-grid {
+            grid-template-columns: 1fr;
+            gap: 14px;
+          }
+          .trust-bar-item {
+            flex-direction: row;
+            align-items: center;
+          }
+        }
+      `}</style>
     </section>
   );
 }
