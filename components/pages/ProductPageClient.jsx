@@ -524,7 +524,8 @@ export default function ProductPageClient({ product, resolvedImages }) {
         position: 'fixed', bottom: 0, left: 0, right: 0,
         background: 'rgba(17,17,17,.97)', backdropFilter: 'blur(20px)',
         borderTop: '1px solid rgba(201,169,110,.2)',
-        padding: '12px 20px',
+        padding: '10px 20px',
+        paddingBottom: 'calc(10px + env(safe-area-inset-bottom, 0px))',
         display: 'none',
         zIndex: 100,
       }} className="mobile-sticky-cta">
@@ -550,7 +551,8 @@ export default function ProductPageClient({ product, resolvedImages }) {
           main > .container > div:nth-child(2) > div:first-child { position: static !important; }
           .grid-3 { grid-template-columns: 1fr !important; }
           .mobile-sticky-cta { display: block !important; }
-          main { padding-bottom: 80px; }
+          /* Dejar espacio para sticky bar + safe area iOS */
+          main { padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
         }
         @media(max-width:640px) {
           .grid-4 { grid-template-columns: repeat(2,1fr) !important; }
