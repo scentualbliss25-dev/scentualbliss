@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   Lock, CreditCard, ArrowLeft, CheckCircle, ChevronDown, Truck, RotateCcw,
-  Shield, Clock, Smartphone, Building2, MessageCircle,
+  Shield, Clock, Building2, MessageCircle,
   Award, Star,
 } from 'lucide-react';
 import { PageTransition } from '@/components/ui/ScrollAnimations';
@@ -17,12 +17,11 @@ const PHONE_WHATSAPP = '573169376436';
 
 const steps = ['Información', 'Pago'];
 
-// Solo métodos disponibles en Wompi Colombia (producción)
+// Métodos de pago recomendados para e-commerce de lujo en Colombia
+// Wompi Widget maneja todos los métodos internamente, este listado es solo informativo
 const PAYMENT_METHODS = [
-  { id: 'card',        label: 'Tarjeta de crédito / débito', icon: CreditCard, desc: 'Visa, Mastercard, AMEX, Diners' },
-  { id: 'nequi',       label: 'Nequi',                       icon: Smartphone, desc: 'Pago desde tu app Nequi' },
-  { id: 'pse',         label: 'PSE',                          icon: Building2,  desc: 'Transferencia bancaria en línea' },
-  { id: 'bancolombia', label: 'Bancolombia',                  icon: Building2,  desc: 'Botón de pago / transferencia' },
+  { id: 'card', label: 'Tarjeta de crédito / débito', icon: CreditCard, desc: 'Visa, Mastercard, AMEX, Diners' },
+  { id: 'pse',  label: 'PSE',                          icon: Building2,  desc: 'Transferencia bancaria en línea' },
 ];
 
 // Countdown urgencia: 15 minutos para reservar el pedido
