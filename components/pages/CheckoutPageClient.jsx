@@ -1,10 +1,10 @@
 'use client';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   Lock, CreditCard, ArrowLeft, CheckCircle, ChevronDown, Truck, RotateCcw,
-  Shield, Clock, Users, MessageCircle, Smartphone, Building2, Banknote, Wallet,
+  Shield, Clock, Smartphone, Building2,
   Award, Star,
 } from 'lucide-react';
 import { PageTransition } from '@/components/ui/ScrollAnimations';
@@ -13,17 +13,15 @@ import { formatCOP } from '@/lib/format';
 
 const FREE_SHIPPING_THRESHOLD = 350000; // COP
 const SHIPPING_COST = 15000; // COP
-const PHONE_WHATSAPP = '573169376436';
 
 const steps = ['Información', 'Pago'];
 
+// Solo métodos disponibles en Wompi Colombia (producción)
 const PAYMENT_METHODS = [
-  { id: 'card',     label: 'Tarjeta de Crédito / Débito', icon: CreditCard, desc: 'Visa, Mastercard, AMEX, Diners' },
-  { id: 'nequi',    label: 'Nequi / Daviplata',           icon: Smartphone, desc: 'Pago al instante con tu app' },
-  { id: 'pse',      label: 'PSE',                          icon: Building2,  desc: 'Transferencia bancaria en línea' },
-  { id: 'bancolombia', label: 'Bancolombia',               icon: Building2,  desc: 'Botón Bancolombia o transferencia' },
-  { id: 'cod',      label: 'Pago contra entrega',          icon: Banknote,   desc: 'Paga al recibir (ciudades principales)' },
-  { id: 'whatsapp', label: 'Finalizar por WhatsApp',       icon: MessageCircle, desc: 'Te asesoramos y coordinamos pago' },
+  { id: 'card',        label: 'Tarjeta de crédito / débito', icon: CreditCard, desc: 'Visa, Mastercard, AMEX, Diners' },
+  { id: 'nequi',       label: 'Nequi',                       icon: Smartphone, desc: 'Pago desde tu app Nequi' },
+  { id: 'pse',         label: 'PSE',                          icon: Building2,  desc: 'Transferencia bancaria en línea' },
+  { id: 'bancolombia', label: 'Bancolombia',                  icon: Building2,  desc: 'Botón de pago / transferencia' },
 ];
 
 // Countdown urgencia: 15 minutos para reservar el pedido
@@ -36,7 +34,6 @@ export default function CheckoutPageClient() {
   const [form, setForm] = useState({
     name: '', email: '', phone: '', address: '', addressDetail: '',
     city: '', department: '', zip: '', country: 'CO',
-    cardNum: '', expiry: '', cvv: '', cardName: '',
   });
   const [errors, setErrors] = useState({});
   const [paymentMethod, setPaymentMethod] = useState('card');
@@ -81,12 +78,9 @@ export default function CheckoutPageClient() {
   }, [items.length]);
 
   const discount = couponApplied ? total * 0.15 : 0;
-  // COD agrega cargo
-  const codSurcharge = paymentMethod === 'cod' ? 8000 : 0;
-  // Envio: gratis sobre threshold (en USD/COP indistinto, asumimos USD para el placeholder)
   const subtotalAfterDiscount = total - discount;
   const shipping = subtotalAfterDiscount >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
-  const grand = subtotalAfterDiscount + shipping + codSurcharge;
+  const grand = subtotalAfterDiscount + shipping;
   const remainingForFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotalAfterDiscount);
 
   // Format minutes:seconds
@@ -118,16 +112,7 @@ export default function CheckoutPageClient() {
     if (!form.department.trim()) e.department = 'Ingresa tu departamento';
     return e;
   };
-  const validateStep1 = () => {
-    const e = {};
-    if (paymentMethod === 'card') {
-      if (!form.cardName.trim() || form.cardName.trim().length < 3) e.cardName = 'Nombre como aparece en la tarjeta';
-      if (!form.cardNum || form.cardNum.length < 13) e.cardNum = 'Número de tarjeta inválido';
-      if (!/^\d{2}\/\d{2}$/.test(form.expiry)) e.expiry = 'Formato MM/AA';
-      if (!form.cvv || form.cvv.length < 3) e.cvv = 'CVV inválido';
-    }
-    return e;
-  };
+  const validateStep1 = () => ({});
 
   const handleNext = (e) => {
     e?.preventDefault?.();
@@ -149,42 +134,8 @@ export default function CheckoutPageClient() {
     }
   };
 
-  const handleWhatsAppCheckout = () => {
-    const lines = [
-      `Hola! Quiero finalizar mi compra en ScentualBliss 🌸`,
-      ``,
-      `*Productos:*`,
-      ...items.map(i => `• ${i.name} (${i.selectedSize}) ×${i.quantity} — $${(i.price * i.quantity).toFixed(2)}`),
-      ``,
-      `*Subtotal:* ${formatCOP(total)}`,
-      couponApplied ? `*Descuento BLISS15:* -${formatCOP(discount)}` : null,
-      `*Envío:* ${shipping === 0 ? 'GRATIS' : formatCOP(shipping)}`,
-      `*Total:* ${formatCOP(grand)}`,
-      ``,
-      form.name ? `*Nombre:* ${form.name}` : null,
-      form.address ? `*Dirección:* ${form.address}, ${form.city}, ${form.department}` : null,
-      form.phone ? `*Teléfono:* ${form.phone}` : null,
-    ].filter(Boolean).join('\n');
-    const url = `https://wa.me/${PHONE_WHATSAPP}?text=${encodeURIComponent(lines)}`;
-    window.open(url, '_blank');
-  };
-
   const handlePay = async () => {
-    if (paymentMethod === 'whatsapp') {
-      handleWhatsAppCheckout();
-      return;
-    }
-    // COD no usa pasarela: solo confirmación local
-    if (paymentMethod === 'cod') {
-      setLoading(true);
-      await new Promise(r => setTimeout(r, 800));
-      clearCart();
-      const orderId = 'SB-' + Date.now().toString(36).toUpperCase();
-      router.push(`/order-confirm?orderId=${orderId}&total=${grand}&method=cod`);
-      return;
-    }
-
-    // Tarjeta / Nequi / PSE / Bancolombia → Wompi Web Checkout
+    // Todos los métodos → Wompi Web Checkout
     setLoading(true);
     try {
       const res = await fetch('/api/wompi/checkout', {
@@ -238,7 +189,6 @@ export default function CheckoutPageClient() {
   );
 
   // === Componente: badge de input ===
-  const inputClass = (field) => 'input';
   const errBox = (field) => errors[field] && (
     <p data-error="true" style={{ fontSize: '.75rem', color: 'var(--error)', marginTop: '4px', fontWeight: 500 }}>
       {errors[field]}
@@ -449,83 +399,14 @@ export default function CheckoutPageClient() {
                   </div>
                 </div>
 
-                {/* Form de tarjeta solo si payment=card */}
-                {paymentMethod === 'card' && (
-                  <div style={{ background: 'var(--dark-2)', borderRadius: '14px', border: '1px solid var(--dark-4)', padding: '24px', marginBottom: '20px', animation: 'slideUp .2s ease' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                      <h4 style={{ fontFamily: 'var(--font-serif)', color: 'var(--white)', fontSize: '1.1rem' }}>Datos de la Tarjeta</h4>
-                      <div style={{ display: 'flex', gap: '6px' }}>
-                        {['Visa', 'MC', 'AMEX'].map(p => (
-                          <span key={p} style={{ fontSize: '.65rem', padding: '3px 8px', border: '1px solid rgba(201,169,110,.25)', borderRadius: '4px', color: 'var(--gray)', fontWeight: 700 }}>{p}</span>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="form-group">
-                      <label>Nombre en la Tarjeta</label>
-                      <input required autoComplete="cc-name" value={form.cardName} onChange={e => setField('cardName', e.target.value.toUpperCase())}
-                        className={inputClass('cardName')} placeholder="ANA GARCIA" data-error={!!errors.cardName} />
-                      {errBox('cardName')}
-                    </div>
-                    <div className="form-group">
-                      <label>Número de Tarjeta</label>
-                      <div style={{ position: 'relative' }}>
-                        <input required autoComplete="cc-number" inputMode="numeric"
-                          value={form.cardNum.replace(/(\d{4})(?=\d)/g, '$1 ')}
-                          onChange={e => setField('cardNum', e.target.value.replace(/\D/g, '').slice(0, 16))}
-                          className={inputClass('cardNum')} placeholder="1234 5678 9012 3456"
-                          style={{ paddingRight: '44px', letterSpacing: '.08em' }} maxLength={19}
-                          data-error={!!errors.cardNum} />
-                        <CreditCard size={18} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--gray)' }} />
-                      </div>
-                      {errBox('cardNum')}
-                    </div>
-                    <div className="grid-2" style={{ gap: '14px' }}>
-                      <div className="form-group">
-                        <label>Vencimiento</label>
-                        <input required autoComplete="cc-exp" inputMode="numeric" value={form.expiry}
-                          onChange={e => { let v = e.target.value.replace(/\D/g, ''); if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2, 4); setField('expiry', v); }}
-                          className={inputClass('expiry')} placeholder="MM/AA" maxLength={5} data-error={!!errors.expiry} />
-                        {errBox('expiry')}
-                      </div>
-                      <div className="form-group">
-                        <label>CVV</label>
-                        <input required autoComplete="cc-csc" inputMode="numeric"
-                          value={form.cvv} onChange={e => setField('cvv', e.target.value.replace(/\D/g,'').slice(0,4))}
-                          className={inputClass('cvv')} placeholder="123" maxLength={4} data-error={!!errors.cvv} />
-                        {errBox('cvv')}
-                      </div>
-                    </div>
+                {/* Aviso: todos los métodos redirigen a Wompi */}
+                <div style={{ padding: '14px 16px', background: 'rgba(124,158,135,.10)', border: '1px solid rgba(124,158,135,.3)', borderRadius: '10px', marginBottom: '20px', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                  <Shield size={18} style={{ color: 'var(--success)', flexShrink: 0, marginTop: '2px' }} />
+                  <div>
+                    <p style={{ fontSize: '.85rem', fontWeight: 600, color: 'var(--white)', marginBottom: '3px' }}>Pago procesado por Wompi</p>
+                    <p style={{ fontSize: '.78rem', color: 'var(--gray-light)' }}>Serás redirigido a la pasarela segura de Wompi para completar tu pago. Puedes confirmar tu método allí antes de pagar.</p>
                   </div>
-                )}
-
-                {/* Mensaje informativo segun metodo seleccionado */}
-                {paymentMethod === 'cod' && (
-                  <div style={{ padding: '16px', background: 'rgba(245,166,35,.08)', border: '1px solid rgba(245,166,35,.3)', borderRadius: '10px', marginBottom: '20px', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-                    <Banknote size={18} style={{ color: '#F5A623', flexShrink: 0, marginTop: '2px' }} />
-                    <div>
-                      <p style={{ fontSize: '.88rem', fontWeight: 600, color: 'var(--white)', marginBottom: '4px' }}>Pago contra entrega</p>
-                      <p style={{ fontSize: '.8rem', color: 'var(--gray-light)' }}>Pagas al recibir el producto. Aplica recargo de $8,000 COP. Disponible solo en ciudades principales.</p>
-                    </div>
-                  </div>
-                )}
-                {paymentMethod === 'whatsapp' && (
-                  <div style={{ padding: '16px', background: 'rgba(37,211,102,.10)', border: '1px solid rgba(37,211,102,.3)', borderRadius: '10px', marginBottom: '20px', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-                    <MessageCircle size={18} style={{ color: '#25D366', flexShrink: 0, marginTop: '2px' }} />
-                    <div>
-                      <p style={{ fontSize: '.88rem', fontWeight: 600, color: 'var(--white)', marginBottom: '4px' }}>Asesoría personalizada</p>
-                      <p style={{ fontSize: '.8rem', color: 'var(--gray-light)' }}>Te enviaremos por WhatsApp todos los detalles de tu pedido y coordinamos el método de pago que prefieras (Nequi, Bancolombia, transferencia, etc.).</p>
-                    </div>
-                  </div>
-                )}
-                {(paymentMethod === 'nequi' || paymentMethod === 'pse' || paymentMethod === 'bancolombia') && (
-                  <div style={{ padding: '16px', background: 'rgba(124,158,135,.10)', border: '1px solid rgba(124,158,135,.3)', borderRadius: '10px', marginBottom: '20px', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-                    <Shield size={18} style={{ color: 'var(--success)', flexShrink: 0, marginTop: '2px' }} />
-                    <div>
-                      <p style={{ fontSize: '.88rem', fontWeight: 600, color: 'var(--white)', marginBottom: '4px' }}>Pago seguro al instante</p>
-                      <p style={{ fontSize: '.8rem', color: 'var(--gray-light)' }}>Te redirigiremos a la pasarela oficial para completar el pago. Recibirás confirmación al instante.</p>
-                    </div>
-                  </div>
-                )}
+                </div>
 
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '14px', background: 'rgba(124,158,135,.08)', border: '1px solid rgba(124,158,135,.25)', borderRadius: '10px' }}>
                   <Lock size={14} style={{ color: 'var(--success)', flexShrink: 0, marginTop: '2px' }} />
@@ -547,8 +428,6 @@ export default function CheckoutPageClient() {
                   </span>
                 ) : step < steps.length - 1 ? (
                   <>Continuar al Pago →</>
-                ) : paymentMethod === 'whatsapp' ? (
-                  <><MessageCircle size={18} /> Continuar por WhatsApp</>
                 ) : (
                   <><Lock size={16} /> Pagar {formatCOP(grand)}</>
                 )}
@@ -647,12 +526,6 @@ export default function CheckoutPageClient() {
                     {shipping === 0 ? 'GRATIS' : formatCOP(shipping)}
                   </span>
                 </div>
-                {codSurcharge > 0 && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ color: 'var(--gray)', fontSize: '.88rem' }}>Recargo COD</span>
-                    <span style={{ color: 'var(--white)' }}>+{formatCOP(codSurcharge)}</span>
-                  </div>
-                )}
                 <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--dark-4)', paddingTop: '12px', marginTop: '4px' }}>
                   <span style={{ fontWeight: 700, color: 'var(--white)', fontSize: '1.05rem' }}>Total</span>
                   <span style={{ fontWeight: 700, color: 'var(--gold)', fontSize: '1.4rem', fontFamily: 'var(--font-serif)' }}>{formatCOP(grand)}</span>
