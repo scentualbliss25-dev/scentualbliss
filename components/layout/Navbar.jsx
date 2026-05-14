@@ -51,11 +51,11 @@ function BrandLogo() {
   return (
     <Link href="/" className="sb-nav-logo" aria-label="ScentualBliss inicio">
       <img
-        src="/img/logo-transparent.png"
+        src="/img/logo-transparent.svg"
         alt="ScentualBliss Perfumery"
         className="sb-logo-img"
-        width="198"
-        height="70"
+        width="255"
+        height="56"
       />
     </Link>
   );
