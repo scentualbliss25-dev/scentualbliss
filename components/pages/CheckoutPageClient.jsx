@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   Lock, CreditCard, ArrowLeft, CheckCircle, ChevronDown, Truck, RotateCcw,
-  Shield, Clock, Smartphone, Building2,
+  Shield, Clock, Smartphone, Building2, MessageCircle,
   Award, Star,
 } from 'lucide-react';
 import { PageTransition } from '@/components/ui/ScrollAnimations';
@@ -13,6 +13,7 @@ import { formatCOP } from '@/lib/format';
 
 const FREE_SHIPPING_THRESHOLD = 350000; // COP
 const SHIPPING_COST = 15000; // COP
+const PHONE_WHATSAPP = '573169376436';
 
 const steps = ['Información', 'Pago'];
 
@@ -189,6 +190,7 @@ export default function CheckoutPageClient() {
   );
 
   // === Componente: badge de input ===
+  const inputClass = () => 'input';
   const errBox = (field) => errors[field] && (
     <p data-error="true" style={{ fontSize: '.75rem', color: 'var(--error)', marginTop: '4px', fontWeight: 500 }}>
       {errors[field]}
