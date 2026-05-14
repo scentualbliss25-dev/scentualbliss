@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { CheckCircle, Package, Mail, ArrowRight, AlertCircle, Loader2, MessageCircle } from 'lucide-react';
 import { PageTransition } from '@/components/ui/ScrollAnimations';
 import { useCartStore } from '@/lib/store/cartStore';
+import { formatCOP } from '@/lib/format';
 
 const PHONE_WHATSAPP = '573169376436';
 
@@ -116,7 +117,7 @@ export default function OrderConfirmPageClient() {
               </div>
               <div>
                 <p style={{ fontSize: '.75rem', color: 'var(--gray)', textTransform: 'uppercase', letterSpacing: '.1em', marginBottom: '6px' }}>{method === 'cod' ? 'Total a Pagar' : 'Total'}</p>
-                <p style={{ fontWeight: 700, color: 'var(--white)', fontSize: '1.05rem' }}>${finalTotal.toFixed(2)}</p>
+                <p style={{ fontWeight: 700, color: 'var(--white)', fontSize: '1.05rem' }}>{formatCOP(finalTotal) || '$0'}</p>
               </div>
               <div>
                 <p style={{ fontSize: '.75rem', color: 'var(--gray)', textTransform: 'uppercase', letterSpacing: '.1em', marginBottom: '6px' }}>Tiempo de Entrega</p>

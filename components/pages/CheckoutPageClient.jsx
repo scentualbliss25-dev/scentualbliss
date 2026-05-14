@@ -481,7 +481,7 @@ export default function CheckoutPageClient() {
                       <p style={{ fontSize: '.82rem', fontWeight: 600, color: 'var(--white)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</p>
                       <p style={{ fontSize: '.72rem', color: 'var(--gray)' }}>{item.selectedSize}</p>
                     </div>
-                    <span style={{ fontWeight: 700, color: 'var(--gold)', fontSize: '.88rem' }}>${(item.price * item.quantity).toFixed(2)}</span>
+                    <span style={{ fontWeight: 700, color: 'var(--gold)', fontSize: '.88rem' }}>{formatCOP(item.price * item.quantity)}</span>
                   </div>
                 ))}
               </div>
