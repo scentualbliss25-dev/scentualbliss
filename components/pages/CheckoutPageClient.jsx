@@ -37,7 +37,9 @@ export default function CheckoutPageClient() {
     city: '', department: '', zip: '', country: 'CO',
   });
   const [errors, setErrors] = useState({});
-  const [paymentMethod, setPaymentMethod] = useState('card');
+  // Wompi muestra todos los métodos disponibles en su pasarela; este campo es solo
+  // para registro nuestro de la orden.
+  const [paymentMethod] = useState('wompi');
   const [loading, setLoading] = useState(false);
   const [coupon, setCoupon] = useState('');
   const [couponApplied, setCouponApplied] = useState(false);
@@ -364,38 +366,27 @@ export default function CheckoutPageClient() {
             {step === 1 && (
               <div style={{ animation: 'slideUp .25s ease' }}>
                 <div style={{ background: 'var(--dark-2)', borderRadius: '14px', border: '1px solid var(--dark-4)', padding: '24px', marginBottom: '20px' }}>
-                  <h3 style={{ fontFamily: 'var(--font-serif)', color: 'var(--white)', marginBottom: '6px', fontSize: '1.3rem' }}>Método de Pago</h3>
-                  <p style={{ color: 'var(--gray)', fontSize: '.85rem', marginBottom: '20px' }}>Elige cómo prefieres pagar tu pedido.</p>
+                  <h3 style={{ fontFamily: 'var(--font-serif)', color: 'var(--white)', marginBottom: '6px', fontSize: '1.3rem' }}>Métodos de pago</h3>
+                  <p style={{ color: 'var(--gray)', fontSize: '.85rem', marginBottom: '20px' }}>
+                    Estos son los métodos disponibles. Elegirás el tuyo en la siguiente pantalla.
+                  </p>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '10px' }}>
                     {PAYMENT_METHODS.map(m => {
                       const Icon = m.icon;
-                      const active = paymentMethod === m.id;
                       return (
-                        <label key={m.id} style={{
-                          display: 'flex', alignItems: 'center', gap: '14px',
-                          padding: '14px 16px', borderRadius: '10px',
-                          border: '1.5px solid',
-                          borderColor: active ? 'var(--gold)' : 'var(--dark-4)',
-                          background: active ? 'rgba(201,169,110,.08)' : 'transparent',
-                          cursor: 'pointer', transition: 'all .2s',
+                        <div key={m.id} style={{
+                          display: 'flex', alignItems: 'center', gap: '12px',
+                          padding: '14px', borderRadius: '10px',
+                          border: '1px solid var(--dark-4)',
+                          background: 'rgba(201,169,110,.04)',
                         }}>
-                          <input type="radio" name="payment" value={m.id} checked={active}
-                            onChange={() => setPaymentMethod(m.id)} style={{ display: 'none' }} />
-                          <div style={{
-                            width: 22, height: 22, borderRadius: '50%',
-                            border: `2px solid ${active ? 'var(--gold)' : 'var(--dark-4)'}`,
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            flexShrink: 0,
-                          }}>
-                            {active && <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--gold)' }} />}
+                          <Icon size={20} style={{ color: 'var(--gold)', flexShrink: 0 }} />
+                          <div style={{ minWidth: 0 }}>
+                            <p style={{ fontSize: '.85rem', fontWeight: 600, color: 'var(--white)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.label}</p>
+                            <p style={{ fontSize: '.7rem', color: 'var(--gray)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.desc}</p>
                           </div>
-                          <Icon size={20} style={{ color: active ? 'var(--gold)' : 'var(--gray)', flexShrink: 0 }} />
-                          <div style={{ flex: 1 }}>
-                            <p style={{ fontSize: '.92rem', fontWeight: 600, color: 'var(--white)' }}>{m.label}</p>
-                            <p style={{ fontSize: '.78rem', color: 'var(--gray)' }}>{m.desc}</p>
-                          </div>
-                        </label>
+                        </div>
                       );
                     })}
                   </div>
@@ -406,7 +397,7 @@ export default function CheckoutPageClient() {
                   <Shield size={18} style={{ color: 'var(--success)', flexShrink: 0, marginTop: '2px' }} />
                   <div>
                     <p style={{ fontSize: '.85rem', fontWeight: 600, color: 'var(--white)', marginBottom: '3px' }}>Pago procesado por Wompi</p>
-                    <p style={{ fontSize: '.78rem', color: 'var(--gray-light)' }}>Serás redirigido a la pasarela segura de Wompi para completar tu pago. Puedes confirmar tu método allí antes de pagar.</p>
+                    <p style={{ fontSize: '.78rem', color: 'var(--gray-light)' }}>Serás redirigido a la pasarela segura de Wompi (Bancolombia) para elegir tu método y completar el pago. La transacción se confirma al instante.</p>
                   </div>
                 </div>
 
@@ -431,7 +422,7 @@ export default function CheckoutPageClient() {
                 ) : step < steps.length - 1 ? (
                   <>Continuar al Pago →</>
                 ) : (
-                  <><Lock size={16} /> Pagar {formatCOP(grand)}</>
+                  <><Lock size={16} /> Ir a pagar — {formatCOP(grand)}</>
                 )}
               </button>
             </div>
