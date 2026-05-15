@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { validateWebhookSignature } from '@/lib/wompi';
 import { supabaseAdmin } from '@/lib/supabase';
+import { notifyAdminNewOrder } from '@/lib/notifications';
+import { sendOrderPush } from '@/lib/push';
 
 export async function POST(req) {
   try {
@@ -44,8 +46,21 @@ export async function POST(req) {
       return NextResponse.json({ ok: true, found: false });
     }
 
-    // Si la transacción quedó aprobada, decrementar inventario
+    // Si la transacción quedó aprobada: notificar admin + decrementar inventario
     if (status === 'approved') {
+      // Cargar orden completa para notificaciones
+      const { data: fullOrder } = await supabaseAdmin
+        .from('orders')
+        .select('*, order_items(*)')
+        .eq('id', updated.id)
+        .single();
+
+      if (fullOrder) {
+        // Fire-and-forget: no bloquear respuesta al webhook si falla algún canal
+        notifyAdminNewOrder(fullOrder, fullOrder.order_items || []).catch(e => console.error('[notify]', e));
+        sendOrderPush(fullOrder).catch(e => console.error('[push]', e));
+      }
+
       await decrementInventory(updated.id);
     }
 

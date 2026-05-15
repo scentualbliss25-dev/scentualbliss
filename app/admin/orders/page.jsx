@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { supabaseAdmin } from '@/lib/supabase';
 import { formatCOP } from '@/lib/format';
 import { SyncAllPendingButton } from './SyncButtons';
+import { PushToggle } from './PushToggle';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -61,9 +62,10 @@ export default async function AdminOrdersPage() {
 
   return (
     <main style={{ padding: '32px 24px', maxWidth: 1280, margin: '0 auto', fontFamily: 'system-ui, -apple-system, sans-serif', color: '#1f2937' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
         <h1 style={{ fontSize: '1.6rem', fontWeight: 700, margin: 0 }}>Órdenes</h1>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+          <PushToggle />
           <SyncAllPendingButton />
           <p style={{ fontSize: '.85rem', color: '#6b7280', margin: 0 }}>Últimas 100</p>
         </div>

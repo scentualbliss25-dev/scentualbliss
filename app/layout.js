@@ -39,6 +39,12 @@ export const metadata = {
   },
   description: 'Fragancias únicas creadas para quienes no se conforman con lo ordinario. Perfumes orientales, florales, amaderados y frescos con envío express a todo LATAM.',
   keywords: ['perfumes de lujo', 'fragancias exclusivas', 'perfumería online', 'oud', 'floral', 'oriental', 'perfumes Colombia'],
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'ScentualBliss',
+  },
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: '32x32', type: 'image/png' },
