@@ -8,7 +8,7 @@ import {
   Award, Star,
 } from 'lucide-react';
 import { PageTransition } from '@/components/ui/ScrollAnimations';
-import { useCartStore } from '@/lib/store/cartStore';
+import { useCartStore, useCartTotal } from '@/lib/store/cartStore';
 import { formatCOP } from '@/lib/format';
 
 const FREE_SHIPPING_THRESHOLD = 350000; // COP
@@ -28,7 +28,8 @@ const PAYMENT_METHODS = [
 const RESERVATION_MINUTES = 15;
 
 export default function CheckoutPageClient() {
-  const { items, total, clearCart } = useCartStore();
+  const { items, clearCart } = useCartStore();
+  const total = useCartTotal();
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [form, setForm] = useState({

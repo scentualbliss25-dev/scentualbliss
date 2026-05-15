@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ShoppingBag, Search, Menu, X, Heart, ChevronDown } from 'lucide-react';
-import { useCartStore } from '@/lib/store/cartStore';
+import { useCartStore, useCartCount } from '@/lib/store/cartStore';
 import { useWishlistStore } from '@/lib/store/wishlistStore';
 import { collections, products } from '@/lib/products';
 
@@ -98,7 +98,8 @@ function NavbarInner() {
     }, 220);
   };
 
-  const { count, toggleCart } = useCartStore();
+  const { toggleCart } = useCartStore();
+  const count = useCartCount();
   const { items: wishlistItems } = useWishlistStore();
   const pathname = usePathname();
   const router = useRouter();
