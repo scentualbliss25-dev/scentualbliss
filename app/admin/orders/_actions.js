@@ -4,8 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { fetchTransactionByReference } from '@/lib/wompi';
 import { supabaseAdmin } from '@/lib/supabase';
 
-// Sincroniza una orden contra Wompi por su `reference`. Útil cuando el webhook
-// no llegó (por config, red, etc.). Actualiza status + wompi_tx_id en la DB.
+// === Sync con Wompi ===
 export async function syncOrderAction(orderId) {
   if (!supabaseAdmin) return { ok: false, error: 'Supabase no configurado' };
 
@@ -40,18 +39,15 @@ export async function syncOrderAction(orderId) {
 
   if (updateErr) return { ok: false, error: updateErr.message };
 
-  // Decrementar inventario si la transacción quedó aprobada (idempotente — solo si cambió)
   if (newStatus === 'approved' && order.status !== 'approved') {
     await decrementInventoryForOrder(orderId);
   }
 
   revalidatePath('/admin/orders');
   revalidatePath(`/admin/orders/${orderId}`);
-
   return { ok: true, oldStatus: order.status, newStatus, txId: tx.id };
 }
 
-// Sincroniza TODAS las órdenes pendientes (status='pending' o sin status)
 export async function syncAllPendingAction() {
   if (!supabaseAdmin) return { ok: false, error: 'Supabase no configurado' };
 
@@ -88,6 +84,69 @@ export async function syncAllPendingAction() {
 
   revalidatePath('/admin/orders');
   return { ok: true, synced: results.length, results };
+}
+
+// === Editar orden (estado, notas, tracking) ===
+// Las columnas admin_notes / tracking_carrier / tracking_number son opcionales.
+// Si no existen aún en la DB, Supabase ignora silenciosamente esos campos.
+export async function updateOrderAction(orderId, updates) {
+  if (!supabaseAdmin) return { ok: false, error: 'Supabase no configurado' };
+
+  const allowed = {};
+  if (updates.status !== undefined) allowed.status = updates.status;
+  if (updates.admin_notes !== undefined) allowed.admin_notes = updates.admin_notes;
+  if (updates.tracking_carrier !== undefined) allowed.tracking_carrier = updates.tracking_carrier;
+  if (updates.tracking_number !== undefined) allowed.tracking_number = updates.tracking_number;
+  allowed.updated_at = new Date().toISOString();
+
+  const { error } = await supabaseAdmin
+    .from('orders')
+    .update(allowed)
+    .eq('id', orderId);
+
+  if (error) {
+    // Si falla por columna inexistente, intentar solo con status
+    if (error.message?.includes('column') && updates.status !== undefined) {
+      const { error: e2 } = await supabaseAdmin
+        .from('orders')
+        .update({ status: updates.status, updated_at: new Date().toISOString() })
+        .eq('id', orderId);
+      if (e2) return { ok: false, error: e2.message };
+      revalidatePath('/admin/orders');
+      revalidatePath(`/admin/orders/${orderId}`);
+      return { ok: true, warning: 'Solo se actualizó status. Ejecuta el SQL de migración para habilitar notas/tracking.' };
+    }
+    return { ok: false, error: error.message };
+  }
+
+  revalidatePath('/admin/orders');
+  revalidatePath(`/admin/orders/${orderId}`);
+  return { ok: true };
+}
+
+// === Eliminar orden ===
+export async function deleteOrderAction(orderId) {
+  if (!supabaseAdmin) return { ok: false, error: 'Supabase no configurado' };
+
+  // Eliminar items primero (FK constraint); luego la orden
+  await supabaseAdmin.from('order_items').delete().eq('order_id', orderId);
+  const { error } = await supabaseAdmin.from('orders').delete().eq('id', orderId);
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath('/admin/orders');
+  return { ok: true };
+}
+
+export async function bulkDeleteOrdersAction(orderIds) {
+  if (!supabaseAdmin) return { ok: false, error: 'Supabase no configurado' };
+  if (!orderIds?.length) return { ok: false, error: 'Sin órdenes seleccionadas' };
+
+  await supabaseAdmin.from('order_items').delete().in('order_id', orderIds);
+  const { error } = await supabaseAdmin.from('orders').delete().in('id', orderIds);
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath('/admin/orders');
+  return { ok: true, deleted: orderIds.length };
 }
 
 async function decrementInventoryForOrder(orderId) {
