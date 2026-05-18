@@ -573,6 +573,28 @@ body::after {
 .skeleton-card-img { aspect-ratio: 3/4; width: 100%; border-radius: 4px; }
 .skeleton-card { display: block; }
 
+/* "Cargar más" como celda full-width al final del grid de productos */
+.grid-load-more {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 32px;
+  padding: 16px 0;
+}
+.grid-load-more-count {
+  font-size: .78rem;
+  color: var(--gray-light);
+  letter-spacing: .06em;
+  margin: 0;
+}
+.grid-load-more-error {
+  font-size: .8rem;
+  color: var(--error);
+  margin: 0;
+}
+
 /* Accesibilidad: respeta la preferencia del sistema para reducir movimiento */
 @media (prefers-reduced-motion: reduce) {
   *,
