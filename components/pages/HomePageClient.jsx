@@ -22,13 +22,27 @@ const TRUST = [
 ];
 
 const NOTES_ORBIT = [
-  { label: 'Vainilla', angle: -30, delay: 0 },
-  { label: 'Dátiles', angle: 40, delay: 0.6 },
-  { label: 'Canela', angle: 110, delay: 1.2 },
-  { label: 'Tonka', angle: 180, delay: 1.8 },
-  { label: 'Maple', angle: 230, delay: 2.4 },
-  { label: 'Praliné', angle: 310, delay: 3.0 },
+  { label: 'Bergamota', angle: -30, delay: 0 },
+  { label: 'Jazmín',    angle: 40,  delay: 0.6 },
+  { label: 'Ámbar',     angle: 110, delay: 1.2 },
+  { label: 'Vainilla',  angle: 180, delay: 1.8 },
+  { label: 'Oud',       angle: 230, delay: 2.4 },
+  { label: 'Sándalo',   angle: 310, delay: 3.0 },
 ];
+
+// Perfume insignia de marca propia ScentualBliss (edición limitada — pre-orden).
+// No vive en lib/products.js: es exclusivo del hero y aún no tiene página de detalle.
+const HOUSE_PERFUME = {
+  name: 'Aurum',
+  type: 'EDP',
+  ref: 'SCT-01',
+  family: 'Ámbar floral',
+  image: '/img/scentual-bliss-perfumery.png',
+  status: 'Edición limitada',
+  cta: 'Pre-orden',
+  // Link directo a WhatsApp con mensaje pre-rellenado para reservar
+  ctaHref: 'https://wa.me/573169376436?text=' + encodeURIComponent('Hola! Quiero reservar Aurum EDP — la primera fragancia de autor de ScentualBliss 🌸'),
+};
 
 const HERO_BRANDS = [
   'Dior', 'Creed', 'Chanel', 'Lattafa', 'Tom Ford', 'JPG',
@@ -267,7 +281,7 @@ function Hero() {
             <div className="fx-beam" />
 
             <div className="fx-bottle">
-              <img src="/img/lattafa-khamrah.webp" alt="Lattafa Khamrah" />
+              <img src={HOUSE_PERFUME.image} alt={`${HOUSE_PERFUME.name} ${HOUSE_PERFUME.type} — ScentualBliss`} />
               <div className="fx-bottle-shadow" />
             </div>
 
@@ -282,11 +296,11 @@ function Hero() {
             <div className="fx-hud fx-hud-tl">
               <div className="fx-hud-line">
                 <span className="fx-hud-k">REF</span>
-                <span className="fx-hud-v">SCT-04</span>
+                <span className="fx-hud-v">{HOUSE_PERFUME.ref}</span>
               </div>
               <div className="fx-hud-line">
                 <span className="fx-hud-k">FAM</span>
-                <span className="fx-hud-v">Oriental dulce</span>
+                <span className="fx-hud-v">{HOUSE_PERFUME.family}</span>
               </div>
             </div>
             <div className="fx-hud fx-hud-br">
@@ -303,13 +317,23 @@ function Hero() {
             <div className="fx-tag">
               <span className="fx-tag-pulse" />
               <div>
-                <p className="fx-tag-eyebrow">Fragancia destacada</p>
-                <p className="fx-tag-name">{heroProduct?.name || 'Khamrah'} <em>{heroProduct?.type || 'EDP'}</em></p>
-                <p className="fx-tag-price">desde <b>{COP(heroProduct?.price || 289000)}</b></p>
+                <p className="fx-tag-eyebrow">Fragancia de autor</p>
+                <p className="fx-tag-name">{HOUSE_PERFUME.name} <em>{HOUSE_PERFUME.type}</em></p>
+                <p className="fx-tag-price">
+                  <span className="fx-tag-status">{HOUSE_PERFUME.status}</span>
+                  <span className="fx-tag-sep">·</span>
+                  <b>{HOUSE_PERFUME.cta}</b>
+                </p>
               </div>
-              <Link href={`/perfume/${heroProduct?.slug || 'lattafa-khamrah'}`} className="fx-tag-arrow" aria-label="Ver">
+              <a
+                href={HOUSE_PERFUME.ctaHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="fx-tag-arrow"
+                aria-label={`${HOUSE_PERFUME.cta} de ${HOUSE_PERFUME.name}`}
+              >
                 <ArrowRight size={14} />
-              </Link>
+              </a>
             </div>
           </div>
         </div>

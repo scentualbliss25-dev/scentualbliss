@@ -253,8 +253,10 @@
 .sb-home .fx-tag-eyebrow { font-family: var(--mono); font-size: .56rem; letter-spacing: .25em; text-transform: uppercase; color: var(--gold-deep); }
 .sb-home .fx-tag-name { font-family: var(--display); font-size: 1.05rem; color: var(--ink); line-height: 1.1; margin-top: 1px; }
 .sb-home .fx-tag-name em { color: var(--gold-deep); font-style: italic; }
-.sb-home .fx-tag-price { font-size: .68rem; color: var(--ink-3); margin-top: 2px; }
-.sb-home .fx-tag-price b { color: var(--ink); font-weight: 600; }
+.sb-home .fx-tag-price { font-size: .68rem; color: var(--ink-3); margin-top: 4px; display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.sb-home .fx-tag-price b { color: var(--gold-deep); font-weight: 700; letter-spacing: .04em; text-transform: uppercase; font-size: .66rem; }
+.sb-home .fx-tag-status { background: rgba(212,182,138,.14); color: var(--gold-deep); padding: 2px 8px; border-radius: 99px; font-size: .62rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; border: 1px solid rgba(212,182,138,.28); }
+.sb-home .fx-tag-sep { color: var(--ink-3); opacity: .5; }
 .sb-home .fx-tag-arrow { width: 36px; height: 36px; border-radius: 50%; background: var(--ink); color: var(--bg-1); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .25s; }
 .sb-home .fx-tag-arrow:hover { background: var(--gold-deep); transform: rotate(-45deg); }
 /* Marquee */
