@@ -16,7 +16,7 @@ const CARD_SIZES = '(max-width: 640px) 50vw, (max-width: 900px) 50vw, (max-width
 
 const TOAST = { style: { background: '#1A1610', color: '#F6F3EE', border: '1px solid rgba(184,144,92,.3)', fontFamily: 'DM Sans, sans-serif' }, iconTheme: { primary: '#B8905C', secondary: '#1A1610' } };
 
-export default function ProductCard({ product }) {
+export default function ProductCard({ product, priority = false }) {
   const [hovered, setHovered] = useState(false);
   const hasRealImages = product.images?.length && !product.images[0]?.includes('placeholder');
   const initialImg = hasRealImages ? product.images[0] : getImagePath(product);
@@ -51,10 +51,12 @@ export default function ProductCard({ product }) {
         <div className="product-card-img-wrap" style={{ aspectRatio: '3/4' }}>
           <Image
             src={imgSrc}
-            alt={product.name}
+            alt={`${product.name} de ${product.brand} — perfume ${product.gender?.toLowerCase() || ''}`.trim()}
             fill
             sizes={CARD_SIZES}
             style={{ objectFit: 'cover' }}
+            priority={priority}
+            loading={priority ? 'eager' : 'lazy'}
             onError={() => { if (imgSrc !== PLACEHOLDER) setImgSrc(PLACEHOLDER); }}
           />
 

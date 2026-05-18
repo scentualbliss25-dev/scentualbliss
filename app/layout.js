@@ -8,6 +8,7 @@ import CartDrawer from '@/components/cart/CartDrawer';
 import ToasterWrapper from '@/components/ui/ToasterWrapper';
 import WhatsAppFloat from '@/components/ui/WhatsAppFloat';
 import ScrollToTop from '@/components/ui/ScrollToTop';
+import { SITE_URL } from '@/lib/site';
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -32,7 +33,7 @@ export const viewport = {
 };
 
 export const metadata = {
-  metadataBase: new URL('https://scentualbliss.com'),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: 'ScentualBliss — Perfumería de Lujo',
     template: '%s | ScentualBliss',
@@ -68,6 +69,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="es" className={`${cormorant.variable} ${dmSans.variable}`}>
       <body>
+        <a href="#main-content" className="skip-link">Saltar al contenido principal</a>
         <AnnouncementBar />
         <Navbar />
         <CartDrawer />

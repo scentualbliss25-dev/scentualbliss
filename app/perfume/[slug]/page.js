@@ -4,8 +4,7 @@ import ProductSeoContent, { ProductFAQSchema } from '@/components/seo/ProductSeo
 import { notFound } from 'next/navigation';
 import fs from 'node:fs';
 import path from 'node:path';
-
-const SITE_URL = 'https://scentualbliss.com';
+import { SITE_URL } from '@/lib/site';
 const MAX_PRODUCT_IMAGES = 4;
 
 // Server-only: escanea public/img/ para resolver imagenes reales del producto

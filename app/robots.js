@@ -1,4 +1,4 @@
-const SITE_URL = 'https://scentualbliss.com.co';
+import { SITE_URL } from '@/lib/site';
 
 export default function robots() {
   return {

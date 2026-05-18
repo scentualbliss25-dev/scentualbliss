@@ -1,4 +1,5 @@
 'use client';
+import { useState, useEffect } from 'react';
 import { X, ChevronDown, Search } from 'lucide-react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 
@@ -17,6 +18,25 @@ export default function ShopFilters({
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const [searchInput, setSearchInput] = useState(q);
+
+  // Sincronizar input con URL cuando la URL cambia externamente (back/forward)
+  useEffect(() => { setSearchInput(q); }, [q]);
+
+  // Debounce de búsqueda: 350 ms tras el último keystroke
+  useEffect(() => {
+    if (searchInput === q) return;
+    const id = setTimeout(() => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (searchInput.trim()) params.set('q', searchInput.trim());
+      else params.delete('q');
+      params.delete('page');
+      const qs = params.toString();
+      router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+    }, 350);
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchInput]);
 
   // Cualquier cambio de filtro/orden resetea la paginación
   const updateParam = (key, value) => {
@@ -32,16 +52,33 @@ export default function ShopFilters({
   };
 
   const clearAll = () => router.push(pathname, { scroll: false });
-  const clearSearch = () => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete('q');
-    params.delete('page');
-    const qs = params.toString();
-    router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
-  };
 
   return (
     <>
+      {/* Search input visible */}
+      <div className="shop-search-wrap">
+        <Search size={16} aria-hidden="true" className="shop-search-icon" />
+        <input
+          type="search"
+          inputMode="search"
+          value={searchInput}
+          onChange={e => setSearchInput(e.target.value)}
+          placeholder="Buscar por nombre, marca o nota olfativa…"
+          aria-label="Buscar fragancias"
+          className="shop-search-input"
+        />
+        {searchInput && (
+          <button
+            type="button"
+            onClick={() => setSearchInput('')}
+            aria-label="Borrar búsqueda"
+            className="shop-search-clear"
+          >
+            <X size={14} aria-hidden="true" />
+          </button>
+        )}
+      </div>
+
       {/* Filters row */}
       <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 28, flexWrap: 'wrap' }}>
         <div style={{ flex: '1 1 auto' }}>
@@ -150,26 +187,6 @@ export default function ShopFilters({
           </div>
         </div>
       </div>
-
-      {/* Active search */}
-      {q && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px', background: 'rgba(184,144,92,.06)', borderLeft: '2px solid var(--gold-dark)', marginBottom: 20 }}>
-          <Search size={14} style={{ color: 'var(--gold-dark)', flexShrink: 0 }} aria-hidden="true" />
-          <span style={{ fontSize: '.85rem', color: 'var(--gray-light)', flex: 1 }}>
-            Resultados para <strong style={{ color: 'var(--white)' }}>"{q}"</strong>
-          </span>
-          <button
-            onClick={clearSearch}
-            aria-label="Limpiar búsqueda"
-            style={{
-              width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: 'var(--gray-light)', background: 'transparent', border: 'none', cursor: 'pointer',
-            }}
-          >
-            <X size={16} aria-hidden="true" />
-          </button>
-        </div>
-      )}
 
       {/* Filtros activos consolidados */}
       {activeFilters.length > 0 && (

@@ -1,13 +1,12 @@
 import { products, productTypes, collections } from '@/lib/products';
+import { SITE_URL, SITE_NAME, SITE_LOCALE } from '@/lib/site';
 import ProductCard from '@/components/ui/ProductCard';
 import ShopFilters from '@/components/pages/ShopFilters';
 import ShopLoadMore, { ShopEmptyState } from '@/components/ui/ShopLoadMore';
 import QuickViewModal from '@/components/ui/QuickViewModal';
+import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
-export const metadata = {
-  title: 'Tienda — Todos los Perfumes de Lujo',
-  description: 'Explora nuestra colección completa de fragancias exclusivas. Filtra por categoría, precio y bestsellers. Envío gratis en pedidos mayores a $100.',
-};
+export const revalidate = 300;
 
 const PAGE_SIZE = 24;
 
@@ -24,6 +23,17 @@ const typeCats = [
 const allBrands = [...new Set(products.map(p => p.brand))].sort((a, b) =>
   a.localeCompare(b, 'es', { sensitivity: 'base' })
 );
+
+function parseSearchParams(sp) {
+  return {
+    cat: sp.cat || 'Todos',
+    type: sp.type || 'Todos',
+    sort: sp.sort || 'featured',
+    brand: sp.brand || 'Todos',
+    q: sp.q || '',
+    page: Math.max(1, parseInt(sp.page || '1', 10) || 1),
+  };
+}
 
 function filterAndSort({ cat, type, sort, brand, q }) {
   let list = [...products];
@@ -53,60 +63,161 @@ function filterAndSort({ cat, type, sort, brand, q }) {
   return list;
 }
 
+// Genera segmentos de canonical sin el param "page" (la paginada apunta a su base)
+function buildCanonical({ cat, type, sort, brand, q }) {
+  const params = new URLSearchParams();
+  if (type !== 'Todos') params.set('type', type);
+  if (cat !== 'Todos') params.set('cat', cat);
+  if (brand !== 'Todos') params.set('brand', brand);
+  if (q) params.set('q', q);
+  if (sort !== 'featured') params.set('sort', sort);
+  const qs = params.toString();
+  return qs ? `${SITE_URL}/tienda?${qs}` : `${SITE_URL}/tienda`;
+}
+
+function buildHeading({ cat, type, brand }) {
+  if (brand !== 'Todos') return brand;
+  if (type !== 'Todos') return productTypes.find(t => t.id === type)?.name || null;
+  if (cat !== 'Todos') return collections.find(c => c.id === cat)?.name || null;
+  return null;
+}
+
+export async function generateMetadata({ searchParams }) {
+  const sp = await searchParams;
+  const f = parseSearchParams(sp);
+  const heading = buildHeading(f);
+  const canonical = buildCanonical(f);
+
+  let title;
+  let description;
+  if (f.q) {
+    title = `Resultados para "${f.q}" — Tienda`;
+    description = `Perfumes de lujo que coinciden con "${f.q}". Envío express en Colombia, 100% auténticos.`;
+  } else if (f.brand !== 'Todos') {
+    title = `Perfumes ${f.brand} — Colección Oficial`;
+    description = `Descubre todos los perfumes ${f.brand} disponibles en ScentualBliss. Originales 100% con envío en 24-48h a toda Colombia.`;
+  } else if (f.type !== 'Todos') {
+    // productTypes ya incluyen "Perfumes" en su nombre → no anteponer
+    title = `${heading} — Catálogo Completo`;
+    description = `Explora nuestra selección de ${heading?.toLowerCase()}: las mejores fragancias con envío express en Colombia.`;
+  } else if (f.cat !== 'Todos') {
+    title = `Perfumes ${heading} — Familia Olfativa`;
+    description = `Fragancias ${heading?.toLowerCase()} cuidadosamente seleccionadas. Envío express en 24-48h en Colombia.`;
+  } else {
+    title = 'Tienda — Todos los Perfumes de Lujo';
+    description = 'Explora nuestra colección completa de fragancias exclusivas. Filtra por marca, familia olfativa y tipo. Envío gratis desde COP $350.000.';
+  }
+
+  // Páginas paginadas (?page=2+) no se indexan: apuntan canonical a la base
+  const noindex = f.page > 1;
+
+  return {
+    title,
+    description,
+    alternates: { canonical },
+    robots: noindex ? { index: false, follow: true } : undefined,
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      type: 'website',
+      siteName: SITE_NAME,
+      locale: SITE_LOCALE,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+    },
+  };
+}
+
 export default async function TiendaPage({ searchParams }) {
   const sp = await searchParams;
-  const cat = sp.cat || 'Todos';
-  const type = sp.type || 'Todos';
-  const sort = sp.sort || 'featured';
-  const brand = sp.brand || 'Todos';
-  const q = sp.q || '';
-  const page = Math.max(1, parseInt(sp.page || '1', 10) || 1);
+  const f = parseSearchParams(sp);
 
-  const filtered = filterAndSort({ cat, type, sort, brand, q });
-  const limit = page * PAGE_SIZE;
+  const filtered = filterAndSort(f);
+  const limit = f.page * PAGE_SIZE;
   const visible = filtered.slice(0, limit);
   const hasMore = filtered.length > visible.length;
 
-  const heading = brand !== 'Todos'
-    ? brand
-    : type !== 'Todos'
-      ? productTypes.find(t => t.id === type)?.name
-      : cat !== 'Todos'
-        ? collections.find(c => c.id === cat)?.name
-        : null;
+  const heading = buildHeading(f);
+  const canonical = buildCanonical(f);
 
   const activeFilters = [
-    type !== 'Todos' && { key: 'type', value: type, label: productTypes.find(t => t.id === type)?.name || type },
-    cat !== 'Todos' && { key: 'cat', value: cat, label: collections.find(c => c.id === cat)?.name || cat },
-    brand !== 'Todos' && { key: 'brand', value: brand, label: brand },
+    f.type !== 'Todos' && { key: 'type', value: f.type, label: productTypes.find(t => t.id === f.type)?.name || f.type },
+    f.cat !== 'Todos' && { key: 'cat', value: f.cat, label: collections.find(c => c.id === f.cat)?.name || f.cat },
+    f.brand !== 'Todos' && { key: 'brand', value: f.brand, label: f.brand },
   ].filter(Boolean);
 
+  // Breadcrumbs visuales + structured data
+  const breadcrumbItems = [
+    { name: 'Inicio', url: SITE_URL },
+    { name: 'Tienda', url: `${SITE_URL}/tienda` },
+    ...(heading ? [{ name: heading, url: canonical }] : []),
+  ];
+
+  // JSON-LD ItemList con productos visibles
+  const itemListSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: heading ? `${heading} — ScentualBliss` : 'Catálogo de Perfumes',
+    numberOfItems: filtered.length,
+    itemListElement: visible.map((p, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: `${SITE_URL}/perfume/${p.slug}`,
+      name: p.name,
+    })),
+  };
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((b, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: b.name,
+      item: b.url,
+    })),
+  };
+
   return (
-    <main style={{ minHeight: '80vh' }}>
+    <main id="main-content" style={{ minHeight: '80vh' }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+
       {/* Shop header */}
-      <div style={{ borderBottom: '1px solid rgba(26,22,16,.07)', padding: '52px 0 36px', background: '#F6F3EE' }}>
+      <div className="shop-header">
         <div className="container">
-          <p style={{ fontSize: '.7rem', letterSpacing: '.32em', textTransform: 'uppercase', color: 'var(--gold-dark)', marginBottom: 14, fontWeight: 600 }}>ScentualBliss · Tienda</p>
-          <h1 style={{ fontFamily: 'var(--font-serif)', fontWeight: 300, color: 'var(--white)', lineHeight: 1.1, fontSize: 'clamp(2.2rem, 5vw, 4rem)' }}>
+          <Breadcrumbs items={breadcrumbItems} />
+          <p className="shop-header-eyebrow">ScentualBliss · Tienda</p>
+          <h1 className="shop-header-title">
             {heading
-              ? brand !== 'Todos'
-                ? <em style={{ fontStyle: 'italic', color: 'var(--gold)' }}>{heading}</em>
+              ? f.brand !== 'Todos'
+                ? <em>{heading}</em>
                 : heading.startsWith('Perfumes')
-                  ? <em style={{ fontStyle: 'italic' }}>{heading}</em>
-                  : <>Perfumes <em style={{ fontStyle: 'italic', color: 'var(--gold)' }}>{heading}</em></>
-              : <>La <em style={{ fontStyle: 'italic', color: 'var(--gold)' }}>Colección</em></>}
+                  ? <em>{heading}</em>
+                  : <>Perfumes <em>{heading}</em></>
+              : <>La <em>Colección</em></>}
           </h1>
-          <p style={{ color: 'var(--gray-light)', fontSize: '.9rem', marginTop: 8, letterSpacing: '.04em' }}>{filtered.length} fragancias</p>
+          <p className="shop-header-count">{filtered.length} fragancias</p>
         </div>
       </div>
 
-      <div className="container" style={{ padding: '36px 24px' }}>
+      <div className="container shop-body">
         <ShopFilters
-          cat={cat}
-          type={type}
-          sort={sort}
-          brand={brand}
-          q={q}
+          cat={f.cat}
+          type={f.type}
+          sort={f.sort}
+          brand={f.brand}
+          q={f.q}
           typeCats={typeCats}
           aromaCats={aromaCats}
           allBrands={allBrands}
@@ -114,17 +225,19 @@ export default async function TiendaPage({ searchParams }) {
         />
 
         {filtered.length === 0 ? (
-          <ShopEmptyState hasFilters={activeFilters.length > 0 || !!q} />
+          <ShopEmptyState hasFilters={activeFilters.length > 0 || !!f.q} />
         ) : (
           <>
             <div className="grid-4">
-              {visible.map(p => <ProductCard key={p.id} product={p} />)}
+              {visible.map((p, i) => (
+                <ProductCard key={p.id} product={p} priority={i < 4} />
+              ))}
             </div>
             {hasMore && (
               <ShopLoadMore
                 shown={visible.length}
                 total={filtered.length}
-                nextPage={page + 1}
+                nextPage={f.page + 1}
               />
             )}
           </>
