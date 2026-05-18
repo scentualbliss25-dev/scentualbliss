@@ -1,22 +1,29 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ShoppingBag, Heart, Eye } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cartStore';
 import { useWishlistStore } from '@/lib/store/wishlistStore';
+import { useQuickViewStore } from '@/lib/store/quickViewStore';
 import { getImagePath } from '@/lib/products';
 import { formatCOP } from '@/lib/format';
 import BrandLogo from '@/components/ui/BrandLogo';
 import toast from 'react-hot-toast';
 
+const PLACEHOLDER = '/img/placeholder-perfume.webp';
+const CARD_SIZES = '(max-width: 640px) 50vw, (max-width: 900px) 50vw, (max-width: 1024px) 33vw, 25vw';
+
 const TOAST = { style: { background: '#1A1610', color: '#F6F3EE', border: '1px solid rgba(184,144,92,.3)', fontFamily: 'DM Sans, sans-serif' }, iconTheme: { primary: '#B8905C', secondary: '#1A1610' } };
 
-export default function ProductCard({ product, onQuickView }) {
+export default function ProductCard({ product }) {
   const [hovered, setHovered] = useState(false);
   const hasRealImages = product.images?.length && !product.images[0]?.includes('placeholder');
-  const img = hasRealImages ? product.images[0] : getImagePath(product);
+  const initialImg = hasRealImages ? product.images[0] : getImagePath(product);
+  const [imgSrc, setImgSrc] = useState(initialImg);
   const { addItem } = useCartStore();
   const { items: wishlistItems, toggle: toggleWishlist } = useWishlistStore();
+  const openQuickView = useQuickViewStore((s) => s.open);
   const wishlisted = wishlistItems.some(i => i.id === product.id);
 
   const hasPrice = product.price > 0;
@@ -42,10 +49,13 @@ export default function ProductCard({ product, onQuickView }) {
       >
         {/* Image */}
         <div className="product-card-img-wrap" style={{ aspectRatio: '3/4' }}>
-          <img
-            src={img}
+          <Image
+            src={imgSrc}
             alt={product.name}
-            onError={e => { e.currentTarget.src = '/img/placeholder-perfume.webp'; }}
+            fill
+            sizes={CARD_SIZES}
+            style={{ objectFit: 'cover' }}
+            onError={() => { if (imgSrc !== PLACEHOLDER) setImgSrc(PLACEHOLDER); }}
           />
 
           {/* Badges */}
@@ -67,9 +77,10 @@ export default function ProductCard({ product, onQuickView }) {
             className={`product-card-wishlist ${hovered ? 'is-hover' : ''}`}
             onClick={e => { e.preventDefault(); e.stopPropagation(); toggleWishlist(product); }}
             aria-label={wishlisted ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+            aria-pressed={wishlisted}
             style={{
-              position: 'absolute', top: 12, right: 12, zIndex: 2,
-              width: 36, height: 36, borderRadius: '50%',
+              position: 'absolute', top: 10, right: 10, zIndex: 2,
+              width: 44, height: 44, borderRadius: '50%',
               background: 'rgba(246,243,238,.85)', backdropFilter: 'blur(8px)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               color: wishlisted ? '#C04A5C' : 'var(--gray)',
@@ -77,7 +88,7 @@ export default function ProductCard({ product, onQuickView }) {
               transition: 'opacity .25s',
             }}
           >
-            <Heart size={15} fill={wishlisted ? 'currentColor' : 'none'} />
+            <Heart size={16} fill={wishlisted ? 'currentColor' : 'none'} />
           </button>
 
           {/* Hover overlay + CTA */}
@@ -100,19 +111,18 @@ export default function ProductCard({ product, onQuickView }) {
               >
                 <ShoppingBag size={13} /> {hasPrice ? 'Agregar' : 'Consultar'}
               </button>
-              {onQuickView && (
-                <button
-                  onClick={e => { e.preventDefault(); e.stopPropagation(); onQuickView(product); }}
-                  style={{
-                    width: 40, background: 'rgba(246,243,238,.12)',
-                    border: '1px solid rgba(246,243,238,.25)',
-                    color: '#FAF8F3', cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}
-                >
-                  <Eye size={14} />
-                </button>
-              )}
+              <button
+                onClick={e => { e.preventDefault(); e.stopPropagation(); openQuickView(product); }}
+                aria-label={`Vista rápida de ${product.name}`}
+                style={{
+                  width: 44, minHeight: 44, background: 'rgba(246,243,238,.12)',
+                  border: '1px solid rgba(246,243,238,.25)',
+                  color: '#FAF8F3', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}
+              >
+                <Eye size={16} />
+              </button>
             </div>
           </div>
         </div>
@@ -130,9 +140,13 @@ export default function ProductCard({ product, onQuickView }) {
             <span style={{ fontSize: '.95rem', fontWeight: 500, color: product.price > 0 ? 'var(--white)' : 'var(--gray)', letterSpacing: '.02em' }}>
               {product.price > 0 ? formatCOP(product.price) : 'Consultar precio'}
             </span>
-            <div style={{ display: 'flex', gap: 2 }}>
+            <div
+              style={{ display: 'flex', gap: 2 }}
+              role="img"
+              aria-label={`${Math.round(product.rating)} de 5 estrellas`}
+            >
               {[1,2,3,4,5].map(s => (
-                <svg key={s} width="9" height="9" viewBox="0 0 10 10" fill={s <= Math.round(product.rating) ? 'var(--gold)' : 'none'} stroke="var(--gold)" strokeWidth="1.2">
+                <svg key={s} width="9" height="9" viewBox="0 0 10 10" fill={s <= Math.round(product.rating) ? 'var(--gold)' : 'none'} stroke="var(--gold)" strokeWidth="1.2" aria-hidden="true">
                   <polygon points="5,1 6.2,3.8 9.5,4.2 7.2,6.4 7.9,9.7 5,8.1 2.1,9.7 2.8,6.4 0.5,4.2 3.8,3.8" />
                 </svg>
               ))}
