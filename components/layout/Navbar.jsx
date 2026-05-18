@@ -6,6 +6,7 @@ import { ShoppingBag, Search, Menu, X, Heart, ChevronDown } from 'lucide-react';
 import { useCartStore, useCartCount } from '@/lib/store/cartStore';
 import { useWishlistStore } from '@/lib/store/wishlistStore';
 import { collections, products } from '@/lib/products';
+import BrandLogo from '@/components/ui/BrandLogo';
 
 // Marcas únicas ordenadas alfabéticamente
 const allBrands = [...new Set(products.map(p => p.brand))].sort((a, b) =>
@@ -47,7 +48,7 @@ export default function Navbar() {
   );
 }
 
-function BrandLogo() {
+function HouseLogo() {
   return (
     <Link href="/" className="sb-nav-logo" aria-label="ScentualBliss inicio">
       <img
@@ -66,7 +67,7 @@ function NavbarShell() {
     <header className="sb-nav">
       <div className="container sb-nav-inner">
         <div />
-        <BrandLogo />
+        <HouseLogo />
         <div />
       </div>
       <NavStyles />
@@ -204,7 +205,7 @@ function NavbarInner() {
                               href={sub.to}
                               className={`sb-dropdown-brand ${subActive ? 'active' : ''}`}
                             >
-                              {sub.label}
+                              <BrandLogo brand={sub.label} size="sm" />
                             </Link>
                           );
                         }
@@ -230,7 +231,7 @@ function NavbarInner() {
           })}
         </nav>
 
-        <BrandLogo />
+        <HouseLogo />
 
         <div className="sb-nav-actions">
           <button

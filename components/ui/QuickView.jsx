@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useCartStore } from '@/lib/store/cartStore';
 import { formatCOP } from '@/lib/format';
 import { getImagePath } from '@/lib/products';
+import BrandLogo from '@/components/ui/BrandLogo';
 import toast from 'react-hot-toast';
 
 export default function QuickView({ product, isOpen, onClose }) {
@@ -117,7 +118,11 @@ export default function QuickView({ product, isOpen, onClose }) {
 
                 {/* Contenido scrollable */}
                 <div style={{ flex: 1, overflowY: 'auto', padding: '28px 24px 16px' }}>
-                  <p style={{ fontSize: '.68rem', color: 'var(--gold)', fontWeight: 600, letterSpacing: '.14em', textTransform: 'uppercase', marginBottom: '6px' }}>{product.brand} · {product.gender}</p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: '6px', color: 'var(--gold)' }}>
+                    <BrandLogo brand={product.brand} size="sm" />
+                    <span style={{ opacity: .5 }}>·</span>
+                    <span style={{ fontSize: '.68rem', fontWeight: 600, letterSpacing: '.14em', textTransform: 'uppercase' }}>{product.gender}</span>
+                  </div>
                   <h2 style={{ fontFamily: 'var(--font-serif)', fontWeight: 300, color: 'var(--white)', fontSize: '1.65rem', lineHeight: 1.2, marginBottom: '10px' }}>{product.name}</h2>
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>

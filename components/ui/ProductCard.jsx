@@ -6,6 +6,7 @@ import { useCartStore } from '@/lib/store/cartStore';
 import { useWishlistStore } from '@/lib/store/wishlistStore';
 import { getImagePath } from '@/lib/products';
 import { formatCOP } from '@/lib/format';
+import BrandLogo from '@/components/ui/BrandLogo';
 import toast from 'react-hot-toast';
 
 const TOAST = { style: { background: '#1A1610', color: '#F6F3EE', border: '1px solid rgba(184,144,92,.3)', fontFamily: 'DM Sans, sans-serif' }, iconTheme: { primary: '#B8905C', secondary: '#1A1610' } };
@@ -118,9 +119,9 @@ export default function ProductCard({ product, onQuickView }) {
 
         {/* Info */}
         <div className="product-card-info">
-          <p style={{ fontSize: '.62rem', letterSpacing: '.22em', color: 'var(--gold)', textTransform: 'uppercase', fontWeight: 500, marginBottom: 5 }}>
-            {product.brand}
-          </p>
+          <div style={{ color: 'var(--gold)', marginBottom: 5, minHeight: 18 }}>
+            <BrandLogo brand={product.brand} size="sm" />
+          </div>
           <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.05rem', color: 'var(--white)', fontWeight: 400, lineHeight: 1.3, marginBottom: 8 }}>
             {product.name}
             {product.type && <em style={{ fontSize: '.85rem', color: 'var(--gray)', fontStyle: 'italic', marginLeft: 6, fontWeight: 300 }}>{product.type}</em>}

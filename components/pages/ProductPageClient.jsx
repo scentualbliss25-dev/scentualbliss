@@ -7,6 +7,7 @@ import { useWishlistStore } from '@/lib/store/wishlistStore';
 import { Reveal, StaggerContainer, StaggerItem } from '@/components/ui/ScrollAnimations';
 import ProductCard from '@/components/ui/ProductCard';
 import ProductReviews from '@/components/ui/ProductReviews';
+import BrandLogo from '@/components/ui/BrandLogo';
 import { products, getImagePath } from '@/lib/products';
 import { formatCOP } from '@/lib/format';
 import toast from 'react-hot-toast';
@@ -250,7 +251,9 @@ export default function ProductPageClient({ product, resolvedImages }) {
           <div>
             {/* Brand + Category */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '.72rem', color: 'var(--gold)', fontWeight: 700, letterSpacing: '.15em', textTransform: 'uppercase' }}>{product.brand}</span>
+              <span style={{ color: 'var(--gold)' }}>
+                <BrandLogo brand={product.brand} size="md" />
+              </span>
               <span style={{ color: 'var(--dark-4)' }}>·</span>
               <span style={{ fontSize: '.72rem', color: 'var(--gray)', letterSpacing: '.08em', textTransform: 'uppercase' }}>{product.gender}</span>
               {scentCat && (
