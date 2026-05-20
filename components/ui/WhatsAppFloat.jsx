@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 const PHONE = '573169376436'; // +57 (Colombia) + 3169376436
 const DEFAULT_MESSAGE = 'Hola! Me interesa un perfume de ScentualBliss 🌸';
@@ -7,6 +8,9 @@ const DEFAULT_MESSAGE = 'Hola! Me interesa un perfume de ScentualBliss 🌸';
 export default function WhatsAppFloat() {
   const [showTooltip, setShowTooltip] = useState(false);
   const [bumped, setBumped] = useState(false);
+  const pathname = usePathname();
+  // En página de detalle (mobile) sube el botón para no chocar con el CTA sticky
+  const isPDP = pathname?.startsWith('/perfume/');
 
   // Animacion de "rebote" cada 8s para llamar la atencion sutilmente
   useEffect(() => {
@@ -22,9 +26,9 @@ export default function WhatsAppFloat() {
   return (
     <>
       <div
+        className={`wa-float-wrap${isPDP ? ' wa-float-wrap--pdp' : ''}`}
         style={{
           position: 'fixed',
-          bottom: '24px',
           left: '24px',
           zIndex: 250,
           display: 'flex',

@@ -539,7 +539,7 @@ export default function ProductPageClient({ product, resolvedImages }) {
         <div className="mobile-sticky-cta-info">
           <p className="mobile-sticky-cta-size">Talla {selSize}</p>
           <p className="mobile-sticky-cta-price">
-            {displayPrice > 0 ? formatCOP(displayPrice) : 'Consultar precio'}
+            {displayPrice > 0 ? formatCOP(displayPrice) : 'Consultar'}
           </p>
         </div>
         <button
@@ -548,7 +548,8 @@ export default function ProductPageClient({ product, resolvedImages }) {
           className="btn btn-primary mobile-sticky-cta-btn"
           aria-label={displayPrice > 0 ? `Agregar ${product.name} al carrito` : 'Consultar precio'}
         >
-          <ShoppingBag size={16} /> {displayPrice > 0 ? 'Agregar al carrito' : 'Consultar'}
+          <ShoppingBag size={16} aria-hidden="true" />
+          <span>{displayPrice > 0 ? 'Agregar' : 'Consultar'}</span>
         </button>
       </div>
 

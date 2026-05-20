@@ -1,9 +1,12 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { ArrowUp } from 'lucide-react';
 
 export default function ScrollToTop() {
   const [visible, setVisible] = useState(false);
+  const pathname = usePathname();
+  const isPDP = pathname?.startsWith('/perfume/');
 
   useEffect(() => {
     const onScroll = () => setVisible(window.scrollY > 400);
@@ -20,9 +23,9 @@ export default function ScrollToTop() {
     <button
       onClick={handleClick}
       aria-label="Volver arriba"
+      className={`scroll-top-btn${isPDP ? ' scroll-top-btn--pdp' : ''}`}
       style={{
         position: 'fixed',
-        bottom: '24px',
         right: '24px',
         zIndex: 250,
         width: '52px',
