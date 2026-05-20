@@ -175,13 +175,19 @@ export default function ProductReviews({ productSlug, initialRating, initialCoun
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 24, marginBottom: 40 }}>
         <div>
           <p style={{ fontSize: '.62rem', letterSpacing: '.28em', textTransform: 'uppercase', color: 'var(--gold)', fontWeight: 500, marginBottom: 12 }}>Reseñas</p>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
-            <span style={{ fontFamily: 'var(--font-serif)', fontSize: '3.5rem', fontWeight: 300, color: 'var(--white)', lineHeight: 1 }}>{avgRating.toFixed(1)}</span>
-            <div>
-              <StarRating value={Math.round(avgRating)} size={16} />
-              <p style={{ fontSize: '.78rem', color: 'var(--gray)', marginTop: 4 }}>{ratingCount} reseñas</p>
+          {reviews.length > 0 ? (
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+              <span style={{ fontFamily: 'var(--font-serif)', fontSize: '3.5rem', fontWeight: 300, color: 'var(--white)', lineHeight: 1 }}>{avgRating.toFixed(1)}</span>
+              <div>
+                <StarRating value={Math.round(avgRating)} size={16} />
+                <p style={{ fontSize: '.78rem', color: 'var(--gray)', marginTop: 4 }}>{ratingCount} {ratingCount === 1 ? 'reseña' : 'reseñas'}</p>
+              </div>
             </div>
-          </div>
+          ) : (
+            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 300, color: 'var(--gray-light)', fontStyle: 'italic' }}>
+              Sé el primero en compartir tu experiencia.
+            </p>
+          )}
         </div>
 
         {/* Distribution bars */}

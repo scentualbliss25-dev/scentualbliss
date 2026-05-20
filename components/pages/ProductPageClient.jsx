@@ -80,13 +80,16 @@ export default function ProductPageClient({ product, resolvedImages }) {
       .catch(() => {});
   }, [product?.slug]);
 
-  const reviewCount = realReviews.length || product?.reviews || 0;
+  // Sin fallback al rating/reviews hardcoded de lib/products.js: si no hay
+  // reseñas reales en Supabase, mostramos 0 y la UI se adapta (oculta el
+  // bloque de estrellas y muestra "Aún sin reseñas").
+  const reviewCount = realReviews.length;
   const avgRating = realReviews.length
     ? (realReviews.reduce((s, r) => s + r.rating, 0) / realReviews.length).toFixed(1)
-    : product?.rating || 0;
+    : 0;
   const recommendPct = realReviews.length
     ? Math.round(realReviews.filter(r => r.rating >= 4).length / realReviews.length * 100)
-    : 98;
+    : null;
 
   if (!product) return (
     <div style={{ textAlign: 'center', padding: '120px 24px' }}>
@@ -228,23 +231,25 @@ export default function ProductPageClient({ product, resolvedImages }) {
                 ))}
               </div>
             )}
-            {/* Social Proof Below Image */}
-            <div style={{ marginTop: '20px', display: 'flex', gap: '20px', padding: '16px', background: 'var(--dark-2)', borderRadius: '12px', border: '1px solid var(--dark-4)' }}>
-              <div style={{ textAlign: 'center', flex: 1 }}>
-                <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', color: 'var(--gold)', fontWeight: 600 }}>{reviewCount}{reviewCount > 0 ? '+' : ''}</p>
-                <p style={{ fontSize: '.72rem', color: 'var(--gray)', letterSpacing: '.06em', textTransform: 'uppercase' }}>Reseñas</p>
+            {/* Social Proof Below Image — solo si hay reseñas reales */}
+            {realReviews.length > 0 && (
+              <div style={{ marginTop: '20px', display: 'flex', gap: '20px', padding: '16px', background: 'var(--dark-2)', borderRadius: '12px', border: '1px solid var(--dark-4)' }}>
+                <div style={{ textAlign: 'center', flex: 1 }}>
+                  <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', color: 'var(--gold)', fontWeight: 600 }}>{reviewCount}</p>
+                  <p style={{ fontSize: '.72rem', color: 'var(--gray)', letterSpacing: '.06em', textTransform: 'uppercase' }}>{reviewCount === 1 ? 'Reseña' : 'Reseñas'}</p>
+                </div>
+                <div style={{ width: 1, background: 'var(--dark-4)' }} />
+                <div style={{ textAlign: 'center', flex: 1 }}>
+                  <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', color: 'var(--gold)', fontWeight: 600 }}>{avgRating}★</p>
+                  <p style={{ fontSize: '.72rem', color: 'var(--gray)', letterSpacing: '.06em', textTransform: 'uppercase' }}>Valoración</p>
+                </div>
+                <div style={{ width: 1, background: 'var(--dark-4)' }} />
+                <div style={{ textAlign: 'center', flex: 1 }}>
+                  <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', color: 'var(--gold)', fontWeight: 600 }}>{recommendPct}%</p>
+                  <p style={{ fontSize: '.72rem', color: 'var(--gray)', letterSpacing: '.06em', textTransform: 'uppercase' }}>Recomiendan</p>
+                </div>
               </div>
-              <div style={{ width: 1, background: 'var(--dark-4)' }} />
-              <div style={{ textAlign: 'center', flex: 1 }}>
-                <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', color: 'var(--gold)', fontWeight: 600 }}>{avgRating}★</p>
-                <p style={{ fontSize: '.72rem', color: 'var(--gray)', letterSpacing: '.06em', textTransform: 'uppercase' }}>Valoración</p>
-              </div>
-              <div style={{ width: 1, background: 'var(--dark-4)' }} />
-              <div style={{ textAlign: 'center', flex: 1 }}>
-                <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', color: 'var(--gold)', fontWeight: 600 }}>{recommendPct}%</p>
-                <p style={{ fontSize: '.72rem', color: 'var(--gray)', letterSpacing: '.06em', textTransform: 'uppercase' }}>Recomiendan</p>
-              </div>
-            </div>
+            )}
           </div>
 
           {/* RIGHT: PURCHASE PANEL */}
