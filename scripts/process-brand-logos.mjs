@@ -96,7 +96,8 @@ async function main() {
       continue;
     }
 
-    const slug = FILE_TO_SLUG[base];
+    // Lookup case-insensitive: tolera filenames como 'versace', 'Versace' o 'VERSACE'
+    const slug = FILE_TO_SLUG[base] || FILE_TO_SLUG[Object.keys(FILE_TO_SLUG).find(k => k.toLowerCase() === base.toLowerCase()) || ''];
     if (!slug) {
       orphans.push(file);
       continue;
