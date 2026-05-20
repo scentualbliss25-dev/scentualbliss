@@ -535,28 +535,21 @@ export default function ProductPageClient({ product, resolvedImages }) {
       </div>
 
       {/* STICKY MOBILE CTA */}
-      <div style={{
-        position: 'fixed', bottom: 0, left: 0, right: 0,
-        background: 'rgba(17,17,17,.97)', backdropFilter: 'blur(20px)',
-        borderTop: '1px solid rgba(201,169,110,.2)',
-        padding: '12px 20px',
-        display: 'none',
-        zIndex: 100,
-      }} className="mobile-sticky-cta">
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-          <div style={{ flex: 1 }}>
-            <p style={{ fontFamily: 'var(--font-serif)', color: 'var(--white)', fontSize: '1rem', marginBottom: '2px' }}>{product.name}</p>
-            <p style={{ color: 'var(--gold)', fontWeight: 700, fontSize: '1.1rem' }}>{displayPrice > 0 ? formatCOP(displayPrice) : 'Consultar precio'}</p>
-          </div>
-          <button
-            onClick={handleAdd}
-            disabled={displayPrice <= 0}
-            className="btn btn-primary"
-            style={{ flexShrink: 0, padding: '12px 24px', opacity: displayPrice <= 0 ? 0.55 : 1, cursor: displayPrice <= 0 ? 'not-allowed' : 'pointer' }}
-          >
-            <ShoppingBag size={16} /> {displayPrice > 0 ? 'Agregar' : 'Consultar'}
-          </button>
+      <div className="mobile-sticky-cta" role="region" aria-label="Acción de compra">
+        <div className="mobile-sticky-cta-info">
+          <p className="mobile-sticky-cta-size">Talla {selSize}</p>
+          <p className="mobile-sticky-cta-price">
+            {displayPrice > 0 ? formatCOP(displayPrice) : 'Consultar precio'}
+          </p>
         </div>
+        <button
+          onClick={handleAdd}
+          disabled={displayPrice <= 0}
+          className="btn btn-primary mobile-sticky-cta-btn"
+          aria-label={displayPrice > 0 ? `Agregar ${product.name} al carrito` : 'Consultar precio'}
+        >
+          <ShoppingBag size={16} /> {displayPrice > 0 ? 'Agregar al carrito' : 'Consultar'}
+        </button>
       </div>
 
       <style>{`
@@ -564,8 +557,6 @@ export default function ProductPageClient({ product, resolvedImages }) {
           main > .container > div:nth-child(2) { grid-template-columns: 1fr !important; gap: 32px !important; }
           main > .container > div:nth-child(2) > div:first-child { position: static !important; }
           .grid-3 { grid-template-columns: 1fr !important; }
-          .mobile-sticky-cta { display: block !important; }
-          main { padding-bottom: 80px; }
         }
         @media(max-width:640px) {
           .grid-4 { grid-template-columns: repeat(2,1fr) !important; }

@@ -66,6 +66,7 @@ export default function WhatsAppFloat() {
 
         {/* Botón */}
         <a
+          className="wa-float"
           href={href}
           target="_blank"
           rel="noopener noreferrer"

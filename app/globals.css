@@ -598,6 +598,49 @@ body::after {
   .shop-filters-sticky::-webkit-scrollbar { width: 0; }
 }
 
+/* CTA fija al fondo en mobile (página de detalle del producto). Mantiene
+   el "Agregar al carrito" siempre accesible mientras el usuario hace
+   scroll por descripción, notas, reseñas, etc. Oculta en desktop. */
+.mobile-sticky-cta { display: none; }
+@media (max-width: 768px) {
+  .mobile-sticky-cta {
+    display: flex;
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 90;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    background: var(--cream-soft);
+    border-top: 1px solid rgba(var(--ink-line), .1);
+    box-shadow: 0 -10px 30px -18px rgba(var(--ink-line), .2);
+  }
+  .mobile-sticky-cta-info { flex: 1; min-width: 0; }
+  .mobile-sticky-cta-size {
+    font-size: .65rem;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--gray-light);
+    margin-bottom: 2px;
+  }
+  .mobile-sticky-cta-price {
+    font-family: var(--font-serif);
+    color: var(--gold-dark);
+    font-weight: 600;
+    font-size: 1.15rem;
+    line-height: 1;
+  }
+  .mobile-sticky-cta-btn {
+    flex-shrink: 0;
+    min-height: 48px;
+    padding: 12px 22px;
+  }
+  /* Reservar espacio en el body para que el CTA no tape el contenido final */
+  body:has(.mobile-sticky-cta) main { padding-bottom: 96px; }
+  /* Subir el botón de WhatsApp para no solaparse con el CTA */
+  body:has(.mobile-sticky-cta) .wa-float { bottom: calc(82px + env(safe-area-inset-bottom)) !important; }
+}
+
 /* "Cargar más" como celda full-width al final del grid de productos */
 .grid-load-more {
   grid-column: 1 / -1;
