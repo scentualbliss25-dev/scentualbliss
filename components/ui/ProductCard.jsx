@@ -8,7 +8,6 @@ import { useWishlistStore } from '@/lib/store/wishlistStore';
 import { useQuickViewStore } from '@/lib/store/quickViewStore';
 import { getImagePath } from '@/lib/products';
 import { formatCOP } from '@/lib/format';
-import BrandLogo from '@/components/ui/BrandLogo';
 import toast from 'react-hot-toast';
 
 const PLACEHOLDER = '/img/placeholder-perfume.webp';
@@ -131,9 +130,9 @@ export default function ProductCard({ product, priority = false }) {
 
         {/* Info */}
         <div className="product-card-info">
-          <div style={{ color: 'var(--gold)', marginBottom: 8, height: 32, display: 'flex', alignItems: 'center' }}>
-            <BrandLogo brand={product.brand} size="sm" />
-          </div>
+          <p style={{ fontSize: '.66rem', letterSpacing: '.22em', color: 'var(--gold-dark)', textTransform: 'uppercase', fontWeight: 600, marginBottom: 6 }}>
+            {product.brand}
+          </p>
           <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.05rem', color: 'var(--white)', fontWeight: 400, lineHeight: 1.3, marginBottom: 8 }}>
             {product.name}
             {product.type && <em style={{ fontSize: '.85rem', color: 'var(--gray)', fontStyle: 'italic', marginLeft: 6, fontWeight: 300 }}>{product.type}</em>}
