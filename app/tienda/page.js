@@ -194,6 +194,7 @@ export default async function TiendaPage({ searchParams }) {
             aromaCats={aromaCats}
             allBrands={allBrands}
             activeFilters={activeFilters}
+            totalResults={filtered.length}
           />
         </div>
 
