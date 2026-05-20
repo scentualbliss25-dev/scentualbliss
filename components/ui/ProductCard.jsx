@@ -131,7 +131,7 @@ export default function ProductCard({ product, priority = false }) {
 
         {/* Info */}
         <div className="product-card-info">
-          <div style={{ color: 'var(--gold)', marginBottom: 6, minHeight: 28, display: 'flex', alignItems: 'center' }}>
+          <div style={{ color: 'var(--gold)', marginBottom: 8, height: 32, display: 'flex', alignItems: 'center' }}>
             <BrandLogo brand={product.brand} size="sm" />
           </div>
           <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.05rem', color: 'var(--white)', fontWeight: 400, lineHeight: 1.3, marginBottom: 8 }}>

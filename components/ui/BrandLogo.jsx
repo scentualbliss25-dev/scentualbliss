@@ -35,12 +35,23 @@ export default function BrandLogo({ brand, size = 'md', variant = 'auto', classN
     else setImgFailed(true);
   };
 
+  // Los archivos en /img/brands están normalizados a 360×120 (ratio 3:1)
+  // por scripts/normalize-brand-logos.mjs. Manteniendo el mismo ratio aquí,
+  // todos los logos ocupan exactamente el mismo bounding box visual.
   const sizes = {
-    sm: { fontSize: '.85rem', height: 28 },
-    md: { fontSize: '1.1rem', height: 40 },
-    lg: { fontSize: '1.5rem', height: 56 },
+    sm: { fontSize: '.85rem', width: 96,  height: 32 },
+    md: { fontSize: '1.1rem', width: 144, height: 48 },
+    lg: { fontSize: '1.5rem', width: 210, height: 70 },
   };
   const s = sizes[size] || sizes.md;
+
+  const imgStyle = {
+    width: s.width,
+    height: s.height,
+    objectFit: 'contain',
+    objectPosition: 'left center',
+    maxWidth: '100%',
+  };
 
   if (showImage && variant === 'image') {
     return (
@@ -48,7 +59,7 @@ export default function BrandLogo({ brand, size = 'md', variant = 'auto', classN
         src={imgSrc}
         alt={brand}
         className={`brand-logo brand-logo-img ${className}`}
-        style={{ height: s.height, width: 'auto', maxWidth: '100%', objectFit: 'contain' }}
+        style={imgStyle}
         onError={handleError}
       />
     );
@@ -63,7 +74,7 @@ export default function BrandLogo({ brand, size = 'md', variant = 'auto', classN
           src={imgSrc}
           alt={brand}
           className={`brand-logo brand-logo-img ${className}`}
-          style={{ height: s.height, width: 'auto', maxWidth: '100%', objectFit: 'contain', display: imgFailed ? 'none' : 'block' }}
+          style={{ ...imgStyle, display: imgFailed ? 'none' : 'block' }}
           onError={handleError}
         />
       )}
