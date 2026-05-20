@@ -53,3 +53,6 @@ ScentualBliss*Homepage*
 # Tokens y secretos
 token*.txt
 *.token
+
+# Originales de logos de marca (procesados a public/img/brands/ vía script)
+public/img/brands-original/
