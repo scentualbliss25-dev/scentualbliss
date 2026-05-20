@@ -6,7 +6,6 @@ import { ShoppingBag, Search, Menu, X, Heart, ChevronDown } from 'lucide-react';
 import { useCartStore, useCartCount } from '@/lib/store/cartStore';
 import { useWishlistStore } from '@/lib/store/wishlistStore';
 import { collections, products } from '@/lib/products';
-import BrandLogo from '@/components/ui/BrandLogo';
 
 // Marcas únicas ordenadas alfabéticamente
 const allBrands = [...new Set(products.map(p => p.brand))].sort((a, b) =>
@@ -205,7 +204,7 @@ function NavbarInner() {
                               href={sub.to}
                               className={`sb-dropdown-brand ${subActive ? 'active' : ''}`}
                             >
-                              <BrandLogo brand={sub.label} size="sm" />
+                              {sub.label}
                             </Link>
                           );
                         }
