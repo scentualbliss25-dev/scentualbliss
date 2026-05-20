@@ -278,15 +278,22 @@ export default function ProductPageClient({ product, resolvedImages }) {
               </p>
             )}
 
-            {/* Rating */}
+            {/* Rating real (Supabase). Si aún no hay reseñas, no mostramos
+                ninguna estrella ni promedio para no falsear señal de calidad. */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-              <div style={{ display: 'flex', gap: '2px' }}>
-                {[1,2,3,4,5].map(s => (
-                  <Star key={s} size={15} style={{ color: 'var(--gold)' }} fill={s <= Math.round(Number(avgRating)) ? 'currentColor' : 'none'} />
-                ))}
-              </div>
-              <span style={{ fontWeight: 700, color: 'var(--white)', fontSize: '.9rem' }}>{avgRating}</span>
-              <span style={{ color: 'var(--gray)', fontSize: '.85rem' }}>({reviewCount > 0 ? `${reviewCount} reseñas` : 'Sé el primero en opinar'})</span>
+              {realReviews.length > 0 ? (
+                <>
+                  <div style={{ display: 'flex', gap: '2px' }}>
+                    {[1,2,3,4,5].map(s => (
+                      <Star key={s} size={15} style={{ color: 'var(--gold)' }} fill={s <= Math.round(Number(avgRating)) ? 'currentColor' : 'none'} />
+                    ))}
+                  </div>
+                  <span style={{ fontWeight: 700, color: 'var(--white)', fontSize: '.9rem' }}>{avgRating}</span>
+                  <span style={{ color: 'var(--gray)', fontSize: '.85rem' }}>({reviewCount} {reviewCount === 1 ? 'reseña' : 'reseñas'})</span>
+                </>
+              ) : (
+                <span style={{ color: 'var(--gray)', fontSize: '.85rem' }}>Aún sin reseñas — sé el primero en opinar</span>
+              )}
               <span style={{ marginLeft: '4px', fontSize: '.75rem', color: 'var(--success)', fontWeight: 600 }}>✓ Auténtico</span>
             </div>
 

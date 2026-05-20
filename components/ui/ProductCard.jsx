@@ -137,22 +137,9 @@ export default function ProductCard({ product, priority = false }) {
             {product.name}
             {product.type && <em style={{ fontSize: '.85rem', color: 'var(--gray)', fontStyle: 'italic', marginLeft: 6, fontWeight: 300 }}>{product.type}</em>}
           </h3>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '.95rem', fontWeight: 500, color: product.price > 0 ? 'var(--white)' : 'var(--gray)', letterSpacing: '.02em' }}>
-              {product.price > 0 ? formatCOP(product.price) : 'Consultar precio'}
-            </span>
-            <div
-              style={{ display: 'flex', gap: 2 }}
-              role="img"
-              aria-label={`${Math.round(product.rating)} de 5 estrellas`}
-            >
-              {[1,2,3,4,5].map(s => (
-                <svg key={s} width="9" height="9" viewBox="0 0 10 10" fill={s <= Math.round(product.rating) ? 'var(--gold)' : 'none'} stroke="var(--gold)" strokeWidth="1.2" aria-hidden="true">
-                  <polygon points="5,1 6.2,3.8 9.5,4.2 7.2,6.4 7.9,9.7 5,8.1 2.1,9.7 2.8,6.4 0.5,4.2 3.8,3.8" />
-                </svg>
-              ))}
-            </div>
-          </div>
+          <span style={{ fontSize: '.95rem', fontWeight: 500, color: product.price > 0 ? 'var(--white)' : 'var(--gray)', letterSpacing: '.02em' }}>
+            {product.price > 0 ? formatCOP(product.price) : 'Consultar precio'}
+          </span>
         </div>
       </article>
     </Link>

@@ -144,13 +144,9 @@ export default async function ProductPage({ params }) {
         name: 'ScentualBliss',
       },
     },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: product.rating,
-      reviewCount: product.reviews,
-      bestRating: 5,
-      worstRating: 1,
-    },
+    // aggregateRating intencionalmente omitido: las reseñas reales viven
+    // en Supabase y se cargan en cliente; hasta que existan no falseamos
+    // señales para Google.
     additionalProperty: [
       { '@type': 'PropertyValue', name: 'Tipo', value: product.type || 'EDP' },
       { '@type': 'PropertyValue', name: 'Género', value: product.gender },

@@ -123,15 +123,7 @@ export default function QuickView({ product, isOpen, onClose }) {
                     <span style={{ opacity: .5 }}>·</span>
                     <span style={{ fontSize: '.68rem', fontWeight: 600, letterSpacing: '.14em', textTransform: 'uppercase' }}>{product.gender}</span>
                   </div>
-                  <h2 style={{ fontFamily: 'var(--font-serif)', fontWeight: 300, color: 'var(--white)', fontSize: '1.65rem', lineHeight: 1.2, marginBottom: '10px' }}>{product.name}</h2>
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                    <div style={{ display: 'flex', gap: '2px' }}>
-                      {[1,2,3,4,5].map(s => <Star key={s} size={13} style={{ color: 'var(--gold)' }} fill={s <= Math.round(product.rating) ? 'currentColor' : 'none'} />)}
-                    </div>
-                    <span style={{ fontSize: '.82rem', fontWeight: 600, color: 'var(--white)' }}>{product.rating}</span>
-                    <span style={{ color: 'var(--gray)', fontSize: '.78rem' }}>({product.reviews})</span>
-                  </div>
+                  <h2 style={{ fontFamily: 'var(--font-serif)', fontWeight: 300, color: 'var(--white)', fontSize: '1.65rem', lineHeight: 1.2, marginBottom: '14px' }}>{product.name}</h2>
 
                   <div style={{ marginBottom: '12px' }}>
                     {displayPrice > 0 ? (

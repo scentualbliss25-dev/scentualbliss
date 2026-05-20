@@ -532,7 +532,6 @@ function PCard({ product, onQuick }) {
             {oldPrice ? <span className="old">{COP(oldPrice)}</span> : null}
             {product.price > 0 ? COP(product.price) : <em style={{ fontSize: '.85em', color: 'var(--ink-3)' }}>Próximamente</em>}
           </span>
-          <Stars rating={product.rating || 5} />
         </div>
       </div>
     </Link>
