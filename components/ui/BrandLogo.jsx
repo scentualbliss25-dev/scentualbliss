@@ -36,9 +36,9 @@ export default function BrandLogo({ brand, size = 'md', variant = 'auto', classN
   };
 
   const sizes = {
-    sm: { fontSize: '.78rem', height: 18 },
-    md: { fontSize: '1rem',   height: 26 },
-    lg: { fontSize: '1.35rem', height: 36 },
+    sm: { fontSize: '.85rem', height: 28 },
+    md: { fontSize: '1.1rem', height: 40 },
+    lg: { fontSize: '1.5rem', height: 56 },
   };
   const s = sizes[size] || sizes.md;
 
