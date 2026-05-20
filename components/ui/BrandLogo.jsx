@@ -17,13 +17,23 @@ function brandSlug(brand) {
 //
 // Para agregar logos reales más adelante: colocar el archivo en
 // public/img/brands/tom-ford.svg (o .png) y aparecerá automáticamente.
+// Orden de intento por archivo: SVG primero (escalable), luego PNG / WebP
+const EXT_FALLBACKS = ['svg', 'png', 'webp'];
+
 export default function BrandLogo({ brand, size = 'md', variant = 'auto', className = '' }) {
+  const [extIdx, setExtIdx] = useState(0);
   const [imgFailed, setImgFailed] = useState(false);
   if (!brand) return null;
 
   const slug = brandSlug(brand);
   const showImage = variant !== 'text' && !imgFailed;
-  const imgSrc = `/img/brands/${slug}.svg`;
+  const imgSrc = `/img/brands/${slug}.${EXT_FALLBACKS[extIdx]}`;
+
+  const handleError = () => {
+    // Si SVG falla, probar PNG; si PNG falla, probar WebP; si todo falla, caer a texto.
+    if (extIdx < EXT_FALLBACKS.length - 1) setExtIdx(extIdx + 1);
+    else setImgFailed(true);
+  };
 
   const sizes = {
     sm: { fontSize: '.78rem', height: 18 },
@@ -39,7 +49,7 @@ export default function BrandLogo({ brand, size = 'md', variant = 'auto', classN
         alt={brand}
         className={`brand-logo brand-logo-img ${className}`}
         style={{ height: s.height, width: 'auto', maxWidth: '100%', objectFit: 'contain' }}
-        onError={() => setImgFailed(true)}
+        onError={handleError}
       />
     );
   }
@@ -54,7 +64,7 @@ export default function BrandLogo({ brand, size = 'md', variant = 'auto', classN
           alt={brand}
           className={`brand-logo brand-logo-img ${className}`}
           style={{ height: s.height, width: 'auto', maxWidth: '100%', objectFit: 'contain', display: imgFailed ? 'none' : 'block' }}
-          onError={() => setImgFailed(true)}
+          onError={handleError}
         />
       )}
       {(variant === 'text' || imgFailed) && (
