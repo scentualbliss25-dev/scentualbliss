@@ -573,6 +573,31 @@ body::after {
 .skeleton-card-img { aspect-ratio: 3/4; width: 100%; border-radius: 4px; }
 .skeleton-card { display: block; }
 
+/* Sticky filter bar — desktop only (mobile usará bottom sheet) */
+.shop-filters-sticky {
+  position: static;
+  background: var(--black);
+}
+@media (min-width: 768px) {
+  .shop-filters-sticky {
+    position: sticky;
+    top: var(--nav-h);
+    z-index: 30;
+    padding-top: 16px;
+    padding-bottom: 4px;
+    margin: 0 calc(-1 * var(--sp-6)) 8px;
+    padding-left: var(--sp-6);
+    padding-right: var(--sp-6);
+    box-shadow: 0 6px 20px -16px rgba(var(--ink-line), .18);
+    /* Si los filtros son muy altos en pantallas bajas, scroll interno */
+    max-height: calc(100vh - var(--nav-h) - 16px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  /* Ocultar scrollbar interna pero permitir scroll */
+  .shop-filters-sticky::-webkit-scrollbar { width: 0; }
+}
+
 /* "Cargar más" como celda full-width al final del grid de productos */
 .grid-load-more {
   grid-column: 1 / -1;

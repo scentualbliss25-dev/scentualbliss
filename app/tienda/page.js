@@ -183,17 +183,19 @@ export default async function TiendaPage({ searchParams }) {
       </div>
 
       <div className="container shop-body">
-        <ShopFilters
-          cat={f.cat}
-          type={f.type}
-          sort={f.sort}
-          brand={f.brand}
-          q={f.q}
-          typeCats={typeCats}
-          aromaCats={aromaCats}
-          allBrands={allBrands}
-          activeFilters={activeFilters}
-        />
+        <div className="shop-filters-sticky">
+          <ShopFilters
+            cat={f.cat}
+            type={f.type}
+            sort={f.sort}
+            brand={f.brand}
+            q={f.q}
+            typeCats={typeCats}
+            aromaCats={aromaCats}
+            allBrands={allBrands}
+            activeFilters={activeFilters}
+          />
+        </div>
 
         {filtered.length === 0 ? (
           <ShopEmptyState hasFilters={activeFilters.length > 0 || !!f.q} />
