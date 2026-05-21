@@ -261,9 +261,9 @@
 .sb-home .fx-marquee { position: relative; z-index: 3; border-top: 1px solid rgba(212,182,138,.12); border-bottom: 1px solid rgba(212,182,138,.12); padding: 18px 0; overflow: hidden; background: #FFFFFF; }
 .sb-home .fx-marquee-track { display: flex; gap: 56px; white-space: nowrap; animation: sb-scroll-x 50s linear infinite; width: max-content; }
 .sb-home .fx-marquee-item { display: inline-flex; align-items: center; gap: 12px; font-family: var(--display); font-style: italic; font-size: 1.4rem; color: rgba(212,182,138,.7); }
-.sb-home .fx-marquee-item img { animation: sb-spin-logo 8s linear infinite; }
+.sb-home .fx-marquee-item img { animation: sb-spin-logo 4s linear infinite !important; }
 .sb-home .fx-marquee-num { font-family: var(--mono); font-style: normal; font-size: .68rem; letter-spacing: .2em; color: rgba(212,182,138,.45); }
-@keyframes sb-spin-logo { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes sb-spin-logo { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 /* Responsive */
 @media (max-width: 1100px) {
 .sb-home .fx-container { gap: 24px; }
