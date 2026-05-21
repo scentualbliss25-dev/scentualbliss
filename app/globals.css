@@ -797,4 +797,11 @@ body::after {
   }
   .marquee-track { animation: none !important; }
   .hero-text-reveal > * { animation: none !important; opacity: 1 !important; transform: none !important; }
+  /* Excepciones: animaciones decorativas que deben seguir funcionando */
+  .sb-home .fx-marquee-track,
+  .sb-home .brand-logo-img,
+  .sb-announce-track {
+    animation-duration: revert !important;
+    animation-iteration-count: infinite !important;
+  }
 }
