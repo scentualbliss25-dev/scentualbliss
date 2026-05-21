@@ -201,30 +201,6 @@ function useCountdown(target) {
 // ============================================================
 function Hero() {
   const stageRef = useParallax();
-  const [tick, setTick] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const [activeIdx, setActiveIdx] = useState(null);
-  const activeTimerRef = useRef(null);
-
-  useEffect(() => {
-    if (paused) return undefined;
-    const id = setInterval(() => setTick(t => t + 1), 60);
-    return () => clearInterval(id);
-  }, [paused]);
-
-  // Limpiar timer al desmontar
-  useEffect(() => () => {
-    if (activeTimerRef.current) clearTimeout(activeTimerRef.current);
-  }, []);
-
-  // Al hacer clic en una nota: pasa al frente por 3.5s y luego vuelve a su sitio
-  const onNoteClick = (i) => {
-    setActiveIdx(i);
-    if (activeTimerRef.current) clearTimeout(activeTimerRef.current);
-    activeTimerRef.current = setTimeout(() => {
-      setActiveIdx((prev) => (prev === i ? null : prev));
-    }, 3500);
-  };
   // Producto destacado del hero. Cambialo de slug si querés rotar el destacado.
   const heroProduct = products.find(p => p.slug === 'montale-arabians-tonka');
   const heroRef = `MTL-${String(heroProduct?.id || 141).padStart(3, '0')}`;
@@ -295,11 +271,7 @@ function Hero() {
           </div>
         </div>
 
-        <div
-          className="fx-stage"
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
-        >
+        <div className="fx-stage">
           <div className="fx-stage-inner">
             <svg className="fx-rings" viewBox="0 0 600 600" aria-hidden="true">
               <defs>
@@ -320,40 +292,28 @@ function Hero() {
               })}
             </svg>
 
-            <div className="fx-halo" />
-            <div className="fx-beam" />
+            {/* Halo y beam removidos: el usuario quiere la botella sin efectos/glow detrás */}
 
             <div className="fx-bottle">
               <img
                 src={heroImg}
                 alt={`${heroProduct?.brand || ''} ${heroProduct?.name || HOUSE_PERFUME.name} ${heroProduct?.type || HOUSE_PERFUME.type}`}
               />
-              <div className="fx-bottle-shadow" />
             </div>
 
-            <div className={`fx-orbit ${paused ? 'is-paused' : ''}`} style={{ '--rot': `${tick * 0.12}deg` }}>
-              {NOTES_ORBIT.map((n, i) => {
-                const isActive = activeIdx === i;
-                return (
-                  <div
-                    key={i}
-                    className={`fx-note ${isActive ? 'is-active' : ''}`}
-                    style={{ '--angle': `${n.angle}deg`, animationDelay: `${n.delay}s` }}
-                  >
-                    <button
-                      type="button"
-                      className="fx-note-chip"
-                      style={{ transform: `rotate(${-tick * 0.12}deg)` }}
-                      onClick={() => onNoteClick(i)}
-                      aria-label={`Nota ${n.pos.toLowerCase()}: ${n.label}`}
-                    >
-                      <span className="fx-note-pos">{n.pos}</span>
-                      <span className="fx-note-label">{n.label}</span>
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
+            <ul className="fx-notes-list" aria-label="Pirámide olfativa">
+              {NOTES_ORBIT.map((n, i) => (
+                <li
+                  key={i}
+                  className="fx-note-row"
+                  style={{ animationDelay: `${0.4 + i * 0.08}s` }}
+                >
+                  <span className="fx-note-row-dot" aria-hidden="true" />
+                  <span className="fx-note-row-pos">{n.pos}</span>
+                  <span className="fx-note-row-label">{n.label}</span>
+                </li>
+              ))}
+            </ul>
 
             <div className="fx-hud fx-hud-tl">
               <div className="fx-hud-line">
