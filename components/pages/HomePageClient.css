@@ -180,11 +180,17 @@
 /* RIGHT — bottle stage */
 .sb-home .fx-stage { position: relative; width: 100%; aspect-ratio: 1/1; max-width: 620px; margin-left: auto; }
 .sb-home .fx-stage-inner { position: absolute; inset: 0; transform: translate3d(calc(var(--mx) * 14px), calc(var(--my) * 14px), 0); transition: transform .2s ease-out; }
-.sb-home .fx-rings { position: absolute; inset: 0; width: 100%; height: 100%; animation: sb-spinSlow 60s linear infinite; pointer-events: none; }
+.sb-home .fx-rings {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  /* Parent SVG gira lento — los rings hijos cada uno a su propio ritmo */
+  animation: sb-spinSlow 40s linear infinite;
+  pointer-events: none;
+  transform-origin: 50% 50%;
+}
 .sb-home .fx-rings .ring { transform-origin: 300px 300px; }
-.sb-home .fx-rings .r1 { animation: sb-spinSlow 80s linear infinite reverse; }
-.sb-home .fx-rings .r2 { animation: sb-spinSlow 50s linear infinite; }
-.sb-home .fx-rings .r3 { animation: sb-spinSlow 30s linear infinite reverse; }
+.sb-home .fx-rings .r1 { animation: sb-spinSlow 22s linear infinite reverse; }
+.sb-home .fx-rings .r2 { animation: sb-spinSlow 16s linear infinite; }
+.sb-home .fx-rings .r3 { animation: sb-spinSlow 10s linear infinite reverse; }
 @keyframes sb-spinSlow { to { transform: rotate(360deg); } }
 .sb-home .fx-halo {
   position: absolute; inset: 18%; border-radius: 50%;
@@ -227,15 +233,14 @@
   animation: sb-shadowPulse 7s ease-in-out infinite;
 }
 @keyframes sb-shadowPulse { 0%,100% { transform: scale(1); opacity: .55; } 50% { transform: scale(.85); opacity: .35; } }
-/* Pirámide olfativa — lista vertical fija a la derecha (auto-alineada para no
-   chocar con el HUD-br: top: 18%, bottom respeta espacio del HUD) */
+/* Pirámide olfativa — lista vertical compacta a la derecha de la botella */
 .sb-home .fx-notes-list {
   position: absolute;
   right: 2%;
-  top: 16%;
+  top: 18%;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   z-index: 5;
   list-style: none;
   margin: 0;
@@ -244,8 +249,8 @@
 .sb-home .fx-note-row {
   display: inline-flex;
   align-items: center;
-  gap: 11px;
-  padding: 9px 16px 9px 13px;
+  gap: 9px;
+  padding: 6px 14px 6px 11px;
   background: rgba(15, 12, 9, .62);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
