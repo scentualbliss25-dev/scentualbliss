@@ -22,12 +22,12 @@ const TRUST = [
 ];
 
 const NOTES_ORBIT = [
-  { label: 'Bergamota', angle: -30, delay: 0 },
-  { label: 'Jazmín',    angle: 40,  delay: 0.6 },
-  { label: 'Ámbar',     angle: 110, delay: 1.2 },
-  { label: 'Vainilla',  angle: 180, delay: 1.8 },
-  { label: 'Oud',       angle: 230, delay: 2.4 },
-  { label: 'Sándalo',   angle: 310, delay: 3.0 },
+  { label: 'Azafrán',   angle: -30, delay: 0 },
+  { label: 'Bergamota', angle: 40,  delay: 0.6 },
+  { label: 'Oud',       angle: 110, delay: 1.2 },
+  { label: 'Rosa',      angle: 180, delay: 1.8 },
+  { label: 'Tonka',     angle: 230, delay: 2.4 },
+  { label: 'Ámbar',     angle: 310, delay: 3.0 },
 ];
 
 // Perfume insignia de marca propia ScentualBliss (edición limitada — pre-orden).
@@ -206,7 +206,17 @@ function Hero() {
     const id = setInterval(() => setTick(t => t + 1), 60);
     return () => clearInterval(id);
   }, []);
-  const heroProduct = products.find(p => p.slug === 'lattafa-khamrah');
+  // Producto destacado del hero. Cambialo de slug si querés rotar el destacado.
+  const heroProduct = products.find(p => p.slug === 'montale-arabians-tonka');
+  const heroRef = `MTL-${String(heroProduct?.id || 141).padStart(3, '0')}`;
+  const heroFamily = 'Oud gourmand'; // derivada de las notas: oud, rosa, tonka, ámbar
+  const heroSillage = 92;
+  const heroLongevity = 88;
+  // Para el hero usamos una versión PNG con fondo recortado (transparente) generada
+  // con scripts/remove-bg-hero.mjs. Cae al webp del catálogo si la transparente no existe.
+  const heroImg = heroProduct
+    ? `/img/hero/${heroProduct.slug}-transparent.png`
+    : HOUSE_PERFUME.image;
 
   return (
     <section className="hero-fx" ref={stageRef}>
@@ -291,7 +301,10 @@ function Hero() {
             <div className="fx-beam" />
 
             <div className="fx-bottle">
-              <img src={HOUSE_PERFUME.image} alt={`${HOUSE_PERFUME.name} ${HOUSE_PERFUME.type} — ScentualBliss`} />
+              <img
+                src={heroImg}
+                alt={`${heroProduct?.brand || ''} ${heroProduct?.name || HOUSE_PERFUME.name} ${heroProduct?.type || HOUSE_PERFUME.type}`}
+              />
               <div className="fx-bottle-shadow" />
             </div>
 
@@ -306,44 +319,45 @@ function Hero() {
             <div className="fx-hud fx-hud-tl">
               <div className="fx-hud-line">
                 <span className="fx-hud-k">REF</span>
-                <span className="fx-hud-v">{HOUSE_PERFUME.ref}</span>
+                <span className="fx-hud-v">{heroRef}</span>
               </div>
               <div className="fx-hud-line">
                 <span className="fx-hud-k">FAM</span>
-                <span className="fx-hud-v">{HOUSE_PERFUME.family}</span>
+                <span className="fx-hud-v">{heroFamily}</span>
               </div>
             </div>
             <div className="fx-hud fx-hud-br">
               <div className="fx-hud-bar">
-                <div className="fx-hud-bar-fill" />
-                <span className="fx-hud-bar-label">Sillage 92%</span>
+                <div className="fx-hud-bar-fill" style={{ width: heroSillage + '%' }} />
+                <span className="fx-hud-bar-label">Sillage {heroSillage}%</span>
               </div>
               <div className="fx-hud-bar">
-                <div className="fx-hud-bar-fill alt" />
-                <span className="fx-hud-bar-label">Longevidad 88%</span>
+                <div className="fx-hud-bar-fill alt" style={{ width: heroLongevity + '%' }} />
+                <span className="fx-hud-bar-label">Longevidad {heroLongevity}%</span>
               </div>
             </div>
 
             <div className="fx-tag">
               <span className="fx-tag-pulse" />
               <div>
-                <p className="fx-tag-eyebrow">Fragancia de autor</p>
-                <p className="fx-tag-name">{HOUSE_PERFUME.name} <em>{HOUSE_PERFUME.type}</em></p>
+                <p className="fx-tag-eyebrow">Nicho · Destacado</p>
+                <p className="fx-tag-name">
+                  {heroProduct?.name || HOUSE_PERFUME.name}{' '}
+                  <em>{heroProduct?.type || HOUSE_PERFUME.type}</em>
+                </p>
                 <p className="fx-tag-price">
-                  <span className="fx-tag-status">{HOUSE_PERFUME.status}</span>
+                  <span className="fx-tag-status">{heroProduct?.brand || 'ScentualBliss'}</span>
                   <span className="fx-tag-sep">·</span>
-                  <b>{HOUSE_PERFUME.cta}</b>
+                  <b>Ver perfume</b>
                 </p>
               </div>
-              <a
-                href={HOUSE_PERFUME.ctaHref}
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                href={heroProduct ? `/perfume/${heroProduct.slug}` : '/tienda'}
                 className="fx-tag-arrow"
-                aria-label={`${HOUSE_PERFUME.cta} de ${HOUSE_PERFUME.name}`}
+                aria-label={`Ver ${heroProduct?.brand || ''} ${heroProduct?.name || ''}`}
               >
                 <ArrowRight size={14} />
-              </a>
+              </Link>
             </div>
           </div>
         </div>
