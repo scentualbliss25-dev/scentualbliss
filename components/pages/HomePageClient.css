@@ -579,59 +579,57 @@
 }
 
 /* ≤640 · mobile (teléfono mediano/grande)
-   Notas pasan a fila horizontal envolvente debajo de la botella */
+   - Botella desplazada hacia arriba (inset top:4%, bottom:22%) para dejar
+     espacio limpio al pie del stage
+   - Tag DENTRO del stage al fondo, sin colgar afuera (ya no invade el marquee)
+   - Eyebrow y price line de la tag ocultos: queda solo el nombre + arrow
+   - HUD-br y lista de notas ocultos para no competir con la tag */
 @media (max-width: 640px) {
   .sb-home .fx-stage { max-width: 380px; }
-  .sb-home .fx-bottle { inset: 8%; }
-  /* HUDs más compactos y subiendo de capa para no ser tapados por las notas */
+  .sb-home .fx-bottle { inset: 4% 10% 22% 10%; }
+  /* HUD-tl compacto */
   .sb-home .fx-hud-tl { padding: 9px 11px; font-size: .58rem; }
   .sb-home .fx-hud-tl::before { width: 12px; height: 12px; }
   .sb-home .fx-hud-line { min-width: 92px; gap: 8px; padding: 1px 0; }
   .sb-home .fx-hud-k { font-size: .54rem; }
   .sb-home .fx-hud-v { font-size: .62rem; }
-  /* HUD-br oculto en este tamaño — los datos viven dentro del tag */
-  .sb-home .fx-hud-br { display: none; }
-  /* Notas: row horizontal envolvente abajo del stage, centradas */
-  .sb-home .fx-notes-list {
+  /* HUD-br y notas ocultos */
+  .sb-home .fx-hud-br,
+  .sb-home .fx-notes-list { display: none; }
+  /* Tag compacta DENTRO del stage al fondo, una sola línea */
+  .sb-home .fx-tag-eyebrow,
+  .sb-home .fx-tag-price { display: none; }
+  .sb-home .fx-tag {
     position: absolute;
-    top: auto;
-    bottom: 4px;
-    left: 8px;
-    right: 8px;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 4px;
-    z-index: 4;
+    left: 50%;
+    bottom: 4%;
+    transform: translateX(-50%);
+    gap: 10px;
+    padding: 10px 14px 10px 18px;
+    max-width: calc(100% - 16px);
   }
-  .sb-home .fx-note-row {
-    padding: 4px 10px 4px 8px;
-    gap: 6px;
-    background: rgba(15, 12, 9, .75);
+  .sb-home .fx-tag-name {
+    font-size: 1rem;
+    white-space: nowrap;
   }
-  .sb-home .fx-note-row-label { font-size: .56rem; }
-  .sb-home .fx-note-row-pos { font-size: .44rem; }
-  .sb-home .fx-tag { bottom: -52px; }
+  /* Sin necesidad de padding extra para colgar la tag — ya está adentro */
+  .sb-home .fx-container { padding-bottom: 32px; }
 }
 
-/* ≤420 · mobile pequeño
-   Ocultar HUDs para máxima limpieza, foco en bottle + tag */
+/* ≤420 · mobile pequeño */
 @media (max-width: 420px) {
-  .sb-home .fx-stage { max-width: 320px; }
-  .sb-home .fx-bottle { inset: 10%; }
-  /* Ocultamos HUD-tl también, dejamos solo el bottle y la lista mini */
+  .sb-home .fx-stage { max-width: 300px; }
+  .sb-home .fx-bottle { inset: 4% 10% 24% 10%; }
+  /* Ocultamos HUD-tl también para liberar máximo espacio */
   .sb-home .fx-hud-tl { display: none; }
-  /* Notas todavía visibles pero más chicas */
-  .sb-home .fx-note-row { padding: 3px 9px 3px 7px; gap: 5px; }
-  .sb-home .fx-note-row-label { font-size: .52rem; letter-spacing: .12em; }
-  .sb-home .fx-note-row-pos { font-size: .42rem; letter-spacing: .2em; }
-  /* Tag más compacta para móviles pequeños */
-  .sb-home .fx-tag { gap: 12px; padding: 11px 13px 11px 16px; }
-  .sb-home .fx-tag-name { font-size: .98rem; }
-  .sb-home .fx-tag-eyebrow { font-size: .52rem; }
-  .sb-home .fx-tag-price { font-size: .6rem; }
+  /* Tag aún más compacta */
+  .sb-home .fx-tag {
+    gap: 9px;
+    padding: 9px 12px 9px 16px;
+  }
+  .sb-home .fx-tag-name { font-size: .92rem; letter-spacing: -.005em; }
   .sb-home .fx-tag-arrow { width: 32px; height: 32px; }
+  .sb-home .fx-container { padding-bottom: 24px; }
 }
 /* ===== SECTIONS ===== */
 .sb-home .section { padding: 110px 0; position: relative; }
