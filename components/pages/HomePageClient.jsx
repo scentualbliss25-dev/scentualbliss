@@ -337,7 +337,11 @@ function Hero() {
               </div>
             </div>
 
-            <div className="fx-tag">
+            <Link
+              href={heroProduct ? `/perfume/${heroProduct.slug}` : '/tienda'}
+              className="fx-tag"
+              aria-label={`Ver ${heroProduct?.brand || ''} ${heroProduct?.name || ''}`}
+            >
               <span className="fx-tag-pulse" />
               <div>
                 <p className="fx-tag-eyebrow">Nicho · Destacado</p>
@@ -346,19 +350,15 @@ function Hero() {
                   <em>{heroProduct?.type || HOUSE_PERFUME.type}</em>
                 </p>
                 <p className="fx-tag-price">
-                  <span className="fx-tag-status">{heroProduct?.brand || 'ScentualBliss'}</span>
+                  {heroProduct?.brand || 'ScentualBliss'}
                   <span className="fx-tag-sep">·</span>
                   <b>Ver perfume</b>
                 </p>
               </div>
-              <Link
-                href={heroProduct ? `/perfume/${heroProduct.slug}` : '/tienda'}
-                className="fx-tag-arrow"
-                aria-label={`Ver ${heroProduct?.brand || ''} ${heroProduct?.name || ''}`}
-              >
+              <span className="fx-tag-arrow" aria-hidden="true">
                 <ArrowRight size={14} />
-              </Link>
-            </div>
+              </span>
+            </Link>
           </div>
         </div>
       </div>
