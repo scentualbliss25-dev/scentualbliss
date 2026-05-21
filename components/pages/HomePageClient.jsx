@@ -15,7 +15,7 @@ import './HomePageClient.css';
 const COP = (n) => 'COP $' + Number(n || 0).toLocaleString('es-CO');
 
 const TRUST = [
-  { Icon: Truck, title: 'Envío Express', desc: 'Entrega 24-48h en Colombia' },
+  { Icon: Truck, title: 'Envío Express', desc: 'A toda Colombia' },
   { Icon: Shield, title: 'Pago seguro', desc: 'SSL + cifrado bancario' },
   { Icon: RotateCcw, title: 'Devolución fácil', desc: '30 días sin preguntas' },
   { Icon: Award, title: '100% auténticos', desc: 'Garantía de originalidad' },
