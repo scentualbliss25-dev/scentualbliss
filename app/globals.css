@@ -785,9 +785,10 @@ body::after {
   margin: 0;
 }
 
-/* Accesibilidad: respeta la preferencia del sistema para reducir movimiento */
+/* Accesibilidad: respeta la preferencia del sistema para reducir movimiento.
+   Excluimos animaciones decorativas críticas (marquee de logos, anuncios) usando :not() */
 @media (prefers-reduced-motion: reduce) {
-  *,
+  *:not(.fx-marquee-track):not(.brand-logo-img):not(.sb-announce-track):not(.fx-marquee-track *),
   *::before,
   *::after {
     animation-duration: .01ms !important;
@@ -797,11 +798,4 @@ body::after {
   }
   .marquee-track { animation: none !important; }
   .hero-text-reveal > * { animation: none !important; opacity: 1 !important; transform: none !important; }
-  /* Excepciones: animaciones decorativas que deben seguir funcionando */
-  .sb-home .fx-marquee-track,
-  .sb-home .brand-logo-img,
-  .sb-announce-track {
-    animation-duration: revert !important;
-    animation-iteration-count: infinite !important;
-  }
 }
