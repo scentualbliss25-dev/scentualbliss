@@ -362,28 +362,36 @@ function Hero() {
         </div>
       </div>
 
-      <div className="fx-marquee" aria-hidden="true">
-        <div className="fx-marquee-track">
-          {[...Array(2)].map((_, dup) => (
-            <span key={dup} style={{ display: 'inline-flex', alignItems: 'center', gap: 44 }}>
-              {HERO_BRANDS.map((b, i) => (
-                <span key={`${dup}-${i}`} className="fx-marquee-item">
-                  <img
-                    src={`/img/brands/${b.slug}.webp`}
-                    alt={b.name}
-                    className="brand-logo-img"
-                    width={90}
-                    height={26}
-                    loading="lazy"
-                    onError={(e) => { e.currentTarget.parentElement.style.display = 'none'; }}
-                  />
-                </span>
-              ))}
-            </span>
-          ))}
-        </div>
-      </div>
     </section>
+  );
+}
+
+// ============================================================
+// BRANDS MARQUEE — banda blanca con logos (se ubica debajo del trust bar)
+// ============================================================
+function BrandsMarquee() {
+  return (
+    <div className="fx-marquee" aria-hidden="true">
+      <div className="fx-marquee-track">
+        {[...Array(2)].map((_, dup) => (
+          <span key={dup} style={{ display: 'inline-flex', alignItems: 'center', gap: 44 }}>
+            {HERO_BRANDS.map((b, i) => (
+              <span key={`${dup}-${i}`} className="fx-marquee-item">
+                <img
+                  src={`/img/brands/${b.slug}.webp`}
+                  alt={b.name}
+                  className="brand-logo-img"
+                  width={90}
+                  height={26}
+                  loading="lazy"
+                  onError={(e) => { e.currentTarget.parentElement.style.display = 'none'; }}
+                />
+              </span>
+            ))}
+          </span>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -1017,6 +1025,7 @@ export default function HomePageClient() {
       <main>
         <Hero />
         <TrustBar />
+        <BrandsMarquee />
         <Families />
         <Bestsellers onQuick={setQvProduct} />
         <Featured />
