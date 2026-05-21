@@ -586,7 +586,8 @@
    - HUD-br y lista de notas ocultos para no competir con la tag */
 @media (max-width: 640px) {
   .sb-home .fx-stage { max-width: 380px; }
-  .sb-home .fx-bottle { inset: 4% 10% 22% 10%; }
+  /* Botella centrada (inset simétrico) para alinearse con el centro de los aros */
+  .sb-home .fx-bottle { inset: 8%; }
   /* HUD-tl compacto */
   .sb-home .fx-hud-tl { padding: 9px 11px; font-size: .58rem; }
   .sb-home .fx-hud-tl::before { width: 12px; height: 12px; }
@@ -619,7 +620,8 @@
 /* ≤420 · mobile pequeño */
 @media (max-width: 420px) {
   .sb-home .fx-stage { max-width: 300px; }
-  .sb-home .fx-bottle { inset: 4% 10% 24% 10%; }
+  /* Botella centrada simétricamente para mantener alineación con los aros */
+  .sb-home .fx-bottle { inset: 10%; }
   /* Ocultamos HUD-tl también para liberar máximo espacio */
   .sb-home .fx-hud-tl { display: none; }
   /* Tag aún más compacta */
