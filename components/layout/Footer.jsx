@@ -112,15 +112,15 @@ export default function Footer() {
           <p>© {new Date().getFullYear()} ScentualBliss · Todos los derechos reservados</p>
           <p className="sb-footer-loc">
             <MapPin size={12} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
-            Medellín, Colombia · Hecho con <span style={{ color: '#D4B68A' }}>♥</span>
+            Medellín, Colombia · Hecho con <span style={{ color: '#F2CF7A' }}>♥</span>
           </p>
         </div>
       </div>
 
       <style>{`
         .sb-footer {
-          background: #0F0C09;
-          color: rgba(250,248,243,.65);
+          background: #050505;
+          color: rgba(232,201,139,.65);
           padding: 90px 0 36px;
           font-family: var(--font-sans);
           font-size: .88rem;
@@ -132,7 +132,7 @@ export default function Footer() {
           grid-template-columns: 1.6fr 1fr 1fr 1fr;
           gap: 56px;
           padding-bottom: 56px;
-          border-bottom: 1px solid rgba(250,248,243,.08);
+          border-bottom: 1px solid rgba(212,166,79,.15);
         }
         .sb-footer-logo-link {
           display: inline-block;
@@ -148,24 +148,24 @@ export default function Footer() {
           line-height: 1.65;
           max-width: 36ch;
           margin-bottom: 22px;
-          color: rgba(250,248,243,.65);
+          color: rgba(232,201,139,.65);
         }
         .sb-footer-social { display: flex; gap: 10px; }
         .sb-footer-social a {
           width: 38px;
           height: 38px;
           border-radius: 50%;
-          border: 1px solid rgba(250,248,243,.15);
+          border: 1px solid rgba(212,166,79,.25);
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          color: rgba(250,248,243,.7);
+          color: rgba(232,201,139,.7);
           transition: all .25s ease;
         }
         .sb-footer-social a:hover {
-          background: #B8905C;
-          border-color: #B8905C;
-          color: #0F0C09;
+          background: #D4A64F;
+          border-color: #D4A64F;
+          color: #050505;
           transform: translateY(-2px);
         }
 
@@ -179,7 +179,7 @@ export default function Footer() {
           cursor: default;
         }
         .sb-footer-col-chev {
-          color: rgba(250,248,243,.5);
+          color: rgba(232,201,139,.5);
           transition: transform .25s ease;
           display: none;
         }
@@ -188,7 +188,7 @@ export default function Footer() {
           font-size: .72rem;
           letter-spacing: .25em;
           text-transform: uppercase;
-          color: #FAF8F3;
+          color: #E8C98B;
           font-weight: 600;
           margin: 0 0 18px;
         }
@@ -200,10 +200,10 @@ export default function Footer() {
         .sb-footer-col li { margin-bottom: 10px; }
         .sb-footer-col a {
           font-size: .88rem;
-          color: rgba(250,248,243,.65);
+          color: rgba(232,201,139,.65);
           transition: color .25s ease;
         }
-        .sb-footer-col a:hover { color: #D4B68A; }
+        .sb-footer-col a:hover { color: #F2CF7A; }
 
         .sb-footer-bottom {
           display: flex;
@@ -213,10 +213,10 @@ export default function Footer() {
           font-size: .72rem;
           flex-wrap: wrap;
           gap: 14px;
-          color: rgba(250,248,243,.45);
+          color: rgba(232,201,139,.45);
           letter-spacing: .04em;
         }
-        .sb-footer-loc { color: rgba(250,248,243,.55); }
+        .sb-footer-loc { color: rgba(232,201,139,.55); }
 
         @media (max-width: 1024px) {
           .sb-footer-top { grid-template-columns: 1fr 1fr 1fr; gap: 32px; }
@@ -242,7 +242,7 @@ export default function Footer() {
             text-align: center;
             padding-bottom: 28px;
             margin-bottom: 8px;
-            border-bottom: 1px solid rgba(250,248,243,.08);
+            border-bottom: 1px solid rgba(212,166,79,.15);
           }
           .sb-footer-logo-link {
             display: flex;
@@ -266,7 +266,7 @@ export default function Footer() {
 
           /* Columnas colapsables (acordeones) */
           .sb-footer-col {
-            border-bottom: 1px solid rgba(250,248,243,.08);
+            border-bottom: 1px solid rgba(212,166,79,.15);
           }
           .sb-footer-col-toggle {
             cursor: pointer;
@@ -278,13 +278,13 @@ export default function Footer() {
           }
           .sb-footer-col.is-open .sb-footer-col-chev {
             transform: rotate(180deg);
-            color: #D4B68A;
+            color: #F2CF7A;
           }
           .sb-footer-col h4 {
             margin: 0;
             font-size: .78rem;
           }
-          .sb-footer-col.is-open h4 { color: #D4B68A; }
+          .sb-footer-col.is-open h4 { color: #F2CF7A; }
           .sb-footer-col ul {
             max-height: 0;
             overflow: hidden;

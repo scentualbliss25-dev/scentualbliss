@@ -295,7 +295,7 @@ function NavbarInner() {
                   <span>{item.label}</span>
                   <ChevronDown
                     size={15}
-                    style={{ color: 'var(--gold-dark)', transition: 'transform .25s', transform: subOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                    style={{ color: '#F2CF7A', transition: 'transform .25s', transform: subOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
                   />
                 </button>
                 {subOpen && (
@@ -324,16 +324,16 @@ function NavStyles() {
     <style>{`
       .sb-nav {
         position: sticky; top: 0; z-index: 50;
-        background: rgba(253, 251, 247, .82);
-        backdrop-filter: blur(20px) saturate(1.6);
-        -webkit-backdrop-filter: blur(20px) saturate(1.6);
-        border-bottom: 1px solid transparent;
+        background: rgba(5, 5, 5, .85);
+        backdrop-filter: blur(20px) saturate(1.4);
+        -webkit-backdrop-filter: blur(20px) saturate(1.4);
+        border-bottom: 1px solid rgba(212, 166, 79, .12);
         transition: all .35s cubic-bezier(.22,.61,.36,1);
       }
       .sb-nav.scrolled {
-        background: rgba(253, 251, 247, .95);
-        border-bottom-color: rgba(31, 26, 20, 0.10);
-        box-shadow: 0 1px 0 rgba(31, 26, 20, .04), 0 8px 24px rgba(31,26,20,.04);
+        background: rgba(5, 5, 5, .96);
+        border-bottom-color: rgba(212, 166, 79, .22);
+        box-shadow: 0 1px 0 rgba(0,0,0, .25), 0 8px 24px rgba(0,0,0,.35);
       }
       .sb-nav-inner {
         display: grid;
@@ -381,16 +381,16 @@ function NavStyles() {
         border-radius: 50%;
         align-items: center;
         justify-content: center;
-        color: #1F1A14;
+        color: #F2CF7A;
         background: transparent;
         border: 0;
         cursor: pointer;
-        transition: background .25s;
+        transition: background .25s, color .25s;
         grid-column: 1;
         justify-self: start;
         margin-left: -10px;
       }
-      .sb-mobile-toggle-left:hover { background: #F5EFE3; }
+      .sb-mobile-toggle-left:hover { background: rgba(212, 166, 79, .12); color: #E8C98B; }
       .sb-nav-link-wrap {
         position: relative;
         display: flex;
@@ -400,7 +400,7 @@ function NavStyles() {
         font-family: var(--font-sans);
         font-size: .82rem;
         font-weight: 500;
-        color: #1F1A14;
+        color: #E8C98B;
         position: relative;
         padding: 8px 0;
         display: inline-flex;
@@ -413,16 +413,16 @@ function NavStyles() {
         position: absolute;
         left: 0; right: 0; bottom: 0;
         height: 1px;
-        background: #1F1A14;
+        background: #F2CF7A;
         transform: scaleX(0);
         transform-origin: right;
         transition: transform .4s cubic-bezier(.16,1,.3,1);
       }
-      .sb-nav-link:hover, .sb-nav-link.active { color: #8C6A40; }
+      .sb-nav-link:hover, .sb-nav-link.active { color: #F2CF7A; }
       .sb-nav-link:hover::after, .sb-nav-link.active::after {
         transform: scaleX(1);
         transform-origin: left;
-        background: #8C6A40;
+        background: #F2CF7A;
       }
 
       .sb-dropdown {
@@ -438,12 +438,12 @@ function NavStyles() {
         to { opacity: 1; transform: translateX(-50%) translateY(0); }
       }
       .sb-dropdown-card {
-        background: #FDFBF7;
-        border: 1px solid rgba(31, 26, 20, 0.10);
+        background: #E8C98B;
+        border: 1px solid rgba(212, 166, 79, .35);
         border-radius: 8px;
         padding: 16px;
         min-width: 380px;
-        box-shadow: 0 30px 60px rgba(31, 26, 20, .12), 0 4px 12px rgba(31, 26, 20, .05);
+        box-shadow: 0 30px 60px rgba(5, 5, 5, .25), 0 4px 12px rgba(5, 5, 5, .15);
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 4px;
@@ -456,7 +456,7 @@ function NavStyles() {
         transition: background .2s;
       }
       .sb-dropdown-item:hover, .sb-dropdown-item.active {
-        background: #FAF6EE;
+        background: rgba(212, 166, 79, .18);
       }
       .sb-dropdown-dot {
         width: 8px;
@@ -470,12 +470,12 @@ function NavStyles() {
         font-family: var(--font-sans);
         font-size: .82rem;
         font-weight: 600;
-        color: #1F1A14;
+        color: #050505;
         margin: 0 0 1px 0;
       }
       .sb-dropdown-item p {
         font-size: .7rem;
-        color: #7A6E5E;
+        color: rgba(5, 5, 5, .60);
         line-height: 1.4;
         margin: 0;
       }
@@ -490,18 +490,18 @@ function NavStyles() {
         padding: 8px 12px;
         font-family: var(--font-sans);
         font-size: .78rem;
-        color: #1F1A14;
+        color: #050505;
         border-radius: 6px;
         transition: background .18s, color .18s;
         text-decoration: none;
       }
       .sb-dropdown-brand:hover {
-        background: #FAF6EE;
-        color: #8C6A40;
+        background: rgba(212, 166, 79, .18);
+        color: #A87428;
       }
       .sb-dropdown-brand.active {
-        background: #FAF6EE;
-        color: #8C6A40;
+        background: rgba(212, 166, 79, .18);
+        color: #A87428;
         font-weight: 600;
       }
 
@@ -519,23 +519,23 @@ function NavStyles() {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        color: #1F1A14;
+        color: #E8C98B;
         background: transparent;
         border: 0;
         cursor: pointer;
         transition: all .25s;
       }
       .sb-nav-icon-btn:hover {
-        background: #F5EFE3;
-        color: #8C6A40;
+        background: rgba(212, 166, 79, .12);
+        color: #F2CF7A;
       }
       .sb-nav-badge {
         position: absolute;
         top: 4px; right: 4px;
-        background: #1F1A14;
-        color: #FDFBF7;
+        background: #F2CF7A;
+        color: #050505;
         font-size: .58rem;
-        font-weight: 600;
+        font-weight: 700;
         min-width: 17px;
         height: 17px;
         padding: 0 5px;
@@ -544,7 +544,7 @@ function NavStyles() {
         align-items: center;
         justify-content: center;
         line-height: 1;
-        border: 2px solid #FDFBF7;
+        border: 2px solid #050505;
         font-family: var(--font-sans);
       }
       .sb-nav-badge.pop { animation: sb-badge-pop .4s cubic-bezier(.16,1,.3,1); }
@@ -559,9 +559,9 @@ function NavStyles() {
       .sb-search-bar {
         position: absolute;
         top: 100%; left: 0; right: 0;
-        background: rgba(253, 251, 247, .98);
+        background: rgba(5, 5, 5, .98);
         backdrop-filter: blur(20px);
-        border-bottom: 1px solid rgba(31, 26, 20, 0.10);
+        border-bottom: 1px solid rgba(212, 166, 79, .22);
         padding: 16px 24px;
         animation: sb-slide-down .25s cubic-bezier(.22,.61,.36,1);
       }
@@ -573,42 +573,44 @@ function NavStyles() {
         width: 100%;
         max-width: 600px;
         padding: 12px 16px;
-        background: #FFFFFF;
-        border: 1.5px solid rgba(31, 26, 20, .12);
+        background: rgba(255, 255, 255, .06);
+        border: 1.5px solid rgba(212, 166, 79, .30);
         border-radius: 6px;
-        color: #1F1A14;
+        color: #E8C98B;
         font-family: var(--font-sans);
         font-size: .95rem;
         outline: none;
-        transition: border-color .2s, box-shadow .2s;
+        transition: border-color .2s, box-shadow .2s, background .2s;
       }
+      .sb-search-input::placeholder { color: rgba(232, 201, 139, .5); }
       .sb-search-input:focus {
-        border-color: #B8905C;
-        box-shadow: 0 0 0 4px rgba(184, 144, 92, .15);
+        border-color: #F2CF7A;
+        background: rgba(255, 255, 255, .09);
+        box-shadow: 0 0 0 4px rgba(212, 166, 79, .22);
       }
       .sb-search-hint {
         font-size: .72rem;
-        color: #7A6E5E;
+        color: rgba(232, 201, 139, .55);
         margin-top: 8px;
         max-width: 600px;
         font-family: var(--font-sans);
       }
       .sb-search-hint kbd {
-        background: #FAF6EE;
-        border: 1px solid rgba(31, 26, 20, 0.10);
+        background: rgba(212, 166, 79, .12);
+        border: 1px solid rgba(212, 166, 79, .30);
         border-radius: 4px;
         padding: 1px 6px;
         font-family: ui-monospace, monospace;
         font-size: .85em;
-        color: #4A3F33;
+        color: #E8C98B;
       }
 
       .sb-mobile-menu {
         position: absolute;
         top: 100%; left: 0; right: 0;
-        background: rgba(253, 251, 247, .98);
+        background: rgba(5, 5, 5, .98);
         backdrop-filter: blur(20px);
-        border-bottom: 1px solid rgba(31, 26, 20, 0.10);
+        border-bottom: 1px solid rgba(212, 166, 79, .22);
         padding: 16px 24px;
         display: flex;
         flex-direction: column;
@@ -623,10 +625,10 @@ function NavStyles() {
         align-items: center;
         font-family: var(--font-serif);
         font-size: 1.1rem;
-        color: #1F1A14;
+        color: #E8C98B;
         letter-spacing: .02em;
         padding: 14px 0;
-        border-bottom: 1px solid rgba(31, 26, 20, .07);
+        border-bottom: 1px solid rgba(212, 166, 79, .12);
         background: none;
         border-left: 0;
         border-right: 0;
@@ -649,7 +651,7 @@ function NavStyles() {
         padding: 10px 0;
         font-family: var(--font-sans);
         font-size: .9rem;
-        color: #4A3F33;
+        color: #F2CF7A;
       }
       .sb-mobile-dot {
         width: 7px;

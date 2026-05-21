@@ -5,36 +5,44 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  /* Acentos dorados — alineados con paleta del template */
-  --gold: #B8905C;
-  --gold-light: #D4B68A;       /* gold-soft del template */
-  --gold-dark: #8C6A40;        /* gold-deep del template */
+  /* === PALETA ESTRICTA — 5 colores ===
+     #050505 negro principal
+     #D4A64F dorado principal
+     #F2CF7A dorado claro brillante
+     #A87428 dorado oscuro elegante
+     #E8C98B beige cálido de iluminación
+     ====================================== */
 
-  /* TEMA CLARO — backgrounds (alineados con --bg-* del template) */
-  --black: #FDFBF7;            /* body bg principal — marfil cálido (--bg-1) */
-  --dark: #F5EFE3;             /* secciones alternas — sand (--bg-2) */
-  --dark-2: #FFFFFF;            /* cards/papel — blanco puro para destacar productos */
-  --dark-3: #FAF6EE;            /* cream (--bg-3) */
-  --dark-4: #E5DCC7;            /* bordes — beige medio */
-  --cream: #F5EFE3;
-  --cream-2: #FAF6EE;
-  --bg-deep: #0F0C09;           /* fondo profundo (footer, story) */
-  --bg-dark: #1A1612;           /* mocha noche (announce, secciones oscuras) */
-  --cream-soft: #F6F3EE;        /* header tienda, chips activos texto */
-  --cream-cta: #FAF8F3;         /* texto sobre fondo dorado/oscuro */
+  /* Acentos dorados */
+  --gold: #D4A64F;
+  --gold-light: #F2CF7A;
+  --gold-dark: #A87428;
 
-  /* Canales RGB para componer rgba() con alpha desde tokens */
-  --ink-line: 26,22,16;         /* bordes/scrim oscuros */
-  --gold-rgb: 184,144,92;       /* gold con alpha */
-  --cream-rgb: 246,243,238;     /* cream con alpha */
+  /* Backgrounds — base OSCURA */
+  --black: #050505;             /* body bg principal */
+  --dark: #0A0A0A;              /* secciones alternas */
+  --dark-2: #0F0F0F;            /* cards */
+  --dark-3: #141414;            /* zonas suaves */
+  --dark-4: rgba(212,166,79,.15); /* bordes dorados sutiles */
+  --cream: #E8C98B;             /* acento beige (franja marcas, etc) */
+  --cream-2: #E8C98B;
+  --bg-deep: #050505;            /* zonas oscuras (footer/announce) */
+  --bg-dark: #050505;
+  --cream-soft: #E8C98B;
+  --cream-cta: #050505;          /* texto sobre dorado */
 
-  /* TEMA CLARO — textos (alineados con --ink-* del template) */
-  --white: #1F1A14;             /* texto principal — ink */
-  --gray: #7A6E5E;              /* texto muted — ink-3 */
-  --gray-light: #4A3F33;        /* texto body — ink-2 */
+  /* Canales RGB para rgba() */
+  --ink-line: 232,201,139;       /* bordes/scrim dorados */
+  --gold-rgb: 212,166,79;
+  --cream-rgb: 232,201,139;
 
-  --error: #C04A5C;
-  --success: #6B8E7A;
+  /* Textos — crema/oro sobre oscuro */
+  --white: #E8C98B;              /* texto principal (beige cálido) */
+  --gray: rgba(232,201,139,.55); /* muted */
+  --gray-light: rgba(232,201,139,.75); /* body */
+
+  --error: #D4A64F;
+  --success: #D4A64F;
 
   --font-serif: var(--font-cormorant), Georgia, serif;
   --font-sans: var(--font-dm-sans), system-ui, sans-serif;
@@ -110,18 +118,18 @@ button { cursor: pointer; border: none; background: none; font-family: var(--fon
 .btn:active { transform: scale(.98); }
 
 .btn-primary {
-  background: var(--gold); color: #1F1A12; border: 2px solid var(--gold);
+  background: var(--gold); color: #050505; border: 2px solid var(--gold);
   box-shadow: var(--shadow-gold);
 }
-.btn-primary:hover { background: var(--gold-dark); border-color: var(--gold-dark); color: #FFFFFF; transform: translateY(-1px); box-shadow: 0 8px 40px rgba(201,169,110,.5); }
+.btn-primary:hover { background: var(--gold-light); border-color: var(--gold-light); color: #050505; transform: translateY(-1px); box-shadow: 0 8px 40px rgba(212,166,79,.45); }
 
 .btn-outline {
-  background: transparent; color: var(--gold-dark); border: 1.5px solid var(--gold);
+  background: transparent; color: var(--gold-light); border: 1.5px solid var(--gold);
 }
-.btn-outline:hover { background: var(--gold); color: #1F1A12; transform: translateY(-1px); }
+.btn-outline:hover { background: var(--gold); color: #050505; transform: translateY(-1px); }
 
-.btn-dark { background: var(--dark-3); color: var(--white); border: 1.5px solid var(--dark-4); }
-.btn-dark:hover { border-color: var(--gold); color: var(--gold-dark); background: #FFFFFF; }
+.btn-dark { background: transparent; color: var(--white); border: 1.5px solid var(--dark-4); }
+.btn-dark:hover { border-color: var(--gold); color: var(--gold-light); background: rgba(212,166,79,.08); }
 
 .btn-sm { padding: 10px 20px; font-size: .8rem; }
 .btn-lg { padding: 18px 48px; font-size: 1rem; }
@@ -131,7 +139,7 @@ button { cursor: pointer; border: none; background: none; font-family: var(--fon
 .badge {
   display: inline-block; font-size: .7rem; font-weight: 700; letter-spacing: .1em;
   text-transform: uppercase; padding: 3px 10px; border-radius: var(--r-full);
-  color: #1F1A12;
+  color: #050505;
 }
 
 .divider {
@@ -348,7 +356,7 @@ body::after {
   position: relative;
   overflow: hidden;
   border-radius: 4px;
-  background: #FFFFFF;
+  background: rgba(232, 201, 139, .08);
 }
 .product-card-img-wrap img {
   width: 100%;
@@ -431,9 +439,9 @@ body::after {
 
 /* Shop header — responsive */
 .shop-header {
-  border-bottom: 1px solid rgba(var(--ink-line), .07);
+  border-bottom: 1px solid rgba(var(--ink-line), .15);
   padding: 32px 0 24px;
-  background: var(--cream-soft);
+  background: var(--black);
 }
 @media (min-width: 768px) {
   .shop-header { padding: 52px 0 36px; }
@@ -442,28 +450,28 @@ body::after {
   font-size: .7rem;
   letter-spacing: .32em;
   text-transform: uppercase;
-  color: var(--gold-dark);
+  color: var(--gold);
   font-weight: 600;
   margin-bottom: 12px;
 }
 .shop-header-title {
   font-family: var(--font-serif);
   font-weight: 300;
-  color: var(--white);
+  color: #E8C98B;
   line-height: 1.1;
   font-size: clamp(1.8rem, 5vw, 4rem);
 }
 .shop-header-title em {
   font-style: italic;
-  color: var(--gold);
+  color: var(--gold-light);
 }
 .shop-header-count {
-  color: var(--gray-light);
+  color: rgba(232,201,139,.7);
   font-size: .9rem;
   margin-top: 8px;
   letter-spacing: .04em;
 }
-.shop-body { padding: 28px 24px; }
+.shop-body { padding: 28px 24px; background: var(--black); }
 @media (min-width: 768px) {
   .shop-body { padding: 36px 24px; }
 }
@@ -517,8 +525,8 @@ body::after {
   width: 100%;
   min-height: 48px;
   padding: 12px 44px 12px 40px;
-  background: #FFFFFF;
-  border: 1px solid rgba(var(--ink-line), .15);
+  background: rgba(212, 166, 79, .06);
+  border: 1px solid rgba(var(--ink-line), .25);
   color: var(--white);
   font-family: var(--font-sans);
   font-size: .92rem;
@@ -661,7 +669,7 @@ body::after {
   position: fixed;
   left: 0; right: 0; bottom: 0;
   z-index: 960;
-  background: var(--cream-soft);
+  background: var(--dark-2);
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
   max-height: 90vh;
@@ -690,7 +698,7 @@ body::after {
   font-family: var(--font-serif);
   font-size: 1.25rem;
   font-weight: 400;
-  color: var(--white);
+  color: #E8C98B;
   margin: 0;
 }
 .shop-sheet-close {
@@ -745,9 +753,9 @@ body::after {
     align-items: center;
     gap: 10px;
     padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
-    background: var(--cream-soft);
+    background: var(--dark-2);
     border-top: 1px solid rgba(var(--ink-line), .1);
-    box-shadow: 0 -10px 30px -18px rgba(var(--ink-line), .2);
+    box-shadow: 0 -10px 30px -18px rgba(0, 0, 0, .4);
   }
   .mobile-sticky-cta-info {
     flex: 1 1 0;
@@ -758,7 +766,7 @@ body::after {
     font-size: .6rem;
     letter-spacing: .18em;
     text-transform: uppercase;
-    color: var(--gray-light);
+    color: rgba(232,201,139,.65);
     margin-bottom: 2px;
     white-space: nowrap;
     overflow: hidden;
@@ -766,7 +774,7 @@ body::after {
   }
   .mobile-sticky-cta-price {
     font-family: var(--font-serif);
-    color: var(--gold-dark);
+    color: var(--gold-light);
     font-weight: 600;
     font-size: 1.15rem;
     line-height: 1;

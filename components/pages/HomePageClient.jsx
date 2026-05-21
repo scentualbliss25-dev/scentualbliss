@@ -44,11 +44,21 @@ const HOUSE_PERFUME = {
   ctaHref: 'https://wa.me/573169376436?text=' + encodeURIComponent('Hola! Quiero reservar Aurum EDP — la primera fragancia de autor de ScentualBliss 🌸'),
 };
 
-const HERO_BRANDS = [
-  'Dior', 'Creed', 'Chanel', 'Lattafa', 'Tom Ford', 'JPG',
-  'Carolina Herrera', 'Hugo Boss', 'Armaf', 'Valentino',
-  'Versace', 'Givenchy', 'Montale', 'Xerjoff', 'YSL', 'Armani',
-];
+function _brandSlug(name) {
+  return String(name || '').toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/&/g, 'and')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+const HERO_BRANDS = (() => {
+  const seen = new Map();
+  for (const p of products) {
+    if (!p.brand || seen.has(p.brand)) continue;
+    seen.set(p.brand, { name: p.brand, slug: _brandSlug(p.brand) });
+  }
+  return Array.from(seen.values());
+})();
 
 const QUIZ_STEPS = [
   {
@@ -339,14 +349,21 @@ function Hero() {
         </div>
       </div>
 
-      <div className="fx-marquee">
+      <div className="fx-marquee" aria-hidden="true">
         <div className="fx-marquee-track">
           {[...Array(2)].map((_, dup) => (
-            <span key={dup} style={{ display: 'inline-flex', gap: 56 }}>
+            <span key={dup} style={{ display: 'inline-flex', alignItems: 'center', gap: 44 }}>
               {HERO_BRANDS.map((b, i) => (
                 <span key={`${dup}-${i}`} className="fx-marquee-item">
-                  <span className="fx-marquee-num">{String(i + 1).padStart(2, '0')}</span>
-                  {b}
+                  <img
+                    src={`/img/brands/${b.slug}.webp`}
+                    alt={b.name}
+                    className="brand-logo-img"
+                    width={90}
+                    height={26}
+                    loading="lazy"
+                    onError={(e) => { e.currentTarget.parentElement.style.display = 'none'; }}
+                  />
                 </span>
               ))}
             </span>
@@ -362,22 +379,22 @@ function Hero() {
 // ============================================================
 function TrustBar() {
   return (
-    <section style={{ borderTop: '1px solid var(--line)', borderBottom: '1px solid var(--line)', background: 'var(--bg-3)', padding: '28px 0' }}>
+    <section style={{ borderTop: '1px solid rgba(212,166,79,.22)', borderBottom: '1px solid rgba(212,166,79,.22)', background: '#050505', padding: '28px 0' }}>
       <div className="container trust-bar-grid">
         {TRUST.map((it, i) => (
           <Reveal key={it.title} delay={i * 80}>
             <div className="trust-bar-item">
               <div style={{
                 width: 42, height: 42, borderRadius: 10,
-                background: 'rgba(184,144,92,.1)', border: '1px solid rgba(184,144,92,.25)',
+                background: 'rgba(212,166,79,.10)', border: '1px solid rgba(212,166,79,.30)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                color: 'var(--gold-deep)',
+                color: '#F2CF7A',
               }}>
                 <it.Icon size={18} />
               </div>
               <div>
-                <p style={{ fontWeight: 600, color: 'var(--ink)', fontSize: '.88rem', marginBottom: 2 }}>{it.title}</p>
-                <p style={{ fontSize: '.74rem', color: 'var(--ink-3)' }}>{it.desc}</p>
+                <p style={{ fontWeight: 600, color: '#E8C98B', fontSize: '.88rem', marginBottom: 2 }}>{it.title}</p>
+                <p style={{ fontSize: '.74rem', color: 'rgba(232,201,139,.6)' }}>{it.desc}</p>
               </div>
             </div>
           </Reveal>

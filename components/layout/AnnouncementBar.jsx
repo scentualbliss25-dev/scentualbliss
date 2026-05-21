@@ -24,8 +24,8 @@ export default function AnnouncementBar() {
 
       <style>{`
         .sb-announce {
-          background: #0F0C09;
-          color: #D4B68A;
+          background: #050505;
+          color: #F2CF7A;
           padding: 9px 0;
           font-size: .68rem;
           letter-spacing: .25em;
@@ -60,7 +60,7 @@ export default function AnnouncementBar() {
           width: 4px;
           height: 4px;
           border-radius: 50%;
-          background: #B8905C;
+          background: #D4A64F;
           opacity: .7;
         }
         @keyframes sb-announce-scroll {
