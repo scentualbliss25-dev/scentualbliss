@@ -797,8 +797,51 @@ function Quiz() {
 // ============================================================
 // TESTIMONIALS
 // ============================================================
+// Tiempo relativo en español a partir de un timestamp ISO (ej. "hace 3 días").
+function relativeTime(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  const diff = (Date.now() - d.getTime()) / 1000;
+  if (diff < 60) return 'hace un momento';
+  if (diff < 3600) return `hace ${Math.floor(diff / 60)} min`;
+  if (diff < 86400) return `hace ${Math.floor(diff / 3600)} h`;
+  if (diff < 604800) {
+    const days = Math.floor(diff / 86400);
+    return `hace ${days} ${days === 1 ? 'día' : 'días'}`;
+  }
+  if (diff < 2592000) {
+    const weeks = Math.floor(diff / 604800);
+    return `hace ${weeks} ${weeks === 1 ? 'semana' : 'semanas'}`;
+  }
+  if (diff < 31536000) {
+    const months = Math.floor(diff / 2592000);
+    return `hace ${months} ${months === 1 ? 'mes' : 'meses'}`;
+  }
+  const years = Math.floor(diff / 31536000);
+  return `hace ${years} ${years === 1 ? 'año' : 'años'}`;
+}
+
+// Hash determinista nombre → tono de avatar (paleta cálida coherente con la marca).
+const AVATAR_PALETTE = [
+  'linear-gradient(135deg, #B8905C 0%, #8C6A40 100%)',
+  'linear-gradient(135deg, #C77A7A 0%, #9C5050 100%)',
+  'linear-gradient(135deg, #4A6B5C 0%, #2F4A3D 100%)',
+  'linear-gradient(135deg, #6B5B4A 0%, #3D2F22 100%)',
+  'linear-gradient(135deg, #D4B68A 0%, #B8905C 100%)',
+];
+function avatarBg(name = '') {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) >>> 0;
+  return AVATAR_PALETTE[hash % AVATAR_PALETTE.length];
+}
+
 function Testimonials() {
   const [reviews, setReviews] = useState(null); // null = loading, [] = empty
+  const scrollerRef = useRef(null);
+  const [canPrev, setCanPrev] = useState(false);
+  const [canNext, setCanNext] = useState(true);
+
   const initialsOf = (name = '') =>
     name.split(' ').map(p => p[0]).filter(Boolean).slice(0, 2).join('').toUpperCase();
 
@@ -828,10 +871,38 @@ function Testimonials() {
           rating: r.rating,
           text: r.text,
           product: prod ? `${prod.brand} ${prod.name}` : r.product_slug,
-          location: null,
+          when: relativeTime(r.created_at),
         };
       })
-    : testimonials.map(t => ({ ...t, location: t.location }));
+    : testimonials.map(t => ({ ...t, when: t.location || '' }));
+
+  // Actualiza disponibilidad de flechas según scroll actual
+  const updateArrows = () => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    setCanPrev(el.scrollLeft > 8);
+    setCanNext(el.scrollLeft + el.clientWidth < el.scrollWidth - 8);
+  };
+
+  useEffect(() => {
+    updateArrows();
+    const el = scrollerRef.current;
+    if (!el) return;
+    el.addEventListener('scroll', updateArrows, { passive: true });
+    window.addEventListener('resize', updateArrows);
+    return () => {
+      el.removeEventListener('scroll', updateArrows);
+      window.removeEventListener('resize', updateArrows);
+    };
+  }, [items.length]);
+
+  const scrollBy = (dir) => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const card = el.querySelector('.tcard');
+    const step = (card?.clientWidth || 320) + 20; // card width + gap
+    el.scrollBy({ left: dir * step, behavior: 'smooth' });
+  };
 
   return (
     <section className="section">
@@ -840,32 +911,51 @@ function Testimonials() {
           <p className="eyebrow">Lo que dicen</p>
           <h2>Miles de historias, <em>una fragancia</em>.</h2>
         </div>
-        <div className="testimonials-grid">
-          {items.map((t, i) => (
-            <Reveal key={t.id ?? i} delay={(i % 5) * 80}>
-              <div className="tcard">
-                <div className="tcard-stars">
+        <div className="testimonials-wrap">
+          <button
+            type="button"
+            className={`testimonials-arrow prev ${canPrev ? '' : 'is-hidden'}`}
+            onClick={() => scrollBy(-1)}
+            aria-label="Reseña anterior"
+          >
+            <ArrowLeft size={18} />
+          </button>
+          <button
+            type="button"
+            className={`testimonials-arrow next ${canNext ? '' : 'is-hidden'}`}
+            onClick={() => scrollBy(1)}
+            aria-label="Siguiente reseña"
+          >
+            <ArrowRight size={18} />
+          </button>
+
+          <div className="testimonials-grid" ref={scrollerRef}>
+            {items.map((t, i) => (
+              <article key={t.id ?? i} className="tcard">
+                <div className="tcard-head">
+                  <div className="tcard-avatar" style={{ background: avatarBg(t.name) }}>
+                    {initialsOf(t.name)}
+                  </div>
+                  <div className="tcard-id">
+                    <p className="tcard-name">{t.name}</p>
+                    {t.when && <p className="tcard-when">{t.when}</p>}
+                  </div>
+                </div>
+                <div className="tcard-stars" aria-label={`${t.rating || 5} de 5 estrellas`}>
                   {[1, 2, 3, 4, 5].map(s => (
-                    <svg key={s} width="13" height="13" viewBox="0 0 24 24"
-                      fill={s <= Math.round(t.rating || 5) ? 'currentColor' : 'transparent'}
-                      stroke="currentColor" strokeWidth="1.5">
+                    <svg key={s} width="14" height="14" viewBox="0 0 24 24"
+                      fill={s <= Math.round(t.rating || 5) ? 'currentColor' : 'rgba(31,26,20,.12)'}>
                       <polygon points="12,2 15.1,8.3 22,9.3 17,14.1 18.2,21 12,17.8 5.8,21 7,14.1 2,9.3 8.9,8.3" />
                     </svg>
                   ))}
                 </div>
-                <p className="tcard-text">"{t.text}"</p>
-                <div className="tcard-author">
-                  <div className="tcard-avatar">{initialsOf(t.name)}</div>
-                  <div>
-                    <p className="tcard-name">{t.name}</p>
-                    <p className="tcard-meta">
-                      {t.location ? `${t.location} · ` : ''}{t.product}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </Reveal>
-          ))}
+                <p className="tcard-text">{t.text}</p>
+                {t.product && (
+                  <p className="tcard-product">{t.product}</p>
+                )}
+              </article>
+            ))}
+          </div>
         </div>
       </div>
     </section>
