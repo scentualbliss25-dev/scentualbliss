@@ -258,8 +258,8 @@
 .sb-home .fx-tag-arrow { width: 36px; height: 36px; border-radius: 50%; background: var(--ink); color: var(--bg-1); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .25s; }
 .sb-home .fx-tag-arrow:hover { background: var(--gold-deep); transform: rotate(-45deg); }
 /* Marquee */
-.sb-home .fx-marquee { position: relative; z-index: 3; border-top: 1px solid rgba(212,182,138,.12); border-bottom: 1px solid rgba(212,182,138,.12); padding: 18px 0; overflow: hidden; background: #FFFFFF; }
-.sb-home .fx-marquee-track { display: flex; gap: 56px; white-space: nowrap; animation: sb-scroll-x 50s linear infinite; width: max-content; }
+.sb-home .fx-marquee { position: relative; z-index: 3; border-top: 1px solid rgba(212,182,138,.12); border-bottom: 1px solid rgba(212,182,138,.12); padding: 18px 0; overflow: hidden; background: #FFFFFF; width: 100%; }
+.sb-home .fx-marquee-track { display: flex; gap: 56px; white-space: nowrap; animation: sb-scroll-x 50s linear infinite; width: max-content; will-change: transform; }
 .sb-home .fx-marquee-item { display: inline-flex; align-items: center; gap: 12px; font-family: var(--display); font-style: italic; font-size: 1.4rem; color: rgba(212,182,138,.7); }
 .sb-home .brand-logo-img { animation: sb-spin-logo 3s linear infinite; }
 .sb-home .fx-marquee-num { font-family: var(--mono); font-style: normal; font-size: .68rem; letter-spacing: .2em; color: rgba(212,182,138,.45); }
