@@ -9,20 +9,29 @@ function getClient() {
 }
 
 // GET /api/reviews?slug=dior-sauvage-edt
+// GET /api/reviews?limit=10  -> últimas N reseñas across todos los productos (para el home)
 export async function GET(req) {
   const supabase = getClient();
   if (!supabase) return NextResponse.json([]);
 
   const { searchParams } = new URL(req.url);
   const slug = searchParams.get('slug');
-  if (!slug) return NextResponse.json({ error: 'slug requerido' }, { status: 400 });
+  const limit = Number(searchParams.get('limit')) || null;
 
-  const { data, error } = await supabase
+  if (!slug && !limit) {
+    return NextResponse.json({ error: 'slug o limit requerido' }, { status: 400 });
+  }
+
+  let query = supabase
     .from('reviews')
     .select('*')
-    .eq('product_slug', slug)
     .eq('approved', true)
     .order('created_at', { ascending: false });
+
+  if (slug) query = query.eq('product_slug', slug);
+  if (limit) query = query.limit(Math.min(limit, 50));
+
+  const { data, error } = await query;
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json(data);

@@ -798,8 +798,41 @@ function Quiz() {
 // TESTIMONIALS
 // ============================================================
 function Testimonials() {
+  const [reviews, setReviews] = useState(null); // null = loading, [] = empty
   const initialsOf = (name = '') =>
     name.split(' ').map(p => p[0]).filter(Boolean).slice(0, 2).join('').toUpperCase();
+
+  // Lookup rápido slug → producto (para mostrar la marca + nombre en la card)
+  const productBySlug = useMemo(() => {
+    const map = new Map();
+    for (const p of products) map.set(p.slug, p);
+    return map;
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/reviews?limit=10')
+      .then(r => (r.ok ? r.json() : []))
+      .then(data => { if (!cancelled) setReviews(Array.isArray(data) ? data : []); })
+      .catch(() => { if (!cancelled) setReviews([]); });
+    return () => { cancelled = true; };
+  }, []);
+
+  // Si la API devolvió reseñas reales, las usamos. Si no, fallback al hardcoded seed.
+  const items = (reviews && reviews.length > 0)
+    ? reviews.map(r => {
+        const prod = productBySlug.get(r.product_slug);
+        return {
+          id: r.id,
+          name: r.author_name,
+          rating: r.rating,
+          text: r.text,
+          product: prod ? `${prod.brand} ${prod.name}` : r.product_slug,
+          location: null,
+        };
+      })
+    : testimonials.map(t => ({ ...t, location: t.location }));
+
   return (
     <section className="section">
       <div className="container">
@@ -808,12 +841,14 @@ function Testimonials() {
           <h2>Miles de historias, <em>una fragancia</em>.</h2>
         </div>
         <div className="testimonials-grid">
-          {testimonials.map((t, i) => (
-            <Reveal key={t.id} delay={i * 80}>
+          {items.map((t, i) => (
+            <Reveal key={t.id ?? i} delay={(i % 5) * 80}>
               <div className="tcard">
                 <div className="tcard-stars">
                   {[1, 2, 3, 4, 5].map(s => (
-                    <svg key={s} width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                    <svg key={s} width="13" height="13" viewBox="0 0 24 24"
+                      fill={s <= Math.round(t.rating || 5) ? 'currentColor' : 'transparent'}
+                      stroke="currentColor" strokeWidth="1.5">
                       <polygon points="12,2 15.1,8.3 22,9.3 17,14.1 18.2,21 12,17.8 5.8,21 7,14.1 2,9.3 8.9,8.3" />
                     </svg>
                   ))}
@@ -823,7 +858,9 @@ function Testimonials() {
                   <div className="tcard-avatar">{initialsOf(t.name)}</div>
                   <div>
                     <p className="tcard-name">{t.name}</p>
-                    <p className="tcard-meta">{t.location} · {t.product}</p>
+                    <p className="tcard-meta">
+                      {t.location ? `${t.location} · ` : ''}{t.product}
+                    </p>
                   </div>
                 </div>
               </div>
