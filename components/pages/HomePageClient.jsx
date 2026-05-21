@@ -306,7 +306,7 @@ function Hero() {
                 <li
                   key={i}
                   className="fx-note-row"
-                  style={{ animationDelay: `${0.4 + i * 0.08}s` }}
+                  style={{ animationDelay: `${0.9 + i * 0.08}s` }}
                 >
                   <span className="fx-note-row-dot" aria-hidden="true" />
                   <span className="fx-note-row-pos">{n.pos}</span>
