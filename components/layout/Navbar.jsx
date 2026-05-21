@@ -474,17 +474,20 @@ function NavStyles() {
         border-radius: 2px;
       }
       .sb-dropdown-dot {
-        width: 8px;
-        height: 8px;
+        width: 10px;
+        height: 10px;
         border-radius: 50%;
-        margin-top: 7px;
+        margin-top: 6px;
         flex-shrink: 0;
-        box-shadow: 0 0 0 3px rgba(255,255,255,.6);
-        transition: box-shadow .25s;
+        /* Aro oscuro para que el punto resalte sobre el fondo dorado claro */
+        box-shadow: 0 0 0 1.5px rgba(5, 5, 5, .35), inset 0 0 0 1px rgba(255, 255, 255, .25);
+        transition: box-shadow .25s, transform .25s;
       }
       .sb-dropdown-item:hover .sb-dropdown-dot,
       .sb-dropdown-item.active .sb-dropdown-dot {
-        box-shadow: 0 0 0 3px rgba(232, 201, 139, .35), 0 0 12px currentColor;
+        /* En hover el fondo es oscuro → cambiamos a aro claro + glow del color de la familia */
+        box-shadow: 0 0 0 2px rgba(242, 207, 122, .45), 0 0 14px currentColor;
+        transform: scale(1.1);
       }
       .sb-dropdown-item h4 {
         font-family: var(--font-sans);
