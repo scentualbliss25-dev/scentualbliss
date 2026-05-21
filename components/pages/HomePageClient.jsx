@@ -22,12 +22,12 @@ const TRUST = [
 ];
 
 const NOTES_ORBIT = [
-  { label: 'Azafrán',   angle: -30, delay: 0 },
-  { label: 'Bergamota', angle: 40,  delay: 0.6 },
-  { label: 'Oud',       angle: 110, delay: 1.2 },
-  { label: 'Rosa',      angle: 180, delay: 1.8 },
-  { label: 'Tonka',     angle: 230, delay: 2.4 },
-  { label: 'Ámbar',     angle: 310, delay: 3.0 },
+  { label: 'Azafrán',   pos: 'Salida',  angle: -30, delay: 0   },
+  { label: 'Bergamota', pos: 'Salida',  angle: 40,  delay: 0.6 },
+  { label: 'Oud',       pos: 'Corazón', angle: 110, delay: 1.2 },
+  { label: 'Rosa',      pos: 'Corazón', angle: 180, delay: 1.8 },
+  { label: 'Tonka',     pos: 'Fondo',   angle: 230, delay: 2.4 },
+  { label: 'Ámbar',     pos: 'Fondo',   angle: 310, delay: 3.0 },
 ];
 
 // Perfume insignia de marca propia ScentualBliss (edición limitada — pre-orden).
@@ -202,10 +202,12 @@ function useCountdown(target) {
 function Hero() {
   const stageRef = useParallax();
   const [tick, setTick] = useState(0);
+  const [paused, setPaused] = useState(false);
   useEffect(() => {
+    if (paused) return undefined;
     const id = setInterval(() => setTick(t => t + 1), 60);
     return () => clearInterval(id);
-  }, []);
+  }, [paused]);
   // Producto destacado del hero. Cambialo de slug si querés rotar el destacado.
   const heroProduct = products.find(p => p.slug === 'montale-arabians-tonka');
   const heroRef = `MTL-${String(heroProduct?.id || 141).padStart(3, '0')}`;
@@ -276,7 +278,11 @@ function Hero() {
           </div>
         </div>
 
-        <div className="fx-stage">
+        <div
+          className="fx-stage"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+        >
           <div className="fx-stage-inner">
             <svg className="fx-rings" viewBox="0 0 600 600" aria-hidden="true">
               <defs>
@@ -308,10 +314,16 @@ function Hero() {
               <div className="fx-bottle-shadow" />
             </div>
 
-            <div className="fx-orbit" style={{ '--rot': `${tick * 0.12}deg` }}>
+            <div className={`fx-orbit ${paused ? 'is-paused' : ''}`} style={{ '--rot': `${tick * 0.12}deg` }}>
               {NOTES_ORBIT.map((n, i) => (
                 <div key={i} className="fx-note" style={{ '--angle': `${n.angle}deg`, animationDelay: `${n.delay}s` }}>
-                  <span style={{ transform: `rotate(${-tick * 0.12}deg)` }}>{n.label}</span>
+                  <span
+                    className="fx-note-chip"
+                    style={{ transform: `rotate(${-tick * 0.12}deg)` }}
+                  >
+                    <span className="fx-note-pos">{n.pos}</span>
+                    <span className="fx-note-label">{n.label}</span>
+                  </span>
                 </div>
               ))}
             </div>
