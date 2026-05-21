@@ -60,32 +60,63 @@ const HERO_BRANDS = (() => {
   return Array.from(seen.values());
 })();
 
+// QUIZ_STEPS — cada opción puede aportar a tres dimensiones de matching:
+//   weight       → boost a familias olfativas (acumulan score)
+//   occasionTags → palabras clave que se cruzan contra product.occasion
+//   productType  → 'disenador' | 'nicho' | 'arabe' | null (sin filtro)
+//   genderTags   → 'Masculino' | 'Femenino' | 'Unisex' (match laxo)
 const QUIZ_STEPS = [
   {
-    q: '¿En qué momento quieres que tu fragancia <em>brille</em>?',
+    q: '¿Para quién <em>buscas</em> el perfume?',
+    field: 'gender',
     options: [
-      { icon: '☀️', text: 'Día y oficina', sub: 'Frescura ligera, energizante', weight: { fresco: 3, citrico: 3, frutal: 1 } },
-      { icon: '🌙', text: 'Noches especiales', sub: 'Sensual, profundo, magnético', weight: { dulce: 3, amaderado: 3, floral: 1 } },
-      { icon: '🌿', text: 'Casual diario', sub: 'Versátil, fácil de llevar', weight: { fresco: 2, frutal: 2, citrico: 1 } },
-      { icon: '✨', text: 'Solo eventos', sub: 'Algo único e inolvidable', weight: { amaderado: 3, dulce: 2, floral: 2 } },
+      { icon: '♀', text: 'Para mujer', sub: 'Femenino o unisex', weight: {}, genderTags: ['Femenino', 'Unisex'] },
+      { icon: '♂', text: 'Para hombre', sub: 'Masculino o unisex', weight: {}, genderTags: ['Masculino', 'Unisex'] },
+      { icon: '⚭', text: 'Es un regalo unisex', sub: 'Vale para cualquiera', weight: {}, genderTags: ['Unisex', 'Femenino', 'Masculino'] },
+    ],
+  },
+  {
+    q: '¿En qué momento quieres que <em>brille</em>?',
+    field: 'occasion',
+    options: [
+      { icon: '☀', text: 'Día y oficina', sub: 'Frescura ligera, energizante',
+        weight: { fresco: 3, citrico: 3, frutal: 1 },
+        occasionTags: ['Día', 'Trabajo', 'Casual'] },
+      { icon: '☾', text: 'Noches especiales', sub: 'Sensual, profundo, magnético',
+        weight: { dulce: 3, amaderado: 3, floral: 1 },
+        occasionTags: ['Noche', 'Romántico', 'Cenas', 'Eventos especiales'] },
+      { icon: '✿', text: 'Casual diario', sub: 'Versátil, fácil de llevar',
+        weight: { fresco: 2, frutal: 2, citrico: 1, floral: 1 },
+        occasionTags: ['Casual', 'Día'] },
+      { icon: '✦', text: 'Eventos formales', sub: 'Algo único e inolvidable',
+        weight: { amaderado: 3, dulce: 2, floral: 2 },
+        occasionTags: ['Eventos formales', 'Eventos especiales', 'Cenas elegantes', 'Fiestas'] },
     ],
   },
   {
     q: '¿Qué <em>aroma</em> te detiene en seco al pasar?',
+    field: 'family',
     options: [
-      { icon: '🌹', text: 'Flores recién cortadas', sub: 'Rosa, jazmín, gardenia', weight: { floral: 4 } },
-      { icon: '🍯', text: 'Vainilla y caramelo', sub: 'Dulce, cremoso, cálido', weight: { dulce: 4 } },
-      { icon: '🌲', text: 'Bosque después de lluvia', sub: 'Maderas, pachulí, vetiver', weight: { amaderado: 4 } },
-      { icon: '🍋', text: 'Cítricos al amanecer', sub: 'Bergamota, mandarina, lima', weight: { citrico: 4, fresco: 2 } },
+      { icon: '❀', text: 'Flores recién cortadas', sub: 'Rosa, jazmín, azahar', weight: { floral: 5 } },
+      { icon: '◉', text: 'Vainilla y caramelo', sub: 'Dulce, cremoso, gourmand', weight: { dulce: 5 } },
+      { icon: '❦', text: 'Bosque después de lluvia', sub: 'Maderas, oud, pachulí', weight: { amaderado: 5 } },
+      { icon: '☀', text: 'Cítricos al amanecer', sub: 'Bergamota, mandarina, lima', weight: { citrico: 5, fresco: 2 } },
+      { icon: '◊', text: 'Frutas jugosas', sub: 'Manzana, durazno, frutos rojos', weight: { frutal: 5, dulce: 1 } },
+      { icon: '∿', text: 'Brisa marina', sub: 'Frescos, acuáticos, herbales', weight: { fresco: 5, citrico: 1 } },
     ],
   },
   {
-    q: '¿Cómo te describirían las personas más <em>cercanas</em>?',
+    q: '¿Qué <em>estilo</em> te define?',
+    field: 'style',
     options: [
-      { icon: '🔥', text: 'Intensa y apasionada', sub: 'Vives todo al máximo', weight: { dulce: 2, amaderado: 3 } },
-      { icon: '💎', text: 'Elegante y refinada', sub: 'Tienes ojo para los detalles', weight: { floral: 3, amaderado: 2 } },
-      { icon: '🌊', text: 'Libre y aventurera', sub: 'Espontánea y energética', weight: { fresco: 3, citrico: 2 } },
-      { icon: '🍓', text: 'Coqueta y juguetona', sub: 'Siempre sorprendes', weight: { frutal: 3, dulce: 2 } },
+      { icon: '◆', text: 'Clásico icónico', sub: 'Casas de lujo: Chanel, Dior, Tom Ford',
+        weight: { floral: 1 }, productType: 'disenador' },
+      { icon: '✧', text: 'Exclusivo y único', sub: 'Nicho: Xerjoff, MFK, artesanal',
+        weight: { amaderado: 1, floral: 1 }, productType: 'nicho' },
+      { icon: '☪', text: 'Intenso y poderoso', sub: 'Árabe: Lattafa, Armaf, oud profundo',
+        weight: { dulce: 1, amaderado: 1 }, productType: 'arabe' },
+      { icon: '✦', text: 'Sorpréndeme', sub: 'Cualquier estilo me sirve',
+        weight: {}, productType: null },
     ],
   },
 ];
@@ -729,23 +760,133 @@ function Story() {
 // ============================================================
 // QUIZ
 // ============================================================
+// Tipos de productType en español para mostrar en chips
+const TYPE_DISPLAY = { disenador: 'Diseñador', nicho: 'Nicho', arabe: 'Árabe' };
+
+// Texto del badge "por qué te lo recomendamos" para cada perfume
+function matchReason(product, prefs) {
+  const reasons = [];
+  if (prefs.topFamily && product.category === prefs.topFamily) {
+    reasons.push(FAMILY_NAMES[product.category]?.split(' ')[0] || product.category);
+  }
+  if (prefs.productType && product.productType === prefs.productType) {
+    reasons.push(TYPE_DISPLAY[product.productType]);
+  }
+  if (prefs.occasionTags?.length && product.occasion?.some(o =>
+    prefs.occasionTags.some(t => o.toLowerCase().includes(t.toLowerCase())))) {
+    reasons.push('Tu ocasión');
+  }
+  if (product.bestseller && reasons.length < 2) reasons.push('Bestseller');
+  return reasons.slice(0, 2).join(' · ');
+}
+
 function Quiz() {
   const [step, setStep] = useState(0);
   const [scores, setScores] = useState({});
+  const [prefs, setPrefs] = useState({}); // { occasionTags, productType, genderTags }
   const [done, setDone] = useState(false);
 
-  const choose = (weight) => {
-    const next = { ...scores };
-    Object.entries(weight).forEach(([k, v]) => { next[k] = (next[k] || 0) + v; });
-    setScores(next);
+  const choose = (opt) => {
+    // Acumula pesos de familia
+    const nextScores = { ...scores };
+    Object.entries(opt.weight || {}).forEach(([k, v]) => {
+      nextScores[k] = (nextScores[k] || 0) + v;
+    });
+    setScores(nextScores);
+
+    // Guarda las preferencias contextuales según el field de la pregunta
+    const stepDef = QUIZ_STEPS[step];
+    const nextPrefs = { ...prefs };
+    if (stepDef.field === 'occasion' && opt.occasionTags) nextPrefs.occasionTags = opt.occasionTags;
+    if (stepDef.field === 'style') nextPrefs.productType = opt.productType ?? null;
+    if (stepDef.field === 'gender' && opt.genderTags) nextPrefs.genderTags = opt.genderTags;
+    setPrefs(nextPrefs);
+
     if (step === QUIZ_STEPS.length - 1) setDone(true); else setStep(step + 1);
   };
 
-  const reset = () => { setStep(0); setScores({}); setDone(false); };
+  const reset = () => { setStep(0); setScores({}); setPrefs({}); setDone(false); };
 
-  const winner = Object.entries(scores).sort((a, b) => b[1] - a[1])[0]?.[0] || 'dulce';
-  const recommendations = useMemo(() => products.filter(p => p.category === winner).slice(0, 3), [winner]);
-  const famColor = collections.find(f => f.id === winner)?.color || '#B8905C';
+  // Familia dominante y secundaria
+  const sortedFamilies = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+  const topFamily = sortedFamilies[0]?.[0] || 'dulce';
+  const secondFamily = sortedFamilies[1]?.[0] || null;
+  const famColor = collections.find(f => f.id === topFamily)?.color || '#B8905C';
+
+  // Recomendaciones: scoring multi-factor sobre TODO el catálogo
+  const recommendations = useMemo(() => {
+    if (!done) return [];
+    const fullPrefs = { ...prefs, topFamily, secondFamily };
+
+    const scored = products
+      // Solo perfumes con precio real (descartamos "Próximamente")
+      .filter(p => Number.isFinite(p.price) && p.price > 0)
+      .map(p => {
+        let score = 0;
+
+        // 1. FAMILIA olfativa (señal primaria, peso fuerte)
+        if (p.category === topFamily) score += 12;
+        else if (p.category === secondFamily) score += 5;
+
+        // 2. OCASIÓN (cruce con product.occasion array)
+        if (prefs.occasionTags?.length && Array.isArray(p.occasion)) {
+          const overlap = p.occasion.filter(o =>
+            prefs.occasionTags.some(t => o.toLowerCase().includes(t.toLowerCase()))
+          );
+          score += overlap.length * 2.5;
+        }
+
+        // 3. TIPO de producto (Diseñador/Nicho/Árabe)
+        if (prefs.productType) {
+          if (p.productType === prefs.productType) score += 6;
+        } else {
+          // "Sorpréndeme" → no penaliza, da un pequeño boost neutral
+          score += 1;
+        }
+
+        // 4. GÉNERO (match laxo: Unisex siempre suma algo)
+        if (prefs.genderTags?.length && p.gender) {
+          if (prefs.genderTags.includes(p.gender)) score += 3;
+        }
+
+        // 5. Calidad: rating y bestseller como desempates
+        score += (p.rating || 0) * 0.6;
+        if (p.bestseller) score += 1.5;
+        if (p.featured) score += 0.5;
+
+        return { p, score };
+      });
+
+    // Top resultados por score
+    let top = scored
+      .filter(({ score }) => score > 5)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 6)
+      .map(({ p }) => p);
+
+    // Fallback: si no llegamos a 3, completamos con productos top-rated del catálogo
+    if (top.length < 3) {
+      const usedIds = new Set(top.map(p => p.id));
+      const fallback = products
+        .filter(p => Number.isFinite(p.price) && p.price > 0 && !usedIds.has(p.id))
+        .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+        .slice(0, 6 - top.length);
+      top = [...top, ...fallback];
+    }
+
+    return top;
+  }, [done, scores, prefs, topFamily, secondFamily]);
+
+  const contextDesc = (() => {
+    if (!done) return '';
+    const parts = [];
+    if (prefs.occasionTags?.includes('Día')) parts.push('para el día');
+    else if (prefs.occasionTags?.includes('Noche')) parts.push('para la noche');
+    else if (prefs.occasionTags?.some(t => t.includes('Eventos'))) parts.push('para eventos');
+    else if (prefs.occasionTags?.includes('Casual')) parts.push('para el día a día');
+    if (prefs.productType) parts.push(`estilo ${TYPE_DISPLAY[prefs.productType].toLowerCase()}`);
+    return parts.length ? ` Curado ${parts.join(' · ')}.` : '';
+  })();
 
   return (
     <section id="sb-quiz" className="section quiz">
@@ -753,7 +894,7 @@ function Quiz() {
         <div className="section-head center">
           <p className="eyebrow"><Sparkles size={12} />&nbsp;Quiz olfativo</p>
           <h2>¿Qué fragancia <em>eres</em>?</h2>
-          <p>Tres preguntas. Una recomendación curada para ti.</p>
+          <p>{QUIZ_STEPS.length} preguntas rápidas. Te recomendamos lo mejor de nuestro catálogo.</p>
         </div>
         <div className="quiz-card">
           {!done ? (
@@ -767,7 +908,7 @@ function Quiz() {
               <h3 className="quiz-question" dangerouslySetInnerHTML={{ __html: QUIZ_STEPS[step].q }} />
               <div className="quiz-options">
                 {QUIZ_STEPS[step].options.map((opt, i) => (
-                  <button key={i} type="button" className="quiz-option" onClick={() => choose(opt.weight)}>
+                  <button key={i} type="button" className="quiz-option" onClick={() => choose(opt)}>
                     <span className="quiz-option-icon">{opt.icon}</span>
                     <span className="quiz-option-text">
                       {opt.text}
@@ -788,25 +929,45 @@ function Quiz() {
           ) : (
             <div className="quiz-result">
               <p className="quiz-result-eyebrow">Tu firma olfativa</p>
-              <h3>Eres <em style={{ color: famColor }}>{FAMILY_NAMES[winner]}</em>.</h3>
-              <p className="quiz-result-desc">{FAMILY_DESC[winner]}</p>
-              <p className="quiz-step-label" style={{ marginTop: 28, marginBottom: 14 }}>Tres fragancias para ti</p>
+              <h3>Eres <em style={{ color: famColor }}>{FAMILY_NAMES[topFamily]}</em>.</h3>
+              <p className="quiz-result-desc">
+                {FAMILY_DESC[topFamily]}{contextDesc}
+              </p>
+              <p className="quiz-step-label" style={{ marginTop: 28, marginBottom: 14 }}>
+                {recommendations.length} fragancias para ti
+              </p>
               <div className="quiz-result-products">
-                {recommendations.length > 0 ? recommendations.map(p => (
-                  <Link key={p.id} href={`/perfume/${p.slug}`} className="quiz-result-product">
-                    <img src={getImagePath(p)} alt={p.name} />
-                    <p className="b">{p.brand}</p>
-                    <p className="n">{p.name}</p>
-                  </Link>
-                )) : (
+                {recommendations.length > 0 ? recommendations.map(p => {
+                  const reason = matchReason(p, { ...prefs, topFamily });
+                  return (
+                    <Link key={p.id} href={`/perfume/${p.slug}`} className="quiz-result-product">
+                      <div className="quiz-result-img-wrap">
+                        <img src={getImagePath(p)} alt={p.name} />
+                        {p.bestseller && <span className="quiz-result-badge">Bestseller</span>}
+                      </div>
+                      <p className="b">{p.brand}</p>
+                      <p className="n">{p.name}<em> {p.type}</em></p>
+                      <div className="quiz-result-meta">
+                        <span className="quiz-result-price">{COP(p.price)}</span>
+                        <span className="quiz-result-rating">★ {(p.rating || 0).toFixed(1)}</span>
+                      </div>
+                      {reason && <span className="quiz-result-reason">{reason}</span>}
+                    </Link>
+                  );
+                }) : (
                   <p style={{ gridColumn: '1/-1', color: 'rgba(250,248,243,.6)', fontStyle: 'italic' }}>
-                    Pronto añadiremos más fragancias de esta familia.
+                    No encontramos coincidencias exactas. Probá otras respuestas.
                   </p>
                 )}
               </div>
-              <button type="button" onClick={reset} className="btn btn-gold" style={{ marginTop: 32 }}>
-                Hacer el quiz otra vez <RotateCcw size={13} />
-              </button>
+              <div style={{ display: 'flex', gap: 12, marginTop: 32, justifyContent: 'center', flexWrap: 'wrap' }}>
+                <Link href="/tienda" className="btn btn-outline">
+                  Ver toda la tienda <ArrowRight size={13} />
+                </Link>
+                <button type="button" onClick={reset} className="btn btn-gold">
+                  Hacer el quiz otra vez <RotateCcw size={13} />
+                </button>
+              </div>
             </div>
           )}
         </div>
