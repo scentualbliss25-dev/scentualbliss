@@ -180,7 +180,7 @@
 /* RIGHT — bottle stage */
 .sb-home .fx-stage { position: relative; width: 100%; aspect-ratio: 1/1; max-width: 620px; margin-left: auto; }
 .sb-home .fx-stage-inner { position: absolute; inset: 0; transform: translate3d(calc(var(--mx) * 14px), calc(var(--my) * 14px), 0); transition: transform .2s ease-out; }
-.sb-home .fx-rings { position: absolute; inset: 0; width: 100%; height: 100%; animation: sb-spinSlow 60s linear infinite; }
+.sb-home .fx-rings { position: absolute; inset: 0; width: 100%; height: 100%; animation: sb-spinSlow 60s linear infinite; pointer-events: none; }
 .sb-home .fx-rings .ring { transform-origin: 300px 300px; }
 .sb-home .fx-rings .r1 { animation: sb-spinSlow 80s linear infinite reverse; }
 .sb-home .fx-rings .r2 { animation: sb-spinSlow 50s linear infinite; }
@@ -190,12 +190,14 @@
   position: absolute; inset: 18%; border-radius: 50%;
   background: radial-gradient(circle at 50% 55%, rgba(212,182,138,.55) 0%, rgba(184,144,92,.18) 40%, transparent 70%);
   filter: blur(20px); animation: sb-haloPulse 6s ease-in-out infinite;
+  pointer-events: none;
 }
 @keyframes sb-haloPulse { 0%,100% { opacity: .85; transform: scale(1); } 50% { opacity: 1; transform: scale(1.06); } }
 .sb-home .fx-beam {
   position: absolute; left: 50%; top: 5%; bottom: 5%; width: 1px;
   background: linear-gradient(180deg, transparent 0%, rgba(212,182,138,.5) 50%, transparent 100%);
   transform: translateX(-50%);
+  pointer-events: none;
   animation: sb-beamSweep 8s ease-in-out infinite;
 }
 @keyframes sb-beamSweep { 0%,100% { transform: translateX(-50%) rotate(-12deg); opacity: .4; } 50% { transform: translateX(-50%) rotate(12deg); opacity: 1; } }
@@ -212,61 +214,97 @@
   position: absolute; inset: 0;
   transform: rotate(var(--rot));
   transition: transform .25s linear;
-  z-index: 4;
+  /* Notas viven detrás de la botella (z-index 3) por defecto, salvo cuando una
+     está activa: ahí el .fx-note.is-active sube al frente individualmente */
+  z-index: 2;
 }
 .sb-home .fx-orbit.is-paused { transition: transform .8s var(--ease-out); }
 .sb-home .fx-note {
   position: absolute; left: 50%; top: 50%; width: 0; height: 0;
-  --r: 58%;
+  --r: 50%;
   transform: translate(-50%,-50%) rotate(var(--angle)) translateY(calc(var(--r) * -1));
   opacity: 0; animation: sb-noteIn .8s var(--ease-out) forwards;
-  z-index: 4;
 }
+.sb-home .fx-note.is-active { z-index: 20; }
+
+/* Chip por defecto: texto VERTICAL, discreto, detrás de la botella */
 .sb-home .fx-note-chip {
-  display: inline-flex; flex-direction: column; align-items: center; gap: 2px;
-  padding: 8px 14px;
-  background: rgba(15,12,9,.78);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(212,182,138,.32);
+  display: inline-flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 14px 7px;
+  background: rgba(15,12,9,.55);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(212,182,138,.18);
   border-radius: 100px; white-space: nowrap;
-  color: var(--gold-soft);
+  color: rgba(212,182,138,.7);
   transform-origin: center;
-  transition: transform .35s var(--ease-out), background .3s, border-color .3s,
-              padding .35s var(--ease-out), border-radius .35s, color .3s,
-              box-shadow .35s;
-  box-shadow: 0 8px 24px rgba(0,0,0,.4);
-  cursor: default;
+  /* writing-mode rota el texto 90° de modo que se lea de arriba a abajo */
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  cursor: pointer;
   position: relative;
+  font: inherit;
+  transition: transform .45s var(--ease-out), background .35s, border-color .35s,
+              padding .45s var(--ease-out), border-radius .45s, color .35s,
+              box-shadow .45s, opacity .35s;
 }
 .sb-home .fx-note-label {
-  font-family: var(--mono); font-size: .64rem; letter-spacing: .2em;
+  font-family: var(--mono); font-size: .62rem; letter-spacing: .2em;
   text-transform: uppercase; font-weight: 600; line-height: 1;
   color: inherit;
 }
 .sb-home .fx-note-pos {
-  font-family: var(--mono); font-size: .5rem; letter-spacing: .3em;
+  font-family: var(--mono); font-size: .48rem; letter-spacing: .28em;
   text-transform: uppercase; line-height: 1;
   color: var(--gold);
-  max-height: 0; opacity: 0; overflow: hidden;
-  transition: max-height .35s var(--ease-out), opacity .25s, margin .35s;
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity .3s, max-height .3s ease, margin .3s;
 }
 .sb-home .fx-note-chip:hover {
-  transform: scale(1.12);
-  background: rgba(15,12,9,.94);
-  border-color: var(--gold);
-  color: var(--bg-1);
+  color: var(--gold-soft);
+  border-color: rgba(212,182,138,.4);
+  background: rgba(15,12,9,.75);
+}
+
+/* Estado activo: viene al FRENTE, texto HORIZONTAL, mucho más visible */
+.sb-home .fx-note.is-active .fx-note-chip {
+  writing-mode: horizontal-tb;
   padding: 11px 18px;
   border-radius: 14px;
-  box-shadow: 0 14px 34px rgba(0,0,0,.55), 0 0 28px rgba(212,182,138,.25);
+  background: rgba(15,12,9,.95);
+  border-color: var(--gold);
+  color: #fff;
+  box-shadow:
+    0 18px 40px rgba(0,0,0,.6),
+    0 0 36px rgba(212,182,138,.45),
+    inset 0 1px 0 rgba(255,255,255,.08);
+  /* La escala se aplica sobre el rotate inline — el style del JSX la respeta */
+  /* Para conseguir el "salto" usamos un wrapper visual via outline glow */
 }
-.sb-home .fx-note-chip:hover .fx-note-pos {
-  max-height: 14px;
+.sb-home .fx-note.is-active .fx-note-chip::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 18px;
+  border: 1px solid rgba(212,182,138,.35);
+  opacity: 0;
+  animation: sb-note-ring 1.4s ease-out;
+  pointer-events: none;
+}
+.sb-home .fx-note.is-active .fx-note-pos {
   opacity: 1;
+  max-height: 14px;
   margin-bottom: 2px;
 }
-.sb-home .fx-note-chip:hover .fx-note-label {
-  color: #fff;
+.sb-home .fx-note.is-active .fx-note-label {
+  font-size: .72rem;
+  color: var(--bg-1);
+}
+@keyframes sb-note-ring {
+  0%   { opacity: 1; transform: scale(.85); }
+  100% { opacity: 0; transform: scale(1.4); }
 }
 @keyframes sb-noteIn { from { opacity: 0; transform: translate(-50%,-50%) rotate(var(--angle)) translateY(calc(var(--r) * -1)) scale(.6); } to { opacity: 1; transform: translate(-50%,-50%) rotate(var(--angle)) translateY(calc(var(--r) * -1)) scale(1); } }
 /* HUD */
