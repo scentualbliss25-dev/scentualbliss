@@ -788,7 +788,7 @@ body::after {
 /* Accesibilidad: respeta la preferencia del sistema para reducir movimiento.
    Excluimos animaciones decorativas críticas (marquee de logos, anuncios) usando :not() */
 @media (prefers-reduced-motion: reduce) {
-  *:not(.fx-marquee-track):not(.brand-logo-img):not(.sb-announce-track):not(.fx-marquee-track *),
+  *:not(.fx-marquee-track):not(.sb-announce-track):not(.fx-marquee-track *),
   *::before,
   *::after {
     animation-duration: .01ms !important;
