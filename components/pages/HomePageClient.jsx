@@ -561,7 +561,7 @@ function PCard({ product, onQuick }) {
 function Bestsellers({ onQuick }) {
   const items = useMemo(() => products.filter(p => p.bestseller).slice(0, 8), []);
   return (
-    <section className="section">
+    <section className="section section-white">
       <div className="container">
         <div className="section-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 24, maxWidth: '100%' }}>
           <div>

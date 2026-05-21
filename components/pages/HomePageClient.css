@@ -278,6 +278,18 @@
 /* ===== SECTIONS ===== */
 .sb-home .section { padding: 110px 0; position: relative; }
 .sb-home .section-alt { background: var(--bg-3); }
+.sb-home .section-white { background: #FFFFFF; }
+.sb-home .section-white .pcard-img-wrap {
+  background: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(31,26,20,.04), 0 8px 24px rgba(31,26,20,.06);
+  border: 1px solid rgba(31,26,20,.04);
+  transition: box-shadow .4s var(--ease-out), transform .4s var(--ease-out);
+}
+.sb-home .section-white .pcard-img-wrap::before { display: none; }
+.sb-home .section-white .pcard:hover .pcard-img-wrap {
+  box-shadow: 0 4px 8px rgba(31,26,20,.05), 0 16px 40px rgba(31,26,20,.10);
+  transform: translateY(-2px);
+}
 .sb-home .section-head { max-width: 700px; margin-bottom: 64px; }
 .sb-home .section-head.center { margin-left: auto; margin-right: auto; text-align: center; }
 .sb-home .section-head .eyebrow { font-size: .68rem; letter-spacing: .3em; text-transform: uppercase; color: var(--gold-deep); font-weight: 600; margin-bottom: 18px; display: inline-flex; align-items: center; }
