@@ -103,7 +103,9 @@ export default function ProductPageClient({ product, resolvedImages }) {
   ).slice(0, 4);
 
   const discount = product.originalPrice ? Math.round((1 - product.price / product.originalPrice) * 100) : null;
-  const primaryCat = CATEGORY_LABELS[product.type] || CATEGORY_LABELS[product.category] || CATEGORY_LABELS['diseno'];
+  // El "tipo de producto" es Diseñador / Nicho / Árabe (product.productType)
+  // NOT product.type que es la concentración (EDP / EDT / Parfum).
+  const primaryCat = CATEGORY_LABELS[product.productType] || CATEGORY_LABELS[product.category] || CATEGORY_LABELS['disenador'];
   const scentCat = CATEGORY_LABELS[product.category];
 
   // Imagenes resueltas: prioridad → resolvedImages (server-side fs scan) → product.images → fallback
@@ -165,9 +167,9 @@ export default function ProductPageClient({ product, resolvedImages }) {
           <span>/</span>
           <Link href="/tienda" style={{ color: 'var(--gray)' }}>Tienda</Link>
           <span>/</span>
-          {product.type && (
+          {product.productType && (
             <>
-              <Link href={`/tienda?type=${product.type}`} style={{ color: 'var(--gold)' }}>{primaryCat.label}</Link>
+              <Link href={`/tienda?type=${product.productType}`} style={{ color: 'var(--gold)' }}>{primaryCat.label}</Link>
               <span>/</span>
             </>
           )}
