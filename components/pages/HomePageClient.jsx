@@ -67,71 +67,75 @@ const HERO_BRANDS = (() => {
 //   genderTags   → 'Masculino' | 'Femenino' | 'Unisex' (match laxo)
 const QUIZ_STEPS = [
   {
-    q: '¿Para quién <em>buscas</em> el perfume?',
+    q: '¿Para quién es el <em>perfume</em>?',
     field: 'gender',
     options: [
-      { icon: '♀', text: 'Para mujer', sub: 'Femenino o unisex', weight: {}, genderTags: ['Femenino', 'Unisex'] },
-      { icon: '♂', text: 'Para hombre', sub: 'Masculino o unisex', weight: {}, genderTags: ['Masculino', 'Unisex'] },
-      { icon: '⚭', text: 'Es un regalo unisex', sub: 'Vale para cualquiera', weight: {}, genderTags: ['Unisex', 'Femenino', 'Masculino'] },
+      { icon: '👩', text: 'Para mujer', sub: '', weight: {}, genderTags: ['Femenino', 'Unisex'] },
+      { icon: '👨', text: 'Para hombre', sub: '', weight: {}, genderTags: ['Masculino', 'Unisex'] },
+      { icon: '🎁', text: 'Es un regalo', sub: 'Quiero algo unisex que le guste a cualquiera', weight: {}, genderTags: ['Unisex', 'Femenino', 'Masculino'] },
     ],
   },
   {
-    q: '¿En qué momento quieres que <em>brille</em>?',
+    q: '¿Cuándo lo vas a <em>usar</em>?',
     field: 'occasion',
     options: [
-      { icon: '☀', text: 'Día y oficina', sub: 'Frescura ligera, energizante',
+      { icon: '☀️', text: 'Para el día / oficina', sub: 'Algo fresco y ligero',
         weight: { fresco: 3, citrico: 3, frutal: 1 },
         occasionTags: ['Día', 'Trabajo', 'Casual'] },
-      { icon: '☾', text: 'Noches especiales', sub: 'Sensual, profundo, magnético',
+      { icon: '🌙', text: 'Para la noche', sub: 'Algo más intenso y sensual',
         weight: { dulce: 3, amaderado: 3, floral: 1 },
         occasionTags: ['Noche', 'Romántico', 'Cenas', 'Eventos especiales'] },
-      { icon: '✿', text: 'Casual diario', sub: 'Versátil, fácil de llevar',
+      { icon: '👕', text: 'Para todos los días', sub: 'Versátil, fácil de llevar',
         weight: { fresco: 2, frutal: 2, citrico: 1, floral: 1 },
         occasionTags: ['Casual', 'Día'] },
-      { icon: '✦', text: 'Eventos formales', sub: 'Algo único e inolvidable',
+      { icon: '🥂', text: 'Para ocasiones especiales', sub: 'Eventos, cenas, citas',
         weight: { amaderado: 3, dulce: 2, floral: 2 },
         occasionTags: ['Eventos formales', 'Eventos especiales', 'Cenas elegantes', 'Fiestas'] },
     ],
   },
   {
-    q: '¿Qué <em>aroma</em> te detiene en seco al pasar?',
+    q: '¿Qué tipo de aroma te <em>gusta</em>?',
     field: 'family',
     options: [
-      { icon: '❀', text: 'Flores recién cortadas', sub: 'Rosa, jazmín, azahar', weight: { floral: 5 } },
-      { icon: '◉', text: 'Vainilla y caramelo', sub: 'Dulce, cremoso, gourmand', weight: { dulce: 5 } },
-      { icon: '❦', text: 'Bosque después de lluvia', sub: 'Maderas, oud, pachulí', weight: { amaderado: 5 } },
-      { icon: '☀', text: 'Cítricos al amanecer', sub: 'Bergamota, mandarina, lima', weight: { citrico: 5, fresco: 2 } },
-      { icon: '◊', text: 'Frutas jugosas', sub: 'Manzana, durazno, frutos rojos', weight: { frutal: 5, dulce: 1 } },
-      { icon: '∿', text: 'Brisa marina', sub: 'Frescos, acuáticos, herbales', weight: { fresco: 5, citrico: 1 } },
+      { icon: '🌸', text: 'Floral', sub: 'Rosa, jazmín, flores', weight: { floral: 5 } },
+      { icon: '🍯', text: 'Dulce', sub: 'Vainilla, caramelo, gourmand', weight: { dulce: 5 } },
+      { icon: '🌲', text: 'Amaderado', sub: 'Madera, oud, sándalo', weight: { amaderado: 5 } },
+      { icon: '🍋', text: 'Cítrico', sub: 'Limón, bergamota, naranja', weight: { citrico: 5, fresco: 2 } },
+      { icon: '🍓', text: 'Frutal', sub: 'Frutos rojos, manzana, durazno', weight: { frutal: 5, dulce: 1 } },
+      { icon: '🌊', text: 'Fresco', sub: 'Marino, herbal, aire libre', weight: { fresco: 5, citrico: 1 } },
     ],
   },
   {
-    q: '¿Qué <em>estilo</em> te define?',
+    q: '¿Qué tipo de perfumes <em>prefieres</em>?',
     field: 'style',
     options: [
-      { icon: '◆', text: 'Clásico icónico', sub: 'Casas de lujo: Chanel, Dior, Tom Ford',
+      { icon: '💎', text: 'De diseñador', sub: 'Chanel, Dior, Tom Ford, Carolina Herrera',
         weight: { floral: 1 }, productType: 'disenador' },
-      { icon: '✧', text: 'Exclusivo y único', sub: 'Nicho: Xerjoff, MFK, artesanal',
+      { icon: '✨', text: 'De nicho (exclusivos)', sub: 'Xerjoff, MFK, marcas artesanales',
         weight: { amaderado: 1, floral: 1 }, productType: 'nicho' },
-      { icon: '☪', text: 'Intenso y poderoso', sub: 'Árabe: Lattafa, Armaf, oud profundo',
+      { icon: '🌙', text: 'Árabes (intensos)', sub: 'Lattafa, Armaf, Afnan',
         weight: { dulce: 1, amaderado: 1 }, productType: 'arabe' },
-      { icon: '✦', text: 'Sorpréndeme', sub: 'Cualquier estilo me sirve',
+      { icon: '🎲', text: 'Cualquiera está bien', sub: 'Que el sistema elija por mí',
         weight: {}, productType: null },
     ],
   },
 ];
 
 const FAMILY_NAMES = {
-  floral: 'Floral romántica', frutal: 'Frutal vibrante', fresco: 'Fresca libre',
-  citrico: 'Cítrica luminosa', dulce: 'Dulce magnética', amaderado: 'Amaderada profunda',
+  floral: 'Floral',
+  frutal: 'Frutal',
+  fresco: 'Fresco',
+  citrico: 'Cítrico',
+  dulce: 'Dulce / Gourmand',
+  amaderado: 'Amaderado',
 };
 const FAMILY_DESC = {
-  floral: 'Tu firma es etérea y femenina. Buscas elegancia atemporal con notas de rosa, jazmín y azahar.',
-  frutal: 'Eres jugosa, juvenil y memorable. Te van las notas frescas con un toque dulce que dejan huella.',
-  fresco: 'Eres aire en movimiento. Notas marinas, hierbas y maderas claras que respiran libertad.',
-  citrico: 'Eres pura energía. Bergamota, mandarina y limón que iluminan cualquier espacio.',
-  dulce: 'Eres calidez en estado puro. Vainilla, ámbar y maderas adictivas que envuelven la noche.',
-  amaderado: 'Eres misterio y profundidad. Sándalo, oud y pachulí: presencia inolvidable.',
+  floral: 'Te gustan los aromas de flores: rosa, jazmín, azahar. Femenino, elegante y atemporal.',
+  frutal: 'Te van los aromas frutales y jugosos: frutos rojos, manzana, durazno. Juvenil y alegre.',
+  fresco: 'Prefieres aromas frescos y limpios: marinos, herbales, aire libre. Ideal para el día.',
+  citrico: 'Te encantan los aromas cítricos: limón, bergamota, naranja. Energético y luminoso.',
+  dulce: 'Te van los perfumes dulces y gourmand: vainilla, caramelo, ámbar. Cálido y adictivo.',
+  amaderado: 'Buscas aromas amaderados: sándalo, oud, pachulí. Profundo y sofisticado.',
 };
 
 const TOAST_STYLE = {
@@ -857,7 +861,7 @@ function Quiz() {
         return { p, score };
       });
 
-    // Top resultados por score
+    // Top resultados por score (selección de los mejores matches)
     let top = scored
       .filter(({ score }) => score > 5)
       .sort((a, b) => b.score - a.score)
@@ -874,18 +878,21 @@ function Quiz() {
       top = [...top, ...fallback];
     }
 
+    // Una vez seleccionados los mejores matches, los ordenamos de menor a mayor precio
+    top = top.sort((a, b) => (a.price || 0) - (b.price || 0));
+
     return top;
   }, [done, scores, prefs, topFamily, secondFamily]);
 
   const contextDesc = (() => {
     if (!done) return '';
     const parts = [];
-    if (prefs.occasionTags?.includes('Día')) parts.push('para el día');
+    if (prefs.occasionTags?.includes('Día')) parts.push('para usar de día');
     else if (prefs.occasionTags?.includes('Noche')) parts.push('para la noche');
-    else if (prefs.occasionTags?.some(t => t.includes('Eventos'))) parts.push('para eventos');
+    else if (prefs.occasionTags?.some(t => t.includes('Eventos'))) parts.push('para ocasiones especiales');
     else if (prefs.occasionTags?.includes('Casual')) parts.push('para el día a día');
-    if (prefs.productType) parts.push(`estilo ${TYPE_DISPLAY[prefs.productType].toLowerCase()}`);
-    return parts.length ? ` Curado ${parts.join(' · ')}.` : '';
+    if (prefs.productType) parts.push(`del tipo ${TYPE_DISPLAY[prefs.productType].toLowerCase()}`);
+    return parts.length ? ` Elegidos ${parts.join(' y ')}.` : '';
   })();
 
   return (
@@ -893,8 +900,8 @@ function Quiz() {
       <div className="container">
         <div className="section-head center">
           <p className="eyebrow"><Sparkles size={12} />&nbsp;Quiz olfativo</p>
-          <h2>¿Qué fragancia <em>eres</em>?</h2>
-          <p>{QUIZ_STEPS.length} preguntas rápidas. Te recomendamos lo mejor de nuestro catálogo.</p>
+          <h2>Encontrá tu <em>perfume ideal</em></h2>
+          <p>Responde {QUIZ_STEPS.length} preguntas rápidas y te recomendamos los perfumes de nuestro catálogo que mejor encajan con vos.</p>
         </div>
         <div className="quiz-card">
           {!done ? (
@@ -928,13 +935,13 @@ function Quiz() {
             </>
           ) : (
             <div className="quiz-result">
-              <p className="quiz-result-eyebrow">Tu firma olfativa</p>
-              <h3>Eres <em style={{ color: famColor }}>{FAMILY_NAMES[topFamily]}</em>.</h3>
+              <p className="quiz-result-eyebrow">Tu tipo de perfume</p>
+              <h3>Te gustan los <em style={{ color: famColor }}>{FAMILY_NAMES[topFamily]}</em></h3>
               <p className="quiz-result-desc">
                 {FAMILY_DESC[topFamily]}{contextDesc}
               </p>
               <p className="quiz-step-label" style={{ marginTop: 28, marginBottom: 14 }}>
-                {recommendations.length} fragancias para ti
+                Te recomendamos {recommendations.length} perfumes (del más económico al más caro)
               </p>
               <div className="quiz-result-products">
                 {recommendations.length > 0 ? recommendations.map(p => {
