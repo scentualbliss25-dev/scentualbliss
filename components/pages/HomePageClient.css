@@ -87,6 +87,18 @@
 .sb-home .btn-gold:hover { transform: translateY(-2px); filter: brightness(1.08); }
 .sb-home .btn-outline { border: 1px solid var(--ink); color: var(--ink); background: transparent; }
 .sb-home .btn-outline:hover { background: var(--ink); color: var(--bg-1); }
+/* Outline button sobre fondo oscuro (quiz card): borde y texto dorados */
+.sb-home .quiz-card .btn-outline,
+.sb-home .quiz-result .btn-outline {
+  border-color: var(--gold-soft);
+  color: var(--gold-soft);
+}
+.sb-home .quiz-card .btn-outline:hover,
+.sb-home .quiz-result .btn-outline:hover {
+  background: var(--gold-soft);
+  color: var(--bg-deep);
+  border-color: var(--gold-soft);
+}
 .sb-home .btn-ghost { color: var(--ink); padding: 8px 0; border-radius: 0; border-bottom: 1px solid var(--ink); text-transform: uppercase; font-size: .76rem; letter-spacing: .12em; }
 .sb-home .btn-ghost:hover { color: var(--gold-deep); border-color: var(--gold-deep); }
 /* ===== REVEAL ===== */
