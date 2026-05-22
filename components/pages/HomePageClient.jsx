@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import QuickView from '@/components/ui/QuickView';
 import {
-  ArrowRight, ArrowLeft, ShoppingBag, Heart, Eye, Star,
+  ArrowRight, ArrowLeft, ShoppingBag, Heart, Eye,
   Truck, Shield, RotateCcw, Award, Sparkles, Flame,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -181,20 +181,6 @@ function Reveal({ children, delay = 0, as: Tag = 'div', className = '', style })
   );
 }
 
-// ---------- Stars ----------
-function Stars({ rating = 5, size = 11 }) {
-  return (
-    <span className="stars" style={{ display: 'inline-flex', gap: 2 }}>
-      {[1, 2, 3, 4, 5].map((s) => (
-        <svg key={s} width={size} height={size} viewBox="0 0 24 24"
-          fill={s <= Math.round(rating) ? 'var(--gold)' : 'transparent'}
-          stroke="var(--gold)" strokeWidth="1.5">
-          <polygon points="12,2 15.1,8.3 22,9.3 17,14.1 18.2,21 12,17.8 5.8,21 7,14.1 2,9.3 8.9,8.3" />
-        </svg>
-      ))}
-    </span>
-  );
-}
 
 // ---------- Parallax hook ----------
 function useParallax() {
@@ -820,19 +806,29 @@ function Quiz() {
   // Recomendaciones: scoring multi-factor sobre TODO el catálogo
   const recommendations = useMemo(() => {
     if (!done) return [];
-    const fullPrefs = { ...prefs, topFamily, secondFamily };
+
+    // HARD FILTERS: si el usuario eligió una preferencia explícita, la respetamos
+    // de forma estricta (no es solo un boost en el score).
+    const matchesHardFilters = (p) => {
+      if (!Number.isFinite(p.price) || p.price <= 0) return false;
+      // Tipo de producto: si eligió Diseñador / Nicho / Árabe → debe coincidir
+      if (prefs.productType && p.productType !== prefs.productType) return false;
+      // Género: si eligió "Para mujer" / "Para hombre" → solo géneros compatibles
+      // (genderTags ya incluye Unisex en los casos correspondientes)
+      if (prefs.genderTags?.length && p.gender && !prefs.genderTags.includes(p.gender)) return false;
+      return true;
+    };
 
     const scored = products
-      // Solo perfumes con precio real (descartamos "Próximamente")
-      .filter(p => Number.isFinite(p.price) && p.price > 0)
+      .filter(matchesHardFilters)
       .map(p => {
         let score = 0;
 
-        // 1. FAMILIA olfativa (señal primaria, peso fuerte)
+        // 1. FAMILIA olfativa (señal primaria)
         if (p.category === topFamily) score += 12;
         else if (p.category === secondFamily) score += 5;
 
-        // 2. OCASIÓN (cruce con product.occasion array)
+        // 2. OCASIÓN — soft, cruce con product.occasion
         if (prefs.occasionTags?.length && Array.isArray(p.occasion)) {
           const overlap = p.occasion.filter(o =>
             prefs.occasionTags.some(t => o.toLowerCase().includes(t.toLowerCase()))
@@ -840,20 +836,7 @@ function Quiz() {
           score += overlap.length * 2.5;
         }
 
-        // 3. TIPO de producto (Diseñador/Nicho/Árabe)
-        if (prefs.productType) {
-          if (p.productType === prefs.productType) score += 6;
-        } else {
-          // "Sorpréndeme" → no penaliza, da un pequeño boost neutral
-          score += 1;
-        }
-
-        // 4. GÉNERO (match laxo: Unisex siempre suma algo)
-        if (prefs.genderTags?.length && p.gender) {
-          if (prefs.genderTags.includes(p.gender)) score += 3;
-        }
-
-        // 5. Calidad: rating y bestseller como desempates
+        // 3. Calidad: rating y bestseller como desempates finos
         score += (p.rating || 0) * 0.6;
         if (p.bestseller) score += 1.5;
         if (p.featured) score += 0.5;
@@ -861,18 +844,18 @@ function Quiz() {
         return { p, score };
       });
 
-    // Top resultados por score (selección de los mejores matches)
+    // Top resultados por score (selección de los mejores matches dentro del filtro)
     let top = scored
-      .filter(({ score }) => score > 5)
       .sort((a, b) => b.score - a.score)
       .slice(0, 6)
       .map(({ p }) => p);
 
-    // Fallback: si no llegamos a 3, completamos con productos top-rated del catálogo
+    // Fallback: si no llegamos a 3 dentro del filtro estricto, completamos con
+    // los top-rated de productos que TAMBIÉN respeten los filtros duros
     if (top.length < 3) {
       const usedIds = new Set(top.map(p => p.id));
       const fallback = products
-        .filter(p => Number.isFinite(p.price) && p.price > 0 && !usedIds.has(p.id))
+        .filter(p => matchesHardFilters(p) && !usedIds.has(p.id))
         .sort((a, b) => (b.rating || 0) - (a.rating || 0))
         .slice(0, 6 - top.length);
       top = [...top, ...fallback];
