@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { verifySession, ADMIN_COOKIE_NAME } from '@/lib/admin-auth';
 
 // Parámetros de tracking que Google Shopping / redes añaden y que no deben indexarse
 // srsltid = Google Shopping Results Tracking ID
@@ -12,30 +13,34 @@ const STRIP_PARAMS = ['srsltid', '_gl', 'igshid', 'mc_eid'];
 const CONC_VALUES = new Set(['EDP', 'EDT', 'Extrait', 'Parfum', 'Elixir',
   'EDT Intense', 'Parfum Concentré']);
 
-export function middleware(req) {
+export async function middleware(req) {
   const { pathname } = req.nextUrl;
 
-  // ── Admin: HTTP Basic Auth ──────────────────────────────────────────────
-  if (pathname.startsWith('/admin')) {
-    const auth = req.headers.get('authorization');
-    const expected = process.env.ADMIN_PASSWORD;
+  // ── Admin: cookie de sesión firmada (ver lib/admin-auth.js) ─────────────
+  // Excluimos /admin/login y /api/admin/login del check, sino habría loop.
+  const isAdminPath = pathname.startsWith('/admin') || pathname.startsWith('/api/admin');
+  const isLoginRoute = pathname === '/admin/login' || pathname === '/api/admin/login';
 
+  if (isAdminPath && !isLoginRoute) {
+    const expected = process.env.ADMIN_PASSWORD;
     if (!expected) {
       return new NextResponse('Admin no configurado (falta ADMIN_PASSWORD)', { status: 503 });
     }
 
-    if (auth?.startsWith('Basic ')) {
-      try {
-        const decoded = atob(auth.slice(6));
-        const [user, pass] = decoded.split(':');
-        if (user === 'admin' && pass === expected) return NextResponse.next();
-      } catch {}
-    }
+    const cookieVal = req.cookies.get(ADMIN_COOKIE_NAME)?.value;
+    const valid = await verifySession(cookieVal, expected);
 
-    return new NextResponse('Auth required', {
-      status: 401,
-      headers: { 'WWW-Authenticate': 'Basic realm="ScentualBliss Admin"' },
-    });
+    if (!valid) {
+      // Para rutas de API → 401 JSON. Para páginas → redirect a /admin/login.
+      if (pathname.startsWith('/api/admin')) {
+        return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+      }
+      const loginUrl = req.nextUrl.clone();
+      loginUrl.pathname = '/admin/login';
+      loginUrl.searchParams.set('next', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+    return NextResponse.next();
   }
 
   // ── Limpieza de URLs: tracking params + redirecciones antiguas ──────────
@@ -74,8 +79,9 @@ export function middleware(req) {
 
 export const config = {
   matcher: [
-    // Admin auth
+    // Admin auth (páginas y endpoints API admin)
     '/admin/:path*',
+    '/api/admin/:path*',
     // Páginas públicas (excluye assets estáticos, imágenes y APIs)
     '/((?!_next/static|_next/image|favicon\\.ico|img/|api/).*)',
   ],
