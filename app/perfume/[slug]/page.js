@@ -1,4 +1,4 @@
-import { products, categoryLabels, getImagePath } from '@/lib/products';
+import { getProductBySlug, getBestsellers, getAllProducts, categoryLabels, getImagePath } from '@/lib/products';
 import ProductPageClient from '@/components/pages/ProductPageClient';
 import ProductSeoContent, { ProductFAQSchema } from '@/components/seo/ProductSeoContent';
 import { notFound } from 'next/navigation';
@@ -26,7 +26,8 @@ function resolveProductImages(product) {
 // Solo pre-generamos bestsellers para mantener el build dentro de los límites
 // de CloudLinux/Hostinger. El resto usa ISR (Incremental Static Regeneration).
 export async function generateStaticParams() {
-  return products.filter(p => p.bestseller).map(p => ({ slug: p.slug }));
+  const bestsellers = await getBestsellers(50);
+  return bestsellers.map(p => ({ slug: p.slug }));
 }
 
 // Permitir generación on-demand de páginas no pre-generadas
@@ -36,7 +37,7 @@ export const revalidate = 3600;
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const product = products.find(p => p.slug === slug);
+  const product = await getProductBySlug(slug);
   if (!product) return {};
 
   const categoryLabel = categoryLabels[product.category] || '';
@@ -111,8 +112,14 @@ export async function generateMetadata({ params }) {
 
 export default async function ProductPage({ params }) {
   const { slug } = await params;
-  const product = products.find(p => p.slug === slug);
+  const product = await getProductBySlug(slug);
   if (!product) notFound();
+
+  // Productos relacionados (misma familia o misma concentración).
+  const allProducts = await getAllProducts();
+  const related = allProducts.filter(p =>
+    (p.category === product.category || p.type === product.type) && p.id !== product.id
+  ).slice(0, 4);
 
   const categoryLabel = categoryLabels[product.category] || '';
   const url = `${SITE_URL}/perfume/${product.slug}`;
@@ -232,7 +239,7 @@ export default async function ProductPage({ params }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
       <ProductFAQSchema product={product} />
-      <ProductPageClient product={product} resolvedImages={resolvedImages} />
+      <ProductPageClient product={product} resolvedImages={resolvedImages} related={related} />
       <ProductSeoContent product={product} />
     </>
   );

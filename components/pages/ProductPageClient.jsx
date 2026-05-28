@@ -8,7 +8,7 @@ import { Reveal, StaggerContainer, StaggerItem } from '@/components/ui/ScrollAni
 import ProductCard from '@/components/ui/ProductCard';
 import ProductReviews from '@/components/ui/ProductReviews';
 import BrandLogo from '@/components/ui/BrandLogo';
-import { products, getImagePath } from '@/lib/products';
+import { getImagePath } from '@/lib/products';
 import { formatCOP } from '@/lib/format';
 import toast from 'react-hot-toast';
 
@@ -68,7 +68,7 @@ function FaqItem({ q, a }) {
   );
 }
 
-export default function ProductPageClient({ product, resolvedImages }) {
+export default function ProductPageClient({ product, resolvedImages, related = [] }) {
   const productSizes = product?.sizes || [];
   const [selSize, setSelSize] = useState(productSizes[1]?.ml || productSizes[0]?.ml || null);
   const selectedSizeObj = productSizes.find(s => s.ml === selSize) || productSizes[0];
@@ -109,9 +109,8 @@ export default function ProductPageClient({ product, resolvedImages }) {
     </div>
   );
 
-  const related = products.filter(p =>
-    (p.category === product.category || p.type === product.type) && p.id !== product.id
-  ).slice(0, 4);
+  // `related` viene desde el server padre (app/perfume/[slug]/page.js)
+  // que calcula los productos relacionados ya filtrados.
 
   const discount = product.originalPrice ? Math.round((1 - product.price / product.originalPrice) * 100) : null;
   // El "tipo de producto" es Diseñador / Nicho / Árabe (product.productType)

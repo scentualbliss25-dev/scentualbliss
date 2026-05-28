@@ -5,7 +5,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ShoppingBag, Search, Menu, X, Heart, ChevronDown, ChevronRight, ArrowRight, FileText, Truck, RotateCcw, HelpCircle, Sparkles, Mail } from 'lucide-react';
 import { useCartStore, useCartCount } from '@/lib/store/cartStore';
 import { useWishlistStore } from '@/lib/store/wishlistStore';
-import { collections, products, getImagePath, momentoOptions, climaOptions } from '@/lib/products';
+import { collections, getImagePath, momentoOptions, climaOptions } from '@/lib/products';
 
 // Helper: normaliza para comparar (sin tildes, minúsculas)
 const norm = (s) => String(s || '')
@@ -27,69 +27,68 @@ const SEARCHABLE_PAGES = [
   { title: 'Términos',   desc: 'Términos y condiciones',   url: '/terminos',      Icon: FileText,   keywords: ['terminos', 'condiciones', 'legal'] },
 ];
 
-// Marcas únicas ordenadas alfabéticamente
-const allBrands = [...new Set(products.map(p => p.brand))].sort((a, b) =>
-  a.localeCompare(b, 'es', { sensitivity: 'base' })
-);
+// Construye los items del menú principal a partir del catálogo recibido.
+// Antes era constante a nivel módulo (cuando products era array hardcoded).
+function buildNavItems(allBrands) {
+  return [
+    { label: 'Inicio', to: '/' },
+    {
+      label: 'Perfumes',
+      to: '/tienda',
+      isMegaMenu: true,
+      categories: [
+        {
+          id: 'marcas',
+          label: 'Marcas',
+          isBrandList: true,
+          items: allBrands.map(b => ({ label: b, to: `/tienda?brand=${encodeURIComponent(b)}` })),
+        },
+        {
+          id: 'conc',
+          label: 'Concentración',
+          items: [
+            { label: 'Eau de Toilette', desc: 'Fresco y ligero', to: '/tienda?conc=EDT' },
+            { label: 'Eau de Parfum', desc: 'Mayor duración e intensidad', to: '/tienda?conc=EDP' },
+            { label: 'Extrait de Parfum', desc: 'La máxima concentración', to: '/tienda?conc=Extrait' },
+            { label: 'Parfum', desc: 'Alta concentración clásica', to: '/tienda?conc=Parfum' },
+            { label: 'Elixir', desc: 'Concentración moderna extrema', to: '/tienda?conc=Elixir' },
+          ],
+        },
+        {
+          id: 'familia',
+          label: 'Familias Olfativas',
+          items: collections.map(c => ({ label: c.name, desc: c.description, to: `/tienda?cat=${c.id}`, color: c.color })),
+        },
+        {
+          id: 'genero',
+          label: 'Género',
+          items: [
+            { label: 'Masculino',  desc: 'Para él',       to: '/tienda?gender=Masculino' },
+            { label: 'Femenino',   desc: 'Para ella',      to: '/tienda?gender=Femenino' },
+            { label: 'Unisex',     desc: 'Para todos',     to: '/tienda?gender=Unisex' },
+          ],
+        },
+        {
+          id: 'momento',
+          label: 'Hora del Día',
+          items: momentoOptions.map(m => ({ label: m.name, desc: m.description, to: `/tienda?momento=${m.id}` })),
+        },
+        {
+          id: 'clima',
+          label: 'Clima',
+          items: climaOptions.map(c => ({ label: c.name, desc: c.description, to: `/tienda?clima=${c.id}` })),
+        },
+      ],
+    },
+    { label: 'Tienda', to: '/tienda' },
+    { label: 'Más Vendidos', to: '/tienda?sort=bestseller' },
+  ];
+}
 
-const NAV_ITEMS = [
-  { label: 'Inicio', to: '/' },
-  {
-    label: 'Perfumes',
-    to: '/tienda',
-    isMegaMenu: true,
-    categories: [
-      {
-        id: 'marcas',
-        label: 'Marcas',
-        isBrandList: true,
-        items: allBrands.map(b => ({ label: b, to: `/tienda?brand=${encodeURIComponent(b)}` })),
-      },
-      {
-        id: 'conc',
-        label: 'Concentración',
-        items: [
-          { label: 'Eau de Toilette', desc: 'Fresco y ligero', to: '/tienda?conc=EDT' },
-          { label: 'Eau de Parfum', desc: 'Mayor duración e intensidad', to: '/tienda?conc=EDP' },
-          { label: 'Extrait de Parfum', desc: 'La máxima concentración', to: '/tienda?conc=Extrait' },
-          { label: 'Parfum', desc: 'Alta concentración clásica', to: '/tienda?conc=Parfum' },
-          { label: 'Elixir', desc: 'Concentración moderna extrema', to: '/tienda?conc=Elixir' },
-        ],
-      },
-      {
-        id: 'familia',
-        label: 'Familias Olfativas',
-        items: collections.map(c => ({ label: c.name, desc: c.description, to: `/tienda?cat=${c.id}`, color: c.color })),
-      },
-      {
-        id: 'genero',
-        label: 'Género',
-        items: [
-          { label: 'Masculino',  desc: 'Para él',       to: '/tienda?gender=Masculino' },
-          { label: 'Femenino',   desc: 'Para ella',      to: '/tienda?gender=Femenino' },
-          { label: 'Unisex',     desc: 'Para todos',     to: '/tienda?gender=Unisex' },
-        ],
-      },
-      {
-        id: 'momento',
-        label: 'Hora del Día',
-        items: momentoOptions.map(m => ({ label: m.name, desc: m.description, to: `/tienda?momento=${m.id}` })),
-      },
-      {
-        id: 'clima',
-        label: 'Clima',
-        items: climaOptions.map(c => ({ label: c.name, desc: c.description, to: `/tienda?clima=${c.id}` })),
-      },
-    ],
-  },
-  { label: 'Tienda', to: '/tienda' },
-  { label: 'Más Vendidos', to: '/tienda?sort=bestseller' },
-];
-
-export default function Navbar() {
+export default function Navbar({ products = [] }) {
   return (
     <Suspense fallback={<NavbarShell />}>
-      <NavbarInner />
+      <NavbarInner products={products} />
     </Suspense>
   );
 }
@@ -121,7 +120,16 @@ function NavbarShell() {
   );
 }
 
-function NavbarInner() {
+function NavbarInner({ products = [] }) {
+  // allBrands y NAV_ITEMS se computan del catálogo (antes eran constantes de módulo).
+  const allBrands = useMemo(
+    () => [...new Set(products.map(p => p.brand))].sort((a, b) =>
+      a.localeCompare(b, 'es', { sensitivity: 'base' })
+    ),
+    [products]
+  );
+  const NAV_ITEMS = useMemo(() => buildNavItems(allBrands), [allBrands]);
+
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);

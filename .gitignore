@@ -55,3 +55,9 @@ token*.txt
 
 # Originales de logos de marca (procesados a public/img/brands/ vía script)
 public/img/brands-original/
+
+.env*.local
+
+# Backup local del antiguo lib/products.js antes de migrar a Supabase.
+# Safety net que SOLO existe en disco local. No va al repo.
+lib/products.backup.js

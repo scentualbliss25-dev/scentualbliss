@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, createContext, useContext } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -11,7 +11,7 @@ import {
   Truck, Shield, RotateCcw, Award, Sparkles, Flame,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { products, collections, testimonials, getImagePath, deriveClima } from '@/lib/products';
+import { collections, testimonials, getImagePath, deriveClima } from '@/lib/products';
 import { useCartStore } from '@/lib/store/cartStore';
 import { useWishlistStore } from '@/lib/store/wishlistStore';
 import './HomePageClient.css';
@@ -49,14 +49,23 @@ function _brandSlug(name) {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '');
 }
-const HERO_BRANDS = (() => {
+
+// === Context para compartir `products` entre sub-componentes sin tener
+// que pasarlo por props uno por uno. El padre (HomePageClient) lo
+// recibe del server component y lo inyecta acá.
+const ProductsContext = createContext([]);
+const useProducts = () => useContext(ProductsContext);
+
+// HERO_BRANDS antes era constante a nivel módulo (cuando products era
+// un array hardcoded). Ahora es función que recibe el array.
+function getHeroBrands(products) {
   const seen = new Map();
   for (const p of products) {
     if (!p.brand || seen.has(p.brand)) continue;
     seen.set(p.brand, { name: p.brand, slug: _brandSlug(p.brand) });
   }
   return Array.from(seen.values());
-})();
+}
 
 // QUIZ_STEPS — cada opción puede aportar a tres dimensiones de matching:
 //   weight       → boost a familias olfativas (acumulan score)
@@ -219,6 +228,7 @@ function useCountdown(target) {
 // HERO — futuristic editorial
 // ============================================================
 function Hero() {
+  const products = useProducts();
   const stageRef = useParallax();
   // Producto destacado del hero. Cambialo de slug si querés rotar el destacado.
   const heroProduct = products.find(p => p.slug === 'montale-arabians-tonka');
@@ -404,6 +414,8 @@ function Hero() {
 // BRANDS MARQUEE — banda blanca con logos (se ubica debajo del trust bar)
 // ============================================================
 function BrandsMarquee() {
+  const products = useProducts();
+  const HERO_BRANDS = useMemo(() => getHeroBrands(products), [products]);
   return (
     <div className="fx-marquee" aria-hidden="true">
       <div className="fx-marquee-track">
@@ -632,7 +644,8 @@ function PCard({ product, onQuick }) {
 // BESTSELLERS
 // ============================================================
 function Bestsellers({ onQuick }) {
-  const items = useMemo(() => products.filter(p => p.bestseller).slice(0, 8), []);
+  const products = useProducts();
+  const items = useMemo(() => products.filter(p => p.bestseller).slice(0, 8), [products]);
   return (
     <section className="section section-white">
       <div className="container">
@@ -666,6 +679,7 @@ const FLASH_DURATION_MS = 1000 * 60 * 60 * 20;
 const FLASH_KEY = 'sb_flash_offer_end';
 
 function Featured() {
+  const products = useProducts();
   const [target, setTarget] = useState(null);
   useEffect(() => {
     try {
@@ -680,7 +694,7 @@ function Featured() {
     }
   }, []);
   const { h, m, s } = useCountdown(target);
-  const product = useMemo(() => products.find(p => p.slug === 'lattafa-khamrah') || products[0], []);
+  const product = useMemo(() => products.find(p => p.slug === 'lattafa-khamrah') || products[0], [products]);
   const addItem = useCartStore(s => s.addItem);
 
   const handleAdd = () => {
@@ -746,10 +760,11 @@ function Featured() {
 // STORY
 // ============================================================
 function Story() {
+  const products = useProducts();
   const storyImg = useMemo(() => {
     const p = products.find(x => x.slug === 'dior-jadore-parfum') || products.find(x => x.brand === 'Dior') || products[0];
     return getImagePath(p);
-  }, []);
+  }, [products]);
   return (
     <section className="section story">
       <div className="container">
@@ -831,6 +846,7 @@ function matchReason(product, prefs) {
 }
 
 function Quiz() {
+  const products = useProducts();
   const [step, setStep] = useState(0);
   const [scores, setScores] = useState({});
   const [prefs, setPrefs] = useState({}); // { occasionTags, productType, genderTags }
@@ -925,7 +941,7 @@ function Quiz() {
     top = top.sort((a, b) => (a.price || 0) - (b.price || 0));
 
     return top;
-  }, [done, scores, prefs, topFamily, secondFamily]);
+  }, [done, scores, prefs, topFamily, secondFamily, products]);
 
   const contextDesc = (() => {
     if (!done) return '';
@@ -1069,6 +1085,7 @@ function avatarBg(name = '') {
 }
 
 function Testimonials() {
+  const products = useProducts();
   const [reviews, setReviews] = useState(null); // null = loading, [] = empty
   const scrollerRef = useRef(null);
   const [canPrev, setCanPrev] = useState(false);
@@ -1082,7 +1099,7 @@ function Testimonials() {
     const map = new Map();
     for (const p of products) map.set(p.slug, p);
     return map;
-  }, []);
+  }, [products]);
 
   useEffect(() => {
     let cancelled = false;
@@ -1251,10 +1268,11 @@ function Newsletter() {
 // ============================================================
 // HOME PAGE CLIENT — root
 // ============================================================
-export default function HomePageClient() {
+export default function HomePageClient({ products = [] }) {
   const [qvProduct, setQvProduct] = useState(null);
 
   return (
+    <ProductsContext.Provider value={products}>
     <div className="sb-home">
       <main>
         <Hero />
@@ -1274,5 +1292,6 @@ export default function HomePageClient() {
         onClose={() => setQvProduct(null)}
       />
     </div>
+    </ProductsContext.Provider>
   );
 }

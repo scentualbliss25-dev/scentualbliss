@@ -1,4 +1,4 @@
-import { products, productTypes, collections } from '@/lib/products';
+import { getAllProducts, getAllBrands, productTypes, collections } from '@/lib/products';
 import { SITE_URL, SITE_NAME, SITE_LOCALE } from '@/lib/site';
 import { filterAndSort, PAGE_SIZE } from '@/lib/shop-filters';
 import ProductCard from '@/components/ui/ProductCard';
@@ -22,9 +22,8 @@ const typeCats = [
   ...productTypes.map(t => ({ id: t.id, label: t.name })),
 ];
 
-const allBrands = [...new Set(products.map(p => p.brand))].sort((a, b) =>
-  a.localeCompare(b, 'es', { sensitivity: 'base' })
-);
+// allBrands ya no se calcula a nivel módulo (antes leía de array hardcoded).
+// Ahora se obtiene async dentro de TiendaPage con getAllBrands().
 
 function parseSearchParams(sp) {
   return {
@@ -110,7 +109,13 @@ export default async function TiendaPage({ searchParams }) {
   const sp = await searchParams;
   const f = parseSearchParams(sp);
 
-  const filtered = filterAndSort(f);
+  // Carga catálogo + lista de marcas desde Supabase (cacheado en memoria).
+  const [allProducts, allBrands] = await Promise.all([
+    getAllProducts(),
+    getAllBrands(),
+  ]);
+
+  const filtered = filterAndSort(allProducts, f);
   const limit = f.page * PAGE_SIZE;
   const visible = filtered.slice(0, limit);
   const hasMore = filtered.length > visible.length;

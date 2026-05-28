@@ -150,7 +150,12 @@ const websiteSchema = {
   },
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  // Carga el catálogo en server-side (cacheado) y se lo pasa al Navbar.
+  // El Navbar necesita la lista de marcas para el mega menú y el catálogo
+  // completo para la búsqueda en vivo.
+  const { getAllProducts } = await import('@/lib/products');
+  const products = await getAllProducts();
   return (
     <html lang="es" className={montserrat.variable}>
       <body>
@@ -164,7 +169,7 @@ export default function RootLayout({ children }) {
         />
         <a href="#main-content" className="skip-link">Saltar al contenido principal</a>
         <AnnouncementBar />
-        <Navbar />
+        <Navbar products={products} />
         <ToasterWrapper />
         {children}
         <Footer />

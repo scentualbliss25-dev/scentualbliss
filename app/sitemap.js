@@ -1,4 +1,4 @@
-import { products, productTypes, collections, momentoOptions, climaOptions, getImagePath } from '@/lib/products';
+import { getAllProducts, getAllBrands, productTypes, collections, momentoOptions, climaOptions } from '@/lib/products';
 import { SITE_URL } from '@/lib/site';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -6,8 +6,13 @@ import path from 'node:path';
 const CONC_IDS = ['EDP', 'EDT', 'Extrait', 'Parfum', 'Elixir'];
 const GENDER_IDS = ['Masculino', 'Femenino', 'Unisex'];
 
-export default function sitemap() {
+export default async function sitemap() {
   const now = new Date();
+  // Catálogo y marcas desde Supabase (cacheado).
+  const [products, allBrands] = await Promise.all([
+    getAllProducts(),
+    getAllBrands(),
+  ]);
 
   const staticPages = [
     { url: SITE_URL,                             lastModified: now, changeFrequency: 'weekly',  priority: 1.0 },
@@ -32,8 +37,7 @@ export default function sitemap() {
   }));
 
   // Por marca
-  const uniqueBrands = [...new Set(products.map(p => p.brand))];
-  const brandPages = uniqueBrands.map(b => ({
+  const brandPages = allBrands.map(b => ({
     url: `${SITE_URL}/tienda?brand=${encodeURIComponent(b)}`,
     lastModified: now, changeFrequency: 'weekly', priority: 0.7,
   }));
