@@ -25,8 +25,16 @@ export const viewport = {
   ],
 };
 
-// Nota: og:image y twitter:image se generan dinámicamente desde
-// app/opengraph-image.jsx y app/twitter-image.jsx (Next.js los inyecta auto).
+// Imagen OG estática (1200x630) en /public/og.png — generada con
+// scripts/generate-og-image.mjs. La versión dinámica (app/opengraph-image.jsx)
+// causaba bugs en SPA navigation, por eso es estática.
+const OG_IMAGE = {
+  url: '/og.png',
+  width: 1200,
+  height: 630,
+  alt: 'ScentualBliss — Perfumería Original',
+};
+
 export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
@@ -75,11 +83,13 @@ export const metadata = {
     url: SITE_URL,
     title: 'ScentualBliss — Perfumería Original',
     description: 'Fragancias únicas que cuentan tu historia. Envío gratis a toda Colombia.',
+    images: [OG_IMAGE],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'ScentualBliss — Perfumería Original',
     description: 'Fragancias únicas que cuentan tu historia. Envío gratis a toda Colombia.',
+    images: [OG_IMAGE.url],
   },
   formatDetection: {
     telephone: false,
