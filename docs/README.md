@@ -2,7 +2,7 @@
 
 Esta carpeta tiene todo lo que necesitas saber sobre el proyecto. Está organizada en doce documentos numerados que puedes leer en orden o saltarte directo al tema que te interese.
 
-El sitio en producción vive en **https://scentualbliss.com.co** y está alojado en Vercel.
+El sitio en producción vive en **https://scentualbliss.com.co** y está alojado en Vercel con deploy automático desde GitHub.
 
 ## Por dónde empezar
 
