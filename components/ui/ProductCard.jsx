@@ -6,7 +6,7 @@ import { ShoppingBag, Heart, Eye } from 'lucide-react';
 import { useCartStore } from '@/lib/store/cartStore';
 import { useWishlistStore } from '@/lib/store/wishlistStore';
 import { useQuickViewStore } from '@/lib/store/quickViewStore';
-import { getImagePath } from '@/lib/products';
+import { getImagePath } from '@/lib/products-constants';
 import { formatCOP } from '@/lib/format';
 import toast from 'react-hot-toast';
 

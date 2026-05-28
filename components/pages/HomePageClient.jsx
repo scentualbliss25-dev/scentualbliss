@@ -11,7 +11,7 @@ import {
   Truck, Shield, RotateCcw, Award, Sparkles, Flame,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { collections, testimonials, getImagePath, deriveClima } from '@/lib/products';
+import { collections, testimonials, getImagePath, deriveClima } from '@/lib/products-constants';
 import { useCartStore } from '@/lib/store/cartStore';
 import { useWishlistStore } from '@/lib/store/wishlistStore';
 import './HomePageClient.css';

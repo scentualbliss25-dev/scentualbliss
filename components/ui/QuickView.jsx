@@ -5,7 +5,7 @@ import { X, ShoppingBag, Star, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { useCartStore } from '@/lib/store/cartStore';
 import { formatCOP } from '@/lib/format';
-import { getImagePath } from '@/lib/products';
+import { getImagePath } from '@/lib/products-constants';
 import BrandLogo from '@/components/ui/BrandLogo';
 import toast from 'react-hot-toast';
 

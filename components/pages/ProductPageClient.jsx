@@ -8,7 +8,7 @@ import { Reveal, StaggerContainer, StaggerItem } from '@/components/ui/ScrollAni
 import ProductCard from '@/components/ui/ProductCard';
 import ProductReviews from '@/components/ui/ProductReviews';
 import BrandLogo from '@/components/ui/BrandLogo';
-import { getImagePath } from '@/lib/products';
+import { getImagePath } from '@/lib/products-constants';
 import { formatCOP } from '@/lib/format';
 import toast from 'react-hot-toast';
 

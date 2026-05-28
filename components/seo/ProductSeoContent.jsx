@@ -1,4 +1,4 @@
-import { categoryLabels } from '@/lib/products';
+import { categoryLabels } from '@/lib/products-constants';
 
 // Helper: explica una nota olfativa (server-side, sin estado)
 function explainNote(noteString) {

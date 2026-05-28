@@ -5,7 +5,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ShoppingBag, Search, Menu, X, Heart, ChevronDown, ChevronRight, ArrowRight, FileText, Truck, RotateCcw, HelpCircle, Sparkles, Mail } from 'lucide-react';
 import { useCartStore, useCartCount } from '@/lib/store/cartStore';
 import { useWishlistStore } from '@/lib/store/wishlistStore';
-import { collections, getImagePath, momentoOptions, climaOptions } from '@/lib/products';
+import { collections, getImagePath, momentoOptions, climaOptions } from '@/lib/products-constants';
 
 // Helper: normaliza para comparar (sin tildes, minúsculas)
 const norm = (s) => String(s || '')
