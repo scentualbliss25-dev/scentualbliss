@@ -1,28 +1,17 @@
 import './globals.css';
 import Script from 'next/script';
-import { Cormorant_Garamond, DM_Sans } from 'next/font/google';
+import { Montserrat } from 'next/font/google';
 import AnnouncementBar from '@/components/layout/AnnouncementBar';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import CartDrawer from '@/components/cart/CartDrawer';
 import ToasterWrapper from '@/components/ui/ToasterWrapper';
-import WhatsAppFloat from '@/components/ui/WhatsAppFloat';
-import ScrollToTop from '@/components/ui/ScrollToTop';
+import DeferredShell from '@/components/layout/DeferredShell';
 import { SITE_URL } from '@/lib/site';
 
-const cormorant = Cormorant_Garamond({
+const montserrat = Montserrat({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600'],
-  style: ['normal', 'italic'],
-  variable: '--font-cormorant',
-  display: 'swap',
-});
-
-const dmSans = DM_Sans({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600'],
-  style: ['normal', 'italic'],
-  variable: '--font-dm-sans',
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-montserrat',
   display: 'swap',
 });
 
@@ -30,17 +19,40 @@ export const viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#FDFBF7' },
+    { media: '(prefers-color-scheme: dark)', color: '#1F1A14' },
+  ],
 };
 
+// Nota: og:image y twitter:image se generan dinámicamente desde
+// app/opengraph-image.jsx y app/twitter-image.jsx (Next.js los inyecta auto).
 export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'ScentualBliss — Perfumería de Lujo',
+    default: 'ScentualBliss — Perfumería Original',
     template: '%s | ScentualBliss',
   },
-  description: 'Fragancias únicas creadas para quienes no se conforman con lo ordinario. Perfumes orientales, florales, amaderados y frescos con envío express a todo LATAM.',
-  keywords: ['perfumes de lujo', 'fragancias exclusivas', 'perfumería online', 'oud', 'floral', 'oriental', 'perfumes Colombia'],
+  description: 'Fragancias únicas creadas para quienes no se conforman con lo ordinario. Perfumes orientales, florales, amaderados y frescos con envío gratis a toda Colombia.',
+  keywords: ['perfumes de lujo', 'fragancias exclusivas', 'perfumería online', 'oud', 'floral', 'oriental', 'perfumes Colombia', 'perfumes Medellín', 'Dior Sauvage', 'Creed Aventus', 'Lattafa Khamrah'],
+  authors: [{ name: 'ScentualBliss' }],
+  creator: 'ScentualBliss',
+  publisher: 'ScentualBliss',
   manifest: '/manifest.json',
+  alternates: {
+    canonical: '/',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
@@ -60,29 +72,98 @@ export const metadata = {
     siteName: 'ScentualBliss',
     locale: 'es_CO',
     type: 'website',
-    title: 'ScentualBliss — Perfumería de Lujo',
-    description: 'Fragancias únicas que cuentan tu historia. Envío gratis en pedidos +$100.',
+    url: SITE_URL,
+    title: 'ScentualBliss — Perfumería Original',
+    description: 'Fragancias únicas que cuentan tu historia. Envío gratis a toda Colombia.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'ScentualBliss — Perfumería Original',
+    description: 'Fragancias únicas que cuentan tu historia. Envío gratis a toda Colombia.',
+  },
+  formatDetection: {
+    telephone: false,
+  },
+};
+
+// Schema.org Organization: le dice a Google quién es la marca, su logo
+// para mostrar en SERP, redes sociales asociadas y formas de contacto.
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': `${SITE_URL}/#organization`,
+  name: 'ScentualBliss',
+  alternateName: 'ScentualBliss Perfumería',
+  url: SITE_URL,
+  logo: {
+    '@type': 'ImageObject',
+    url: `${SITE_URL}/icon-512.png`,
+    width: 512,
+    height: 512,
+  },
+  description: 'Perfumería original en Colombia. Fragancias auténticas de diseñador, nicho y árabes con envío gratis a toda Colombia.',
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Medellín',
+    addressRegion: 'Antioquia',
+    addressCountry: 'CO',
+  },
+  contactPoint: {
+    '@type': 'ContactPoint',
+    telephone: '+57-316-937-6436',
+    contactType: 'customer service',
+    areaServed: 'CO',
+    availableLanguage: ['Spanish'],
+  },
+  sameAs: [
+    'https://www.instagram.com/scentualbliss_25/',
+    'https://www.tiktok.com/@scentualbliss_25',
+    'https://www.facebook.com/people/Scentual-Bliss/61577971191908/',
+  ],
+};
+
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': `${SITE_URL}/#website`,
+  url: SITE_URL,
+  name: 'ScentualBliss',
+  publisher: { '@id': `${SITE_URL}/#organization` },
+  inLanguage: 'es-CO',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: `${SITE_URL}/tienda?q={search_term_string}`,
+    },
+    'query-input': 'required name=search_term_string',
   },
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="es" className={`${cormorant.variable} ${dmSans.variable}`}>
+    <html lang="es" className={montserrat.variable}>
       <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
         <a href="#main-content" className="skip-link">Saltar al contenido principal</a>
         <AnnouncementBar />
         <Navbar />
-        <CartDrawer />
         <ToasterWrapper />
         {children}
         <Footer />
-        <WhatsAppFloat />
-        <ScrollToTop />
+        <DeferredShell />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-512JH5J3JP"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
-        <Script id="ga-init" strategy="afterInteractive">
+        <Script id="ga-init" strategy="lazyOnload">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}

@@ -81,6 +81,7 @@ export default function ProductSeoContent({ product }) {
 
   return (
     <section
+      className="pdp-light"
       aria-label={`Información detallada de ${product.name}`}
       style={{
         background: 'var(--dark-2)',

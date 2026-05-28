@@ -8,6 +8,7 @@ export default function robots() {
         allow: '/',
         disallow: [
           '/api/',
+          '/admin/',
           '/checkout',
           '/order-confirm',
           '/wishlist',

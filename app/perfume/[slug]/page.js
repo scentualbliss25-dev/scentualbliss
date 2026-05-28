@@ -49,7 +49,7 @@ export async function generateMetadata({ params }) {
 
   // Meta description: descripción + notas + duración + CTA (max ~160 chars)
   const notesShort = `${product.notes.top}, ${product.notes.heart}, ${product.notes.base}`;
-  const description = `${product.description.substring(0, 100).trim()}... Notas: ${notesShort.substring(0, 60)}. Duración ${product.longevity}. Envío Colombia.`.substring(0, 160);
+  const description = `${product.description.substring(0, 100).trim()}... Notas: ${notesShort.substring(0, 60)}. Duración ${product.longevity}. Envío gratis a Colombia.`.substring(0, 160);
 
   // Keywords array para SEO
   const keywords = [
@@ -99,8 +99,12 @@ export async function generateMetadata({ params }) {
       'product:brand': product.brand,
       'product:availability': product.stock > 0 ? 'in stock' : 'out of stock',
       'product:condition': 'new',
-      'product:price:amount': String(product.price),
-      'product:price:currency': 'COP',
+      ...(Number.isFinite(product.price) && product.price > 0
+        ? {
+            'product:price:amount': String(product.price),
+            'product:price:currency': 'COP',
+          }
+        : {}),
     },
   };
 }
@@ -113,7 +117,67 @@ export default async function ProductPage({ params }) {
   const categoryLabel = categoryLabels[product.category] || '';
   const url = `${SITE_URL}/perfume/${product.slug}`;
   const resolvedImages = resolveProductImages(product);
-  const image = resolvedImages[0];
+
+  // URLs absolutas para Schema.org (Google requiere https://...)
+  const absoluteImages = resolvedImages.map(img =>
+    img.startsWith('http') ? img : `${SITE_URL}${img}`
+  );
+
+  // Precio válido para Schema: si es Infinity/0/NaN, marcamos PreOrder sin precio.
+  // De lo contrario, InStock con precio real y validez hasta fin del próximo año.
+  const hasValidPrice = Number.isFinite(product.price) && product.price > 0;
+  const inStock = (product.stock ?? 0) > 0;
+  const nextYearEnd = new Date(new Date().getFullYear() + 1, 11, 31).toISOString().split('T')[0];
+
+  const offer = hasValidPrice
+    ? {
+        '@type': 'Offer',
+        url,
+        price: product.price,
+        priceCurrency: 'COP',
+        priceValidUntil: nextYearEnd,
+        availability: inStock
+          ? 'https://schema.org/InStock'
+          : 'https://schema.org/OutOfStock',
+        itemCondition: 'https://schema.org/NewCondition',
+        shippingDetails: {
+          '@type': 'OfferShippingDetails',
+          shippingRate: {
+            '@type': 'MonetaryAmount',
+            value: 0,
+            currency: 'COP',
+          },
+          shippingDestination: {
+            '@type': 'DefinedRegion',
+            addressCountry: 'CO',
+          },
+          deliveryTime: {
+            '@type': 'ShippingDeliveryTime',
+            handlingTime: { '@type': 'QuantitativeValue', minValue: 0, maxValue: 1, unitCode: 'DAY' },
+            transitTime: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 5, unitCode: 'DAY' },
+          },
+        },
+        hasMerchantReturnPolicy: {
+          '@type': 'MerchantReturnPolicy',
+          applicableCountry: 'CO',
+          returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+          merchantReturnDays: 30,
+          returnMethod: 'https://schema.org/ReturnByMail',
+          returnFees: 'https://schema.org/FreeReturn',
+        },
+        seller: {
+          '@type': 'Organization',
+          name: 'ScentualBliss',
+        },
+      }
+    : {
+        '@type': 'Offer',
+        url,
+        priceCurrency: 'COP',
+        availability: 'https://schema.org/PreOrder',
+        itemCondition: 'https://schema.org/NewCondition',
+        seller: { '@type': 'Organization', name: 'ScentualBliss' },
+      };
 
   // JSON-LD enriquecido (Product + BreadcrumbList)
   const productSchema = {
@@ -122,7 +186,7 @@ export default async function ProductPage({ params }) {
     '@id': url,
     name: product.name,
     description: product.description,
-    image: [image.startsWith('http') ? image : `${SITE_URL}${image}`],
+    image: absoluteImages,
     sku: product.slug,
     mpn: product.slug,
     brand: {
@@ -130,20 +194,7 @@ export default async function ProductPage({ params }) {
       name: product.brand,
     },
     category: `Perfume ${categoryLabel} ${product.gender}`,
-    offers: {
-      '@type': 'Offer',
-      url,
-      price: product.price,
-      priceCurrency: 'COP',
-      availability: product.stock > 0
-        ? 'https://schema.org/InStock'
-        : 'https://schema.org/OutOfStock',
-      itemCondition: 'https://schema.org/NewCondition',
-      seller: {
-        '@type': 'Organization',
-        name: 'ScentualBliss',
-      },
-    },
+    offers: offer,
     // aggregateRating intencionalmente omitido: las reseñas reales viven
     // en Supabase y se cargan en cliente; hasta que existan no falseamos
     // señales para Google.
