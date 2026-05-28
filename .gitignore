@@ -40,13 +40,12 @@ next-env.d.ts
 
 # Claude Code (configuración local, no va al repo)
 .claude/
+.agents/
+skills-lock.json
 
 # Archivos de diseño/referencia grandes
 ScentualBliss*Homepage*
 *.docx
-
-# Claude Code (configuración local, no va al repo)
-.claude/
 
 .vercel
 
