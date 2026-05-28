@@ -15,24 +15,40 @@ export function PushToggle() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-      setStatus('unsupported');
-      return;
-    }
-    if (!VAPID_PUBLIC_KEY) {
-      setStatus('unsupported');
-      return;
-    }
-    if (Notification.permission === 'denied') {
-      setStatus('denied');
-      return;
-    }
+    // Todo el chequeo dentro de try/catch porque hay browsers donde algunas
+    // de estas APIs lanzan SecurityError o ReferenceError (Brave, iOS Safari
+    // en algunas versiones, modo incógnito en Firefox, etc.).
+    try {
+      if (typeof window === 'undefined') return;
+      if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+        setStatus('unsupported');
+        return;
+      }
+      if (typeof Notification === 'undefined') {
+        setStatus('unsupported');
+        return;
+      }
+      if (!VAPID_PUBLIC_KEY) {
+        setStatus('unsupported');
+        return;
+      }
+      if (Notification.permission === 'denied') {
+        setStatus('denied');
+        return;
+      }
 
-    navigator.serviceWorker.ready.then(async (reg) => {
-      const sub = await reg.pushManager.getSubscription();
-      setStatus(sub ? 'on' : 'off');
-    }).catch(() => setStatus('off'));
+      navigator.serviceWorker.ready.then(async (reg) => {
+        try {
+          const sub = await reg.pushManager.getSubscription();
+          setStatus(sub ? 'on' : 'off');
+        } catch {
+          setStatus('off');
+        }
+      }).catch(() => setStatus('off'));
+    } catch (err) {
+      console.warn('[PushToggle] no soportado:', err?.message);
+      setStatus('unsupported');
+    }
   }, []);
 
   const handleSubscribe = async () => {

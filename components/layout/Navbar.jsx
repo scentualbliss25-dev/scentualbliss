@@ -2,10 +2,10 @@
 import { useState, useEffect, useRef, useMemo, Suspense } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { ShoppingBag, Search, Menu, X, Heart, ChevronDown, ArrowRight, FileText, Truck, RotateCcw, HelpCircle, Sparkles, Mail } from 'lucide-react';
+import { ShoppingBag, Search, Menu, X, Heart, ChevronDown, ChevronRight, ArrowRight, FileText, Truck, RotateCcw, HelpCircle, Sparkles, Mail } from 'lucide-react';
 import { useCartStore, useCartCount } from '@/lib/store/cartStore';
 import { useWishlistStore } from '@/lib/store/wishlistStore';
-import { collections, products, getImagePath } from '@/lib/products';
+import { collections, products, getImagePath, momentoOptions, climaOptions } from '@/lib/products';
 
 // Helper: normaliza para comparar (sin tildes, minúsculas)
 const norm = (s) => String(s || '')
@@ -34,29 +34,56 @@ const allBrands = [...new Set(products.map(p => p.brand))].sort((a, b) =>
 
 const NAV_ITEMS = [
   { label: 'Inicio', to: '/' },
+  {
+    label: 'Perfumes',
+    to: '/tienda',
+    isMegaMenu: true,
+    categories: [
+      {
+        id: 'marcas',
+        label: 'Marcas',
+        isBrandList: true,
+        items: allBrands.map(b => ({ label: b, to: `/tienda?brand=${encodeURIComponent(b)}` })),
+      },
+      {
+        id: 'conc',
+        label: 'Concentración',
+        items: [
+          { label: 'Eau de Toilette', desc: 'Fresco y ligero', to: '/tienda?conc=EDT' },
+          { label: 'Eau de Parfum', desc: 'Mayor duración e intensidad', to: '/tienda?conc=EDP' },
+          { label: 'Extrait de Parfum', desc: 'La máxima concentración', to: '/tienda?conc=Extrait' },
+          { label: 'Parfum', desc: 'Alta concentración clásica', to: '/tienda?conc=Parfum' },
+          { label: 'Elixir', desc: 'Concentración moderna extrema', to: '/tienda?conc=Elixir' },
+        ],
+      },
+      {
+        id: 'familia',
+        label: 'Familias Olfativas',
+        items: collections.map(c => ({ label: c.name, desc: c.description, to: `/tienda?cat=${c.id}`, color: c.color })),
+      },
+      {
+        id: 'genero',
+        label: 'Género',
+        items: [
+          { label: 'Masculino',  desc: 'Para él',       to: '/tienda?gender=Masculino' },
+          { label: 'Femenino',   desc: 'Para ella',      to: '/tienda?gender=Femenino' },
+          { label: 'Unisex',     desc: 'Para todos',     to: '/tienda?gender=Unisex' },
+        ],
+      },
+      {
+        id: 'momento',
+        label: 'Hora del Día',
+        items: momentoOptions.map(m => ({ label: m.name, desc: m.description, to: `/tienda?momento=${m.id}` })),
+      },
+      {
+        id: 'clima',
+        label: 'Clima',
+        items: climaOptions.map(c => ({ label: c.name, desc: c.description, to: `/tienda?clima=${c.id}` })),
+      },
+    ],
+  },
   { label: 'Tienda', to: '/tienda' },
-  {
-    label: 'Aromas',
-    to: '/tienda',
-    submenu: collections.map(c => ({
-      label: c.name,
-      description: c.description,
-      to: `/tienda?cat=${c.id}`,
-      color: c.color,
-      catId: c.id,
-    })),
-  },
-  {
-    label: 'Marcas',
-    to: '/tienda',
-    submenu: allBrands.map(b => ({
-      label: b,
-      to: `/tienda?brand=${encodeURIComponent(b)}`,
-      brandId: b,
-    })),
-    isBrandMenu: true,
-  },
-  { label: 'Bestsellers', to: '/tienda?sort=bestseller' },
+  { label: 'Más Vendidos', to: '/tienda?sort=bestseller' },
 ];
 
 export default function Navbar() {
@@ -100,6 +127,7 @@ function NavbarInner() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [openSubcat, setOpenSubcat] = useState('marcas');
   const [mobileSubOpen, setMobileSubOpen] = useState(null);
   const closeTimerRef = useRef(null);
 
@@ -120,7 +148,8 @@ function NavbarInner() {
 
   const { toggleCart } = useCartStore();
   const count = useCartCount();
-  const { items: wishlistItems } = useWishlistStore();
+  const { items: rawWishlist } = useWishlistStore();
+  const wishlistItems = Array.isArray(rawWishlist) ? rawWishlist : [];
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -149,6 +178,14 @@ function NavbarInner() {
   useEffect(() => () => {
     if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
   }, []);
+
+  // Bloquear scroll cuando el drawer está abierto
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = 'hidden';
+      return () => { document.body.style.overflow = ''; };
+    }
+  }, [menuOpen]);
 
   const handleSearch = (e) => {
     if (e.key === 'Escape') { setSearchOpen(false); setSearchQuery(''); }
@@ -225,16 +262,13 @@ function NavbarInner() {
 
   const isItemActive = (item) => {
     if (item.label === 'Inicio') return pathname === '/';
-    if (item.submenu) {
-      if (item.isBrandMenu) return !!activeBrand && item.submenu.some(s => s.brandId === activeBrand);
-      return !!activeCat && item.submenu.some(s => s.catId === activeCat);
-    }
+    if (item.isMegaMenu) return pathname === '/tienda';
     if (item.to.includes('sort=bestseller')) return searchParams?.get('sort') === 'bestseller';
-    if (item.to === '/tienda') return pathname === '/tienda' && !activeType && !activeCat && !activeBrand;
     return pathname === item.to.split('?')[0];
   };
 
   return (
+    <>
     <header className={`sb-nav ${scrolled ? 'scrolled' : ''}`}>
       <div className="container sb-nav-inner">
         <button
@@ -248,7 +282,7 @@ function NavbarInner() {
         <nav className="sb-nav-links">
           {NAV_ITEMS.map(item => {
             const active = isItemActive(item);
-            const hasSub = !!item.submenu;
+            const hasSub = !!item.submenu || !!item.isMegaMenu;
             const isOpen = openDropdown === item.label;
             return (
               <div
@@ -270,42 +304,45 @@ function NavbarInner() {
                   )}
                 </Link>
 
-                {hasSub && isOpen && (
+                {item.isMegaMenu && isOpen && (
                   <div
-                    className="sb-dropdown"
+                    className="sb-dropdown sb-megamenu-wrap"
                     onMouseEnter={() => openMenu(item.label)}
                     onMouseLeave={scheduleClose}
                   >
-                    <div className={`sb-dropdown-card ${item.isBrandMenu ? 'sb-dropdown-card--brands' : ''}`}>
-                      {item.submenu.map(sub => {
-                        const subActive = item.isBrandMenu
-                          ? activeBrand === sub.brandId
-                          : activeCat === sub.catId;
-                        if (item.isBrandMenu) {
-                          return (
-                            <Link
-                              key={sub.label}
-                              href={sub.to}
-                              className={`sb-dropdown-brand ${subActive ? 'active' : ''}`}
-                            >
-                              {sub.label}
-                            </Link>
-                          );
-                        }
-                        return (
+                    <div className="sb-megamenu">
+                      {/* Left: category list */}
+                      <div className="sb-megamenu-left">
+                        {item.categories.map(cat => (
+                          <div
+                            key={cat.id}
+                            className={`sb-megamenu-row ${openSubcat === cat.id ? 'active' : ''}`}
+                            onMouseEnter={() => setOpenSubcat(cat.id)}
+                          >
+                            <span>{cat.label}</span>
+                            <ChevronRight size={12} />
+                          </div>
+                        ))}
+                        <Link href="/tienda" className="sb-megamenu-ver-todo">
+                          Ver toda la tienda <ChevronRight size={11} />
+                        </Link>
+                      </div>
+                      {/* Right: items for active category */}
+                      <div className={`sb-megamenu-right ${openSubcat === 'marcas' ? 'sb-megamenu-right--brands' : ''}`}>
+                        {item.categories.find(c => c.id === openSubcat)?.items.map(sub => (
                           <Link
                             key={sub.label}
                             href={sub.to}
-                            className={`sb-dropdown-item ${subActive ? 'active' : ''}`}
+                            className="sb-megamenu-item"
                           >
-                            <span className="sb-dropdown-dot" style={{ background: sub.color }} />
+                            {sub.color && <span className="sb-dropdown-dot" style={{ background: sub.color, flexShrink: 0, marginTop: 4 }} />}
                             <div>
-                              <h4>{sub.label}</h4>
-                              <p>{sub.description}</p>
+                              <span className="sb-megamenu-item-label">{sub.label}</span>
+                              {sub.desc && <p className="sb-megamenu-item-desc">{sub.desc}</p>}
                             </div>
                           </Link>
-                        );
-                      })}
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -477,49 +514,121 @@ function NavbarInner() {
         </div>
       )}
 
-      {menuOpen && (
-        <div className="sb-mobile-menu">
-          {NAV_ITEMS.map(item => {
-            const hasSub = !!item.submenu;
-            const subOpen = mobileSubOpen === item.label;
-            if (!hasSub) {
-              return (
-                <Link key={item.label} href={item.to} className="sb-mobile-link">
-                  {item.label}
-                </Link>
-              );
-            }
-            return (
-              <div key={item.label}>
-                <button
-                  type="button"
-                  onClick={() => setMobileSubOpen(o => o === item.label ? null : item.label)}
-                  className="sb-mobile-link sb-mobile-toggle-btn"
-                >
-                  <span>{item.label}</span>
-                  <ChevronDown
-                    size={15}
-                    style={{ color: '#F2CF7A', transition: 'transform .25s', transform: subOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
-                  />
-                </button>
-                {subOpen && (
-                  <div className="sb-mobile-submenu">
-                    {item.submenu.map(sub => (
-                      <Link key={sub.label} href={sub.to} className="sb-mobile-sublink">
-                        <span className="sb-mobile-dot" style={{ background: sub.color }} />
-                        {sub.label}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
-
       <NavStyles />
     </header>
+
+    {menuOpen && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="sb-drawer-backdrop"
+            onClick={() => setMenuOpen(false)}
+            aria-hidden="true"
+          />
+
+          {/* Drawer */}
+          <div className="sb-drawer" role="dialog" aria-modal="true" aria-label="Menú de navegación">
+
+            {/* Header */}
+            <div className="sb-drawer-header">
+              <Link href="/" className="sb-drawer-logo" onClick={() => setMenuOpen(false)} aria-label="Inicio">
+                <img src="/img/logo-transparent.svg" alt="ScentualBliss" height="40" width="160" />
+              </Link>
+              <button
+                type="button"
+                className="sb-drawer-close"
+                onClick={() => setMenuOpen(false)}
+                aria-label="Cerrar menú"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Scrollable body */}
+            <div className="sb-drawer-body">
+
+              {/* Acceso rápido a la tienda */}
+              <Link href="/tienda" className="sb-drawer-cta" onClick={() => setMenuOpen(false)}>
+                <span>Ver toda la tienda</span>
+                <ArrowRight size={15} />
+              </Link>
+
+              {/* Links principales */}
+              <nav className="sb-drawer-main-nav">
+                {NAV_ITEMS.filter(i => !i.isMegaMenu && i.label !== 'Tienda').map(item => (
+                  <Link
+                    key={item.label}
+                    href={item.to}
+                    className="sb-drawer-main-link"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </nav>
+
+              {/* Sección Perfumes */}
+              {NAV_ITEMS.filter(i => i.isMegaMenu).map(item => (
+                <div key={item.label} className="sb-drawer-section">
+                  <p className="sb-drawer-section-title">Explorar Perfumes</p>
+                  {item.categories.map(cat => {
+                    const catKey = `${item.label}-${cat.id}`;
+                    const catOpen = mobileSubOpen === catKey;
+                    return (
+                      <div key={cat.id} className="sb-drawer-cat">
+                        <button
+                          type="button"
+                          className="sb-drawer-cat-btn"
+                          onClick={() => setMobileSubOpen(o => o === catKey ? null : catKey)}
+                          aria-expanded={catOpen}
+                        >
+                          <span>{cat.label}</span>
+                          <ChevronDown size={15} className={`sb-drawer-chevron ${catOpen ? 'open' : ''}`} />
+                        </button>
+                        {catOpen && (
+                          <div className={`sb-drawer-cat-items ${cat.isBrandList ? 'sb-drawer-cat-items--chips' : ''}`}>
+                            {cat.items.map(sub => (
+                              <Link
+                                key={sub.label}
+                                href={sub.to}
+                                onClick={() => setMenuOpen(false)}
+                                className={cat.isBrandList ? 'sb-drawer-chip' : 'sb-drawer-cat-link'}
+                              >
+                                {sub.color && <span className="sb-drawer-dot" style={{ background: sub.color }} />}
+                                {sub.label}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+
+            {/* Footer del drawer */}
+            <div className="sb-drawer-footer">
+              <div className="sb-drawer-social">
+                <a href="https://www.instagram.com/scentualbliss_25/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="sb-drawer-social-btn">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                </a>
+                <a href="https://www.tiktok.com/@scentualbliss_25" target="_blank" rel="noopener noreferrer" aria-label="TikTok" className="sb-drawer-social-btn">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V9.05a8.16 8.16 0 0 0 4.77 1.52V7.15a4.85 4.85 0 0 1-1-.46z"/></svg>
+                </a>
+                <a href="https://www.facebook.com/people/Scentual-Bliss/61577971191908/" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="sb-drawer-social-btn">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                </a>
+                <a href="https://wa.me/573169376436?text=Hola!%20Me%20interesa%20un%20perfume%20de%20ScentualBliss" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className="sb-drawer-social-btn">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.549 4.122 1.514 5.861L.057 23.943l6.204-1.43C7.9 23.47 9.91 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.892 0-3.668-.502-5.2-1.378l-.373-.214-3.683.848.873-3.585-.234-.387A9.953 9.953 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+                </a>
+              </div>
+              <p className="sb-drawer-footer-copy">© 2026 ScentualBliss · Medellín</p>
+            </div>
+          </div>
+        </>
+      )}
+    </>
   );
 }
 
@@ -528,14 +637,12 @@ function NavStyles() {
     <style>{`
       .sb-nav {
         position: sticky; top: 0; z-index: 50;
-        background: rgba(5, 5, 5, .85);
-        backdrop-filter: blur(20px) saturate(1.4);
-        -webkit-backdrop-filter: blur(20px) saturate(1.4);
+        background: #000;
         border-bottom: 1px solid rgba(212, 166, 79, .12);
         transition: all .35s cubic-bezier(.22,.61,.36,1);
       }
       .sb-nav.scrolled {
-        background: rgba(5, 5, 5, .96);
+        background: #000;
         border-bottom-color: rgba(212, 166, 79, .22);
         box-shadow: 0 1px 0 rgba(0,0,0, .25), 0 8px 24px rgba(0,0,0,.35);
       }
@@ -1109,81 +1216,342 @@ function NavStyles() {
         .sb-search-bar { padding: 14px 20px 18px; }
       }
 
-      .sb-mobile-menu {
-        position: absolute;
-        top: 100%; left: 0; right: 0;
-        background: rgba(5, 5, 5, .98);
-        backdrop-filter: blur(20px);
-        border-bottom: 1px solid rgba(212, 166, 79, .22);
-        padding: 16px 24px;
+      /* ===== MOBILE DRAWER ===== */
+      .sb-drawer-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, .65);
+        z-index: 98;
+        backdrop-filter: blur(3px);
+        animation: sb-fade-in .25s ease;
+      }
+      @keyframes sb-fade-in {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+      }
+      .sb-drawer {
+        position: fixed;
+        top: 0; left: 0; bottom: 0;
+        width: min(340px, 90vw);
+        background: #0D0B09;
+        border-right: 1px solid rgba(212,166,79,.2);
+        z-index: 99;
         display: flex;
         flex-direction: column;
-        gap: 4px;
-        animation: sb-slide-down .25s cubic-bezier(.22,.61,.36,1);
-        max-height: calc(100vh - 120px);
-        overflow-y: auto;
+        animation: sb-drawer-in .3s cubic-bezier(.22,.61,.36,1);
+        box-shadow: 8px 0 40px rgba(0,0,0,.5);
       }
-      .sb-mobile-link {
+      @keyframes sb-drawer-in {
+        from { transform: translateX(-100%); }
+        to   { transform: translateX(0); }
+      }
+
+      /* Header */
+      .sb-drawer-header {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        font-family: var(--font-serif);
-        font-size: 1.1rem;
-        color: #E8C98B;
-        letter-spacing: .02em;
-        padding: 14px 4px;
-        border-bottom: 1px solid rgba(212, 166, 79, .12);
+        justify-content: space-between;
+        padding: 18px 20px 16px;
+        border-bottom: 1px solid rgba(212,166,79,.12);
+        flex-shrink: 0;
+      }
+      .sb-drawer-logo img { display: block; }
+      .sb-drawer-close {
+        width: 40px; height: 40px;
+        border-radius: 50%;
+        border: 1px solid rgba(212,166,79,.2);
         background: none;
-        border-left: 0;
-        border-right: 0;
-        border-top: 0;
-        text-align: left;
-        width: 100%;
+        color: rgba(232,201,139,.7);
+        display: flex; align-items: center; justify-content: center;
         cursor: pointer;
-        transition: color .2s, padding-left .25s var(--ease-out, cubic-bezier(.16,1,.3,1));
+        transition: background .2s, color .2s;
+        flex-shrink: 0;
       }
-      .sb-mobile-link:hover,
-      .sb-mobile-link:active,
-      .sb-mobile-link:focus-visible {
+      .sb-drawer-close:hover { background: rgba(212,166,79,.12); color: #F2CF7A; }
+
+      /* Body (scrollable) */
+      .sb-drawer-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 12px 0 24px;
+        scrollbar-width: none;
+      }
+      .sb-drawer-body::-webkit-scrollbar { display: none; }
+
+      /* CTA tienda */
+      .sb-drawer-cta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 8px 16px 16px;
+        padding: 14px 18px;
+        background: linear-gradient(135deg, rgba(212,166,79,.18) 0%, rgba(212,166,79,.08) 100%);
+        border: 1px solid rgba(212,166,79,.35);
+        border-radius: 10px;
+        font-family: var(--font-sans);
+        font-size: .88rem;
+        font-weight: 600;
         color: #F2CF7A;
-        padding-left: 12px;
-        outline: none;
+        letter-spacing: .04em;
+        transition: background .2s;
       }
-      .sb-mobile-toggle-btn { font-family: var(--font-serif); }
-      .sb-mobile-submenu {
-        padding: 8px 0 14px 18px;
+      .sb-drawer-cta:hover { background: rgba(212,166,79,.25); }
+
+      /* Main nav */
+      .sb-drawer-main-nav {
+        padding: 0 8px;
+        margin-bottom: 8px;
+      }
+      .sb-drawer-main-link {
+        display: flex;
+        align-items: center;
+        padding: 0 12px;
+        height: 52px;
+        font-family: var(--font-serif);
+        font-size: 1.05rem;
+        color: rgba(232,201,139,.85);
+        border-radius: 8px;
+        letter-spacing: .02em;
+        transition: background .18s, color .18s;
+      }
+      .sb-drawer-main-link:hover,
+      .sb-drawer-main-link:active { background: rgba(212,166,79,.1); color: #F2CF7A; }
+
+      /* Perfumes section */
+      .sb-drawer-section {
+        padding: 0 8px;
+        border-top: 1px solid rgba(212,166,79,.1);
+        padding-top: 12px;
+        margin-top: 4px;
+      }
+      .sb-drawer-section-title {
+        font-size: .6rem;
+        letter-spacing: .3em;
+        text-transform: uppercase;
+        color: rgba(212,166,79,.55);
+        font-weight: 700;
+        padding: 4px 12px 10px;
+      }
+
+      /* Category accordion */
+      .sb-drawer-cat { margin-bottom: 2px; }
+      .sb-drawer-cat-btn {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 0 12px;
+        height: 50px;
+        background: none;
+        border: none;
+        border-radius: 8px;
+        font-family: var(--font-sans);
+        font-size: .9rem;
+        font-weight: 500;
+        color: rgba(232,201,139,.8);
+        cursor: pointer;
+        text-align: left;
+        transition: background .18s, color .18s;
+      }
+      .sb-drawer-cat-btn:hover,
+      .sb-drawer-cat-btn[aria-expanded="true"] { background: rgba(212,166,79,.1); color: #F2CF7A; }
+      .sb-drawer-chevron {
+        color: rgba(212,166,79,.5);
+        transition: transform .25s;
+        flex-shrink: 0;
+      }
+      .sb-drawer-chevron.open { transform: rotate(180deg); color: #F2CF7A; }
+
+      /* Items lista normal */
+      .sb-drawer-cat-items {
+        padding: 4px 8px 8px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        border-left: 2px solid rgba(212,166,79,.15);
+        margin-left: 16px;
+        margin-bottom: 4px;
+      }
+      .sb-drawer-cat-link {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 6px;
+        font-family: var(--font-sans);
+        font-size: .86rem;
+        color: rgba(232,201,139,.7);
+        transition: background .18s, color .18s;
+        min-height: 42px;
+      }
+      .sb-drawer-cat-link:hover,
+      .sb-drawer-cat-link:active { background: rgba(212,166,79,.1); color: #F2CF7A; }
+      .sb-drawer-dot {
+        width: 8px; height: 8px;
+        border-radius: 50%; flex-shrink: 0;
+        box-shadow: 0 0 0 2px rgba(212,166,79,.2);
+      }
+
+      /* Chips (marcas) */
+      .sb-drawer-cat-items--chips {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 8px 4px 12px 12px;
+        border-left: 2px solid rgba(212,166,79,.15);
+        margin-left: 16px;
+      }
+      .sb-drawer-chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 12px;
+        background: rgba(212,166,79,.08);
+        border: 1px solid rgba(212,166,79,.2);
+        border-radius: 99px;
+        font-family: var(--font-sans);
+        font-size: .75rem;
+        font-weight: 500;
+        color: rgba(232,201,139,.8);
+        transition: background .18s, color .18s, border-color .18s;
+        white-space: nowrap;
+      }
+      .sb-drawer-chip:hover,
+      .sb-drawer-chip:active { background: rgba(212,166,79,.22); color: #F2CF7A; border-color: rgba(212,166,79,.5); }
+
+      /* Footer del drawer */
+      .sb-drawer-footer {
+        padding: 16px 20px;
+        border-top: 1px solid rgba(212,166,79,.12);
+        flex-shrink: 0;
+      }
+      .sb-drawer-social {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .sb-drawer-social-btn {
+        width: 40px; height: 40px;
+        border-radius: 50%;
+        border: 1px solid rgba(212,166,79,.2);
+        display: flex; align-items: center; justify-content: center;
+        color: rgba(232,201,139,.6);
+        transition: background .2s, color .2s;
+      }
+      .sb-drawer-social-btn:hover { background: rgba(212,166,79,.15); color: #F2CF7A; }
+      .sb-drawer-footer-copy {
+        font-size: .68rem;
+        color: rgba(232,201,139,.3);
+        letter-spacing: .08em;
+      }
+
+      /* ===== MEGA MENU (desktop flyout two-panel) ===== */
+      .sb-megamenu-wrap {
+        left: 0;
+        transform: none;
+        animation: sb-drop-fade .22s cubic-bezier(.22,.61,.36,1);
+      }
+      .sb-megamenu {
+        display: flex;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid rgba(212,166,79,.3);
+        box-shadow: 0 32px 64px rgba(5,5,5,.35), 0 4px 16px rgba(5,5,5,.2);
+        min-width: 580px;
+      }
+      /* Left panel: dark, category list */
+      .sb-megamenu-left {
+        width: 190px;
+        flex-shrink: 0;
+        background: #1A1612;
+        border-right: 1px solid rgba(212,166,79,.15);
+        padding: 10px 8px;
         display: flex;
         flex-direction: column;
         gap: 2px;
-        border-left: 1px solid rgba(212, 166, 79, .18);
-        margin-left: 4px;
       }
-      .sb-mobile-sublink {
+      .sb-megamenu-row {
         display: flex;
         align-items: center;
-        gap: 11px;
-        padding: 10px 8px;
-        font-family: var(--font-sans);
-        font-size: .9rem;
-        color: rgba(232, 201, 139, .85);
+        justify-content: space-between;
+        padding: 10px 12px;
         border-radius: 6px;
-        transition: background .2s, color .2s, padding-left .25s var(--ease-out, cubic-bezier(.16,1,.3,1));
+        cursor: pointer;
+        font-family: var(--font-sans);
+        font-size: .8rem;
+        font-weight: 500;
+        color: rgba(232,201,139,.65);
+        letter-spacing: .04em;
+        transition: background .18s, color .18s;
+        user-select: none;
       }
-      .sb-mobile-sublink:hover,
-      .sb-mobile-sublink:active,
-      .sb-mobile-sublink:focus-visible {
-        background: rgba(212, 166, 79, .12);
-        color: #F2CF7A;
-        padding-left: 14px;
-        outline: none;
+      .sb-megamenu-row:hover { background: rgba(212,166,79,.1); color: #E8C98B; }
+      .sb-megamenu-row.active { background: rgba(212,166,79,.18); color: #F2CF7A; }
+      .sb-megamenu-row.active svg { color: #F2CF7A; }
+      .sb-megamenu-ver-todo {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: auto;
+        padding: 10px 12px;
+        font-family: var(--font-sans);
+        font-size: .72rem;
+        font-weight: 600;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: rgba(212,166,79,.55);
+        border-top: 1px solid rgba(212,166,79,.12);
+        transition: color .18s;
       }
-      .sb-mobile-dot {
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        flex-shrink: 0;
-        box-shadow: 0 0 0 2px rgba(212, 166, 79, .15);
+      .sb-megamenu-ver-todo:hover { color: #F2CF7A; }
+      /* Right panel: gold, items */
+      .sb-megamenu-right {
+        flex: 1;
+        background: #E8C98B;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        min-width: 280px;
+        max-height: 420px;
+        overflow-y: auto;
       }
+      .sb-megamenu-right--brands {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        align-content: flex-start;
+        gap: 2px;
+        min-width: 400px;
+      }
+      .sb-megamenu-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 9px 12px;
+        border-radius: 6px;
+        color: #1A1612;
+        text-decoration: none;
+        transition: background .18s, color .18s, transform .18s;
+      }
+      .sb-megamenu-item:hover { background: #1F1A14; transform: translateX(2px); }
+      .sb-megamenu-right--brands .sb-megamenu-item { padding: 8px 10px; }
+      .sb-megamenu-item-label {
+        display: block;
+        font-family: var(--font-sans);
+        font-size: .82rem;
+        font-weight: 600;
+        color: #1A1612;
+        line-height: 1.2;
+        transition: color .18s;
+      }
+      .sb-megamenu-item:hover .sb-megamenu-item-label { color: #F2CF7A; }
+      .sb-megamenu-item-desc {
+        font-size: .68rem;
+        color: rgba(26,22,18,.55);
+        margin: 2px 0 0;
+        line-height: 1.3;
+        transition: color .18s;
+      }
+      .sb-megamenu-item:hover .sb-megamenu-item-desc { color: rgba(232,201,139,.65); }
 
       @media (max-width: 1024px) {
         .sb-nav-links { gap: 22px; }

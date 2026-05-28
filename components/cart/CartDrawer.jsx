@@ -9,11 +9,13 @@ const SHIPPING_FEE = 15000;
 const COP = (n) => 'COP $' + Number(n || 0).toLocaleString('es-CO');
 
 export default function CartDrawer() {
-  const { items, isOpen, closeCart, removeItem, updateQuantity } = useCartStore();
-  const subtotal = items.reduce((s, i) => s + (i.price || 0) * i.quantity, 0);
+  const { items: rawItems, isOpen, closeCart, removeItem, updateQuantity } = useCartStore();
+  // Defensa: localStorage corrupto puede dar items undefined/null. Garantizamos array.
+  const items = Array.isArray(rawItems) ? rawItems : [];
+  const subtotal = items.reduce((s, i) => s + (i?.price || 0) * (i?.quantity || 0), 0);
   const remaining = Math.max(0, FREE_SHIPPING - subtotal);
   const progress = Math.min(100, subtotal === 0 ? 0 : (subtotal / FREE_SHIPPING) * 100);
-  const count = items.reduce((s, i) => s + i.quantity, 0);
+  const count = items.reduce((s, i) => s + (i?.quantity || 0), 0);
   const shipping = subtotal > 0 && remaining === 0 ? 0 : (subtotal > 0 ? SHIPPING_FEE : 0);
   const total = subtotal + shipping;
 

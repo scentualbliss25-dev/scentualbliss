@@ -1,13 +1,17 @@
 'use client';
 import { useState, useEffect, useRef, useMemo } from 'react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import QuickView from '@/components/ui/QuickView';
+import Image from 'next/image';
+
+// QuickView usa framer-motion (~50KB). Cargar solo cuando el usuario abre la vista rápida.
+const QuickView = dynamic(() => import('@/components/ui/QuickView'), { ssr: false });
 import {
   ArrowRight, ArrowLeft, ShoppingBag, Heart, Eye,
   Truck, Shield, RotateCcw, Award, Sparkles, Flame,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { products, collections, testimonials, getImagePath } from '@/lib/products';
+import { products, collections, testimonials, getImagePath, deriveClima } from '@/lib/products';
 import { useCartStore } from '@/lib/store/cartStore';
 import { useWishlistStore } from '@/lib/store/wishlistStore';
 import './HomePageClient.css';
@@ -15,20 +19,14 @@ import './HomePageClient.css';
 const COP = (n) => 'COP $' + Number(n || 0).toLocaleString('es-CO');
 
 const TRUST = [
-  { Icon: Truck, title: 'Envío Express', desc: 'A toda Colombia' },
+  { Icon: Truck, title: 'Envío gratis', desc: 'a toda Colombia' },
   { Icon: Shield, title: 'Pago seguro', desc: 'SSL + cifrado bancario' },
-  { Icon: RotateCcw, title: 'Devolución fácil', desc: '30 días sin preguntas' },
+  { Icon: RotateCcw, title: 'Devolución gratis', desc: 'En los primeros 30 días' },
   { Icon: Award, title: '100% auténticos', desc: 'Garantía de originalidad' },
 ];
 
-const NOTES_ORBIT = [
-  { label: 'Azafrán',   pos: 'Salida',  angle: -30, delay: 0   },
-  { label: 'Bergamota', pos: 'Salida',  angle: 40,  delay: 0.6 },
-  { label: 'Oud',       pos: 'Corazón', angle: 110, delay: 1.2 },
-  { label: 'Rosa',      pos: 'Corazón', angle: 180, delay: 1.8 },
-  { label: 'Tonka',     pos: 'Fondo',   angle: 230, delay: 2.4 },
-  { label: 'Ámbar',     pos: 'Fondo',   angle: 310, delay: 3.0 },
-];
+// Toma la primera nota de una cadena tipo "Azafrán, Bergamota" → "Azafrán"
+const firstNote = (s) => String(s || '').split(',')[0]?.trim() || '—';
 
 // Perfume insignia de marca propia ScentualBliss (edición limitada — pre-orden).
 // No vive en lib/products.js: es exclusivo del hero y aún no tiene página de detalle.
@@ -234,6 +232,17 @@ function Hero() {
     ? `/img/hero/${heroProduct.slug}-transparent.png`
     : HOUSE_PERFUME.image;
 
+  // Lista de 6 atributos para el panel vertical detrás de la botella
+  const CLIMA_LABEL = { calido: 'Cálido', templado: 'Templado', frio: 'Frío' };
+  const heroPyramid = [
+    { pos: 'Clima',         label: CLIMA_LABEL[deriveClima(heroProduct || {})] || '—' },
+    { pos: 'Género',        label: heroProduct?.gender || '—' },
+    { pos: 'Concentración', label: heroProduct?.type || '—' },
+    { pos: 'Salida',        label: firstNote(heroProduct?.notes?.top) },
+    { pos: 'Corazón',       label: firstNote(heroProduct?.notes?.heart) },
+    { pos: 'Fondo',         label: firstNote(heroProduct?.notes?.base) },
+  ];
+
   return (
     <section className="hero-fx" ref={stageRef}>
       <div className="fx-aurora" aria-hidden="true">
@@ -316,14 +325,18 @@ function Hero() {
             {/* Halo y beam removidos: el usuario quiere la botella sin efectos/glow detrás */}
 
             <div className="fx-bottle">
-              <img
+              <Image
+                fill
+                priority
                 src={heroImg}
                 alt={`${heroProduct?.brand || ''} ${heroProduct?.name || HOUSE_PERFUME.name} ${heroProduct?.type || HOUSE_PERFUME.type}`}
+                style={{ objectFit: 'contain' }}
+                sizes="(max-width: 640px) 90vw, (max-width: 1100px) 50vw, 42vw"
               />
             </div>
 
-            <ul className="fx-notes-list" aria-label="Pirámide olfativa">
-              {NOTES_ORBIT.map((n, i) => (
+            <ul className="fx-notes-list" aria-label="Ficha técnica del perfume">
+              {heroPyramid.map((n, i) => (
                 <li
                   key={i}
                   className="fx-note-row"
@@ -493,11 +506,19 @@ function Families() {
               <Link
                 key={f.id}
                 href={`/tienda?cat=${f.id}`}
+                prefetch={false}
                 className={`family ${active === f.id ? 'active' : ''}`}
                 onMouseEnter={() => setActive(f.id)}
                 style={{ flex: active === f.id ? 4 : 1 }}
               >
-                <img src={f.image} alt={f.name} className="family-img" />
+                <Image
+                  fill
+                  src={f.image}
+                  alt={f.name}
+                  className="family-img"
+                  style={{ objectFit: 'cover' }}
+                  sizes="(max-width: 640px) 100vw, (max-width: 1100px) 33vw, 16vw"
+                />
                 <div className="family-num">0{i + 1}</div>
                 <div className="family-dot-wrap" style={{ background: f.color }} />
                 <div className="family-overlay">
@@ -522,9 +543,10 @@ function Families() {
 // ============================================================
 function PCard({ product, onQuick }) {
   const addItem = useCartStore(s => s.addItem);
-  const wishlistItems = useWishlistStore(s => s.items);
+  const rawWishlist = useWishlistStore(s => s.items);
   const toggleWish = useWishlistStore(s => s.toggle);
-  const wishlisted = wishlistItems.some(i => i.id === product.id);
+  const wishlistItems = Array.isArray(rawWishlist) ? rawWishlist : [];
+  const wishlisted = wishlistItems.some(i => i?.id === product.id);
 
   const handleAdd = (e) => {
     e.preventDefault();
@@ -571,7 +593,16 @@ function PCard({ product, onQuick }) {
         >
           <Heart size={15} fill={wishlisted ? 'currentColor' : 'none'} />
         </button>
-        <img className="pcard-img" src={img} alt={product.name} />
+        <div className="pcard-img-inner">
+          <Image
+            fill
+            src={img}
+            alt={product.name}
+            className="pcard-img"
+            style={{ objectFit: 'contain', mixBlendMode: 'multiply' }}
+            sizes="(max-width: 640px) 50vw, (max-width: 1100px) 25vw, 20vw"
+          />
+        </div>
         <div className="pcard-overlay">
           <div className="pcard-cta">
             <button type="button" className="pcard-add" onClick={handleAdd}>
@@ -608,7 +639,7 @@ function Bestsellers({ onQuick }) {
         <div className="section-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 24, maxWidth: '100%' }}>
           <div>
             <p className="eyebrow">Los más amados</p>
-            <h2>Bestsellers <em>2026</em>.</h2>
+            <h2>Los más <em>vendidos</em>.</h2>
             <p>Las fragancias que conquistan a quienes las prueban una sola vez.</p>
           </div>
           <Link href="/tienda" className="btn btn-ghost">
@@ -630,10 +661,23 @@ function Bestsellers({ onQuick }) {
 // ============================================================
 // FEATURED — flash offer with countdown
 // ============================================================
+// Duración de la oferta flash: 20 horas desde primera visita
+const FLASH_DURATION_MS = 1000 * 60 * 60 * 20;
+const FLASH_KEY = 'sb_flash_offer_end';
+
 function Featured() {
   const [target, setTarget] = useState(null);
   useEffect(() => {
-    setTarget(Date.now() + 1000 * 60 * 60 * 18 + 1000 * 60 * 32);
+    try {
+      let stored = Number(localStorage.getItem(FLASH_KEY));
+      if (!stored || stored <= Date.now()) {
+        stored = Date.now() + FLASH_DURATION_MS;
+        localStorage.setItem(FLASH_KEY, String(stored));
+      }
+      setTarget(stored);
+    } catch {
+      setTarget(Date.now() + FLASH_DURATION_MS);
+    }
   }, []);
   const { h, m, s } = useCountdown(target);
   const product = useMemo(() => products.find(p => p.slug === 'lattafa-khamrah') || products[0], []);
@@ -657,7 +701,14 @@ function Featured() {
           <Reveal>
             <div className="featured-img-wrap">
               <span className="featured-discount">−<em>30</em>%</span>
-              <img className="featured-img" src={getImagePath(product)} alt={product?.name || 'Oferta'} />
+              <Image
+                fill
+                src={getImagePath(product)}
+                alt={product?.name || 'Oferta'}
+                className="featured-img"
+                style={{ objectFit: 'contain', mixBlendMode: 'multiply' }}
+                sizes="(max-width: 860px) 90vw, 45vw"
+              />
             </div>
           </Reveal>
           <Reveal delay={150}>
@@ -705,7 +756,16 @@ function Story() {
         <div className="story-grid">
           <Reveal>
             <div className="story-img">
-              <img src={storyImg} alt="Atelier" />
+              <div className="story-img-inner">
+                <Image
+                  fill
+                  src={storyImg}
+                  alt="Atelier"
+                  className="story-img-pic"
+                  style={{ objectFit: 'contain', mixBlendMode: 'screen' }}
+                  sizes="(max-width: 860px) 90vw, 45vw"
+                />
+              </div>
               <p className="story-quote">
                 Cada fragancia que elegimos pasa por nuestras manos antes de pasar por las tuyas.
               </p>
@@ -932,7 +992,7 @@ function Quiz() {
                   return (
                     <Link key={p.id} href={`/perfume/${p.slug}`} className="quiz-result-product">
                       <div className="quiz-result-img-wrap">
-                        <img src={getImagePath(p)} alt={p.name} />
+                        <Image fill src={getImagePath(p)} alt={p.name} style={{ objectFit: 'contain' }} sizes="120px" />
                         {p.bestseller && <span className="quiz-result-badge">Bestseller</span>}
                       </div>
                       <p className="b">{p.brand}</p>
@@ -1139,11 +1199,32 @@ function Testimonials() {
 // ============================================================
 function Newsletter() {
   const [email, setEmail] = useState('');
-  const submit = (e) => {
+  const [loading, setLoading] = useState(false);
+
+  const submit = async (e) => {
     e.preventDefault();
-    if (!email.includes('@')) return;
-    toast.success(`¡Suscrita! Revisa ${email} para tu código de 10% OFF.`, { ...TOAST_STYLE, duration: 4000 });
-    setEmail('');
+    if (!email.includes('@') || loading) return;
+    setLoading(true);
+    try {
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (data.already) {
+        toast(`${email} ya está suscrito. ¡Gracias!`, { ...TOAST_STYLE, icon: '💛', duration: 4000 });
+      } else if (data.success) {
+        toast.success(`¡Suscrito! Revisa ${email} para tu código de 10% OFF.`, { ...TOAST_STYLE, duration: 4000 });
+        setEmail('');
+      } else {
+        toast.error('Algo salió mal. Intenta de nuevo.', { ...TOAST_STYLE });
+      }
+    } catch {
+      toast.error('Sin conexión. Intenta de nuevo.', { ...TOAST_STYLE });
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <section className="section newsletter">
@@ -1155,7 +1236,9 @@ function Newsletter() {
             <p>Suscríbete y recibe ofertas, lanzamientos anticipados y guías de fragancias directo en tu email.</p>
             <form className="newsletter-form" onSubmit={submit}>
               <input className="newsletter-input" type="email" placeholder="tu@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
-              <button className="newsletter-submit" type="submit">Suscribirme</button>
+              <button className="newsletter-submit" type="submit" disabled={loading}>
+                {loading ? 'Enviando…' : 'Suscribirme'}
+              </button>
             </form>
             <p className="newsletter-fine">Sin spam. Cancela cuando quieras.</p>
           </Reveal>

@@ -28,7 +28,10 @@ const PAYMENT_METHODS = [
 const RESERVATION_MINUTES = 15;
 
 export default function CheckoutPageClient() {
-  const { items, clearCart } = useCartStore();
+  const { items: rawItems, clearCart } = useCartStore();
+  // Defensa: localStorage corrupto puede dar items undefined. Garantizamos array
+  // para evitar que items.length / .map / .reduce revienten.
+  const items = Array.isArray(rawItems) ? rawItems : [];
   const total = useCartTotal();
   const router = useRouter();
   const [step, setStep] = useState(0);
@@ -312,7 +315,7 @@ export default function CheckoutPageClient() {
                 {/* Envío */}
                 <div style={{ background: 'var(--dark-2)', borderRadius: '14px', border: '1px solid var(--dark-4)', padding: '24px' }}>
                   <h3 style={{ fontFamily: 'var(--font-serif)', color: 'var(--white)', marginBottom: '6px', fontSize: '1.3rem' }}>Dirección de Envío</h3>
-                  <p style={{ color: 'var(--gray)', fontSize: '.85rem', marginBottom: '20px' }}>📦 Entrega en 24-48h en ciudades principales.</p>
+                  <p style={{ color: 'var(--gray)', fontSize: '.85rem', marginBottom: '20px' }}>📦 Envío gratis a toda Colombia.</p>
                   <div className="form-group">
                     <label>Dirección <span style={{ color: 'var(--gold)' }}>*</span></label>
                     <input required autoComplete="street-address" value={form.address} onChange={e => setField('address', e.target.value)}
@@ -466,8 +469,8 @@ export default function CheckoutPageClient() {
                 {items.map(item => (
                   <div key={item.key} style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                     <div style={{ position: 'relative', flexShrink: 0 }}>
-                      <img src={item.images[0]} alt={item.name}
-                        onError={e => { e.currentTarget.src = '/img/placeholder-perfume.webp'; }}
+                      <img src={item.images?.[0] || `/img/${item.slug}.webp`} alt={item.name}
+                        onError={e => { if (!e.currentTarget.src.endsWith('placeholder-perfume.webp')) e.currentTarget.src = '/img/placeholder-perfume.webp'; }}
                         style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: '8px', background: 'var(--dark-3)' }} />
                       <span style={{
                         position: 'absolute', top: -6, right: -6,
@@ -528,7 +531,7 @@ export default function CheckoutPageClient() {
               {/* TRUST BADGES */}
               <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid var(--dark-4)' }}>
                 {[
-                  { Icon: Truck,    title: 'Envío Express', desc: '24–48h en ciudades principales' },
+                  { Icon: Truck,    title: 'Envío gratis', desc: 'a toda Colombia' },
                   { Icon: RotateCcw, title: 'Garantía 30 días', desc: 'Devolución sin preguntas' },
                   { Icon: Shield,   title: 'Pago Seguro', desc: 'SSL 256-bit · PCI-DSS' },
                   { Icon: Award,    title: '100% Original', desc: 'Auténtico o te devolvemos el dinero' },

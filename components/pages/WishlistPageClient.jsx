@@ -8,7 +8,8 @@ import ProductCard from '@/components/ui/ProductCard';
 import toast from 'react-hot-toast';
 
 export default function WishlistPageClient() {
-  const { items, toggle } = useWishlistStore();
+  const { items: rawItems, toggle } = useWishlistStore();
+  const items = Array.isArray(rawItems) ? rawItems : [];
   const { addItem } = useCartStore();
 
   const handleAddAll = () => {

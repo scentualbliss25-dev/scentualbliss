@@ -7,7 +7,10 @@ import ShopLoadMore, { ShopEmptyState } from '@/components/ui/ShopLoadMore';
 import QuickViewModal from '@/components/ui/QuickViewModal';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
 
-export const revalidate = 300;
+// La página usa `await searchParams` para filtrar productos, por lo que es
+// inherentemente dinámica. NO se puede combinar con `revalidate` (causa el
+// error "Server Components render" en Next.js 15 durante SPA navigation).
+export const dynamic = 'force-dynamic';
 
 const aromaCats = [
   { id: 'Todos', label: 'Todos' },

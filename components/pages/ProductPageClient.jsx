@@ -30,15 +30,25 @@ const CATEGORY_LABELS = {
   fresh:     { label: 'Fresco',    color: '#4A9B8E', bg: 'rgba(74,155,142,.15)' },
 };
 
-const mockReviews = [
-  { name: 'Valentina R.', location: 'CDMX', rating: 5, text: 'Lo compré por el anuncio y quedé enamorada. Dura todo el día y recibo cumplidos constantemente.', verified: true, date: 'hace 3 días' },
-  { name: 'Carlos M.', location: 'Bogotá', rating: 5, text: 'La duración es increíble. Me lo puse en la mañana y aún lo sentía en la noche. Vale cada peso.', verified: true, date: 'hace 1 semana' },
-  { name: 'Isabella T.', location: 'Buenos Aires', rating: 5, text: 'El empaque llegó perfecto y el aroma es exactamente como lo describen. 100% recomendado.', verified: true, date: 'hace 2 semanas' },
-];
+// Normaliza string: minúsculas + sin acentos
+const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+
+// Detecta si product.badge es redundante con productType (ya se muestra como primaryCat)
+// Ej.: badge "Niche" + productType "nicho" → duplicado
+function isRedundantTypeBadge(product) {
+  if (!product?.badge || !product?.productType) return false;
+  const b = norm(product.badge);
+  const equivalents = {
+    nicho:     ['nicho', 'niche'],
+    disenador: ['disenador', 'diseñador', 'designer'],
+    arabe:     ['arabe', 'árabe', 'arabic'],
+  };
+  return (equivalents[product.productType] || []).includes(b);
+}
 
 const faqItems = [
   { q: '¿Es 100% original?', a: 'Sí. Todos nuestros perfumes son auténticos y certificados. Trabajamos directamente con distribuidores oficiales.' },
-  { q: '¿Cuánto tarda el envío?', a: 'Envío express en 24–48 horas hábiles. Los pedidos antes de las 2 PM se despachan el mismo día.' },
+  { q: '¿Cuánto tarda el envío?', a: 'Envío gratis a toda Colombia. Los pedidos antes de las 2 PM se despachan el mismo día.' },
   { q: '¿Puedo devolverlo si no me gusta?', a: '30 días de garantía sin preguntas. Si no estás satisfecho, te devolvemos el dinero o hacemos el cambio.' },
 ];
 
@@ -67,8 +77,9 @@ export default function ProductPageClient({ product, resolvedImages }) {
   const [qty, setQty] = useState(1);
   const [tab, setTab] = useState('descripcion');
   const { addItem } = useCartStore();
-  const { items: wishlistItems, toggle: toggleWishlist } = useWishlistStore();
-  const wishlisted = product ? wishlistItems.some(i => i.id === product.id) : false;
+  const { items: rawWishlist, toggle: toggleWishlist } = useWishlistStore();
+  const wishlistItems = Array.isArray(rawWishlist) ? rawWishlist : [];
+  const wishlisted = product ? wishlistItems.some(i => i?.id === product.id) : false;
 
   // Reviews reales desde Supabase
   const [realReviews, setRealReviews] = useState([]);
@@ -146,7 +157,7 @@ export default function ProductPageClient({ product, resolvedImages }) {
   ];
 
   return (
-    <main>
+    <main className="pdp-light">
       {/* URGENCY BANNER */}
       {product.stock <= 15 && (
         <div style={{
@@ -181,7 +192,7 @@ export default function ProductPageClient({ product, resolvedImages }) {
 
           {/* LEFT: GALLERY */}
           <div className="product-gallery" style={{ position: 'sticky', top: '100px' }}>
-            <div className="product-main-img" style={{ position: 'relative', aspectRatio: '4/5', borderRadius: '20px', overflow: 'hidden', background: 'var(--dark-2)', marginBottom: '12px' }}>
+            <div className="product-main-img" style={{ position: 'relative', aspectRatio: '4/5', borderRadius: '20px', overflow: 'hidden', background: '#F8F3EA', marginBottom: '12px' }}>
               <img
                 src={productImages[imgIdx]}
                 alt={`${product.name} ${product.brand} perfume`}
@@ -192,7 +203,8 @@ export default function ProductPageClient({ product, resolvedImages }) {
               />
               {/* Badges overlay */}
               <div style={{ position: 'absolute', top: 16, left: 16, display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                {product.badge && (
+                {/* Oculta el badge si duplica el productType (Niche/Nicho, Designer/Diseñador, Arabic/Árabe) */}
+                {product.badge && !isRedundantTypeBadge(product) && (
                   <span className="badge" style={{ background: product.badgeColor || 'var(--gold)' }}>{product.badge}</span>
                 )}
                 {discount && (
@@ -201,6 +213,11 @@ export default function ProductPageClient({ product, resolvedImages }) {
                 {primaryCat && (
                   <span className="badge" style={{ background: primaryCat.bg, color: primaryCat.color, border: `1px solid ${primaryCat.color}40` }}>
                     {primaryCat.label}
+                  </span>
+                )}
+                {product.type && (
+                  <span className="badge" style={{ background: 'rgba(255,255,255,.06)', color: 'var(--gray-light)', border: '1px solid rgba(255,255,255,.12)', fontWeight: 500 }}>
+                    {product.type}
                   </span>
                 )}
               </div>
@@ -387,7 +404,7 @@ export default function ProductPageClient({ product, resolvedImages }) {
             {/* Trust Row */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginBottom: '24px' }}>
               {[
-                { icon: Truck, title: 'Envío Express', desc: '24-48 horas' },
+                { icon: Truck, title: 'Envío gratis', desc: 'a toda Colombia' },
                 { icon: Shield, title: 'Pago Seguro', desc: 'SSL 256-bit' },
                 { icon: RotateCcw, title: '30 días', desc: 'Devolución' },
               ].map(({ icon: Icon, title, desc }) => (
@@ -466,6 +483,7 @@ export default function ProductPageClient({ product, resolvedImages }) {
               {tab === 'detalles' && (
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                   {[
+                    ['Concentración', product.type],
                     ['Duración', product.longevity],
                     ['Proyección', product.sillage],
                     ['Temporada', product.season],
@@ -485,21 +503,64 @@ export default function ProductPageClient({ product, resolvedImages }) {
         </div>
 
         {/* SOCIAL PROOF BANNER */}
-        <div style={{ background: 'linear-gradient(135deg, var(--dark-2), var(--dark-3))', border: '1px solid rgba(201,169,110,.15)', borderRadius: '16px', padding: '32px', marginBottom: '64px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '24px', textAlign: 'center' }}>
+        <div className="pdp-social-proof" style={{ background: 'linear-gradient(135deg, var(--dark-2), var(--dark-3))', border: '1px solid rgba(201,169,110,.15)', borderRadius: '16px', marginBottom: '64px' }}>
+          <div className="pdp-social-proof-grid">
             {[
               { icon: Users, value: '50,000+', label: 'Clientes satisfechos' },
               { icon: Award, value: '100%', label: 'Auténtico garantizado' },
-              { icon: Clock, value: '24-48h', label: 'Envío express' },
+              { icon: Clock, value: 'Gratis', label: 'Envío a toda Colombia' },
               { icon: Star, value: '4.9/5', label: 'Valoración promedio' },
             ].map(({ icon: Icon, value, label }) => (
-              <div key={label}>
-                <Icon size={24} style={{ color: 'var(--gold)', margin: '0 auto 8px' }} />
-                <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', color: 'var(--white)', fontWeight: 600, marginBottom: '4px' }}>{value}</p>
-                <p style={{ fontSize: '.78rem', color: 'var(--gray)', letterSpacing: '.04em' }}>{label}</p>
+              <div key={label} className="pdp-social-proof-item">
+                <Icon className="pdp-social-proof-icon" style={{ color: 'var(--gold)' }} />
+                <p className="pdp-social-proof-value">{value}</p>
+                <p className="pdp-social-proof-label">{label}</p>
               </div>
             ))}
           </div>
+          <style>{`
+            .pdp-social-proof { padding: 32px; }
+            .pdp-social-proof-grid {
+              display: grid;
+              grid-template-columns: repeat(4, 1fr);
+              gap: 24px;
+              text-align: center;
+            }
+            .pdp-social-proof-item { min-width: 0; }
+            .pdp-social-proof-icon {
+              width: 24px;
+              height: 24px;
+              margin: 0 auto 8px;
+              display: block;
+            }
+            .pdp-social-proof-value {
+              font-family: var(--font-serif);
+              font-size: 1.5rem;
+              color: var(--white);
+              font-weight: 600;
+              margin-bottom: 4px;
+              line-height: 1.15;
+              word-break: break-word;
+            }
+            .pdp-social-proof-label {
+              font-size: .78rem;
+              color: var(--gray);
+              letter-spacing: .04em;
+              line-height: 1.35;
+            }
+            @media (max-width: 720px) {
+              .pdp-social-proof { padding: 24px 18px; }
+              .pdp-social-proof-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 22px 16px;
+              }
+              .pdp-social-proof-value { font-size: 1.25rem; }
+              .pdp-social-proof-label { font-size: .72rem; }
+            }
+            @media (max-width: 380px) {
+              .pdp-social-proof-value { font-size: 1.1rem; }
+            }
+          `}</style>
         </div>
 
         {/* REVIEWS */}

@@ -7,6 +7,7 @@ import { OrderActions } from './OrderActions';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+export const metadata = { robots: { index: false, follow: false } };
 
 const STATUS_STYLES = {
   approved:  { bg: '#10b98122', color: '#059669', label: 'Aprobada' },

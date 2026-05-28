@@ -13,7 +13,7 @@ import toast from 'react-hot-toast';
 const PLACEHOLDER = '/img/placeholder-perfume.webp';
 const CARD_SIZES = '(max-width: 640px) 50vw, (max-width: 900px) 50vw, (max-width: 1024px) 33vw, 25vw';
 
-const TOAST = { style: { background: '#1A1610', color: '#F6F3EE', border: '1px solid rgba(184,144,92,.3)', fontFamily: 'DM Sans, sans-serif' }, iconTheme: { primary: '#B8905C', secondary: '#1A1610' } };
+const TOAST = { style: { background: '#1A1610', color: '#F6F3EE', border: '1px solid rgba(184,144,92,.3)', fontFamily: 'var(--font-sans)' }, iconTheme: { primary: '#B8905C', secondary: '#1A1610' } };
 
 export default function ProductCard({ product, priority = false }) {
   const [hovered, setHovered] = useState(false);
@@ -21,9 +21,10 @@ export default function ProductCard({ product, priority = false }) {
   const initialImg = hasRealImages ? product.images[0] : getImagePath(product);
   const [imgSrc, setImgSrc] = useState(initialImg);
   const { addItem } = useCartStore();
-  const { items: wishlistItems, toggle: toggleWishlist } = useWishlistStore();
+  const { items: rawWishlist, toggle: toggleWishlist } = useWishlistStore();
   const openQuickView = useQuickViewStore((s) => s.open);
-  const wishlisted = wishlistItems.some(i => i.id === product.id);
+  const wishlistItems = Array.isArray(rawWishlist) ? rawWishlist : [];
+  const wishlisted = wishlistItems.some(i => i?.id === product.id);
 
   const hasPrice = product.price > 0;
 
