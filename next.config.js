@@ -10,25 +10,23 @@ const nextConfig = {
   },
 };
 
-// Sentry config — envuelve el next.config para que el SDK pueda hacer
-// source maps upload (los errores en prod muestran la línea real del
-// archivo .jsx en vez del bundle minificado).
-export default withSentryConfig(nextConfig, {
-  // Organization y project de Sentry (visibles en sentry.io/settings)
-  org: 'scentualbliss',
-  project: 'javascript-nextjs',
+// En DEV no envolvemos con Sentry: el plugin de webpack genera vendor
+// chunks @sentry que ocasionalmente quedan stale tras hot-reload y rompen
+// rutas dinámicas con "Cannot find module './vendor-chunks/@sentry.js'".
+// Sentry server además ya está deshabilitado en dev (sentry.server.config.js
+// `enabled: NODE_ENV === 'production'`), así que no perdemos nada.
+//
+// En CI/production sí aplicamos el wrapper para que el upload de source maps
+// y la instrumentación funcionen como antes.
+const isProdBuild = process.env.NODE_ENV === 'production';
 
-  // No subir source maps al build local; solo en CI (Vercel).
-  // En el build local Vercel no tiene SENTRY_AUTH_TOKEN, así que skip silencioso.
-  silent: !process.env.CI,
-
-  // Oculta los source maps al cliente — solo Sentry los puede leer.
-  // Esto evita que los usuarios vean el código original en DevTools.
-  hideSourceMaps: true,
-
-  // Desactiva los logger de Sentry en producción para reducir bundle size.
-  disableLogger: true,
-
-  // Tree-shake código de Sentry que no se usa.
-  widenClientFileUpload: true,
-});
+export default isProdBuild
+  ? withSentryConfig(nextConfig, {
+      org: 'scentualbliss',
+      project: 'javascript-nextjs',
+      silent: !process.env.CI,
+      hideSourceMaps: true,
+      disableLogger: true,
+      widenClientFileUpload: true,
+    })
+  : nextConfig;

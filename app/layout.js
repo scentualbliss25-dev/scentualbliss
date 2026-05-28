@@ -1,9 +1,7 @@
 import './globals.css';
 import Script from 'next/script';
 import { Montserrat } from 'next/font/google';
-import AnnouncementBar from '@/components/layout/AnnouncementBar';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
+import { PublicHeader, PublicFooter } from '@/components/layout/PublicChrome';
 import ToasterWrapper from '@/components/ui/ToasterWrapper';
 import DeferredShell from '@/components/layout/DeferredShell';
 import { SITE_URL } from '@/lib/site';
@@ -168,11 +166,10 @@ export default async function RootLayout({ children }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
         <a href="#main-content" className="skip-link">Saltar al contenido principal</a>
-        <AnnouncementBar />
-        <Navbar products={products} />
+        <PublicHeader products={products} />
         <ToasterWrapper />
         {children}
-        <Footer />
+        <PublicFooter />
         <DeferredShell />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-512JH5J3JP"

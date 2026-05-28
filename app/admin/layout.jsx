@@ -1,5 +1,5 @@
 import { ServiceWorkerRegister } from './ServiceWorkerRegister';
-import LogoutButton from './LogoutButton';
+import AdminShell from './AdminShell';
 
 export const metadata = {
   title: 'Admin — ScentualBliss',
@@ -10,8 +10,7 @@ export default function AdminLayout({ children }) {
   return (
     <>
       <ServiceWorkerRegister />
-      <LogoutButton />
-      {children}
+      <AdminShell>{children}</AdminShell>
     </>
   );
 }
