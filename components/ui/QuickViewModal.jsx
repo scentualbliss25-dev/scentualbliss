@@ -1,6 +1,9 @@
 'use client';
+import dynamic from 'next/dynamic';
 import { useQuickViewStore } from '@/lib/store/quickViewStore';
-import QuickView from '@/components/ui/QuickView';
+
+// QuickView usa framer-motion. Carga diferida hasta que el usuario abre la vista rápida.
+const QuickView = dynamic(() => import('@/components/ui/QuickView'), { ssr: false });
 
 export default function QuickViewModal() {
   const product = useQuickViewStore((s) => s.product);

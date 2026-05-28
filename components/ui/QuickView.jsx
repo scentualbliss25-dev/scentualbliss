@@ -64,16 +64,25 @@ export default function QuickView({ product, isOpen, onClose }) {
             onClick={onClose}
             style={{ position: 'fixed', inset: 0, background: 'rgba(31,26,18,.40)', backdropFilter: 'blur(4px)', zIndex: 300 }}
           />
+          <div
+            style={{
+              position: 'fixed', inset: 0, zIndex: 301,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              padding: '16px',
+              pointerEvents: 'none', // permite click sobre el backdrop pero no sobre este wrapper
+            }}
+          >
           <motion.div
             initial={{ opacity: 0, scale: 0.92, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.92, y: 20 }}
             transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
             style={{
-              position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
-              width: '92%', maxWidth: '860px', maxHeight: '90vh', overflow: 'auto',
+              width: '100%', maxWidth: '860px', maxHeight: '90vh', overflow: 'auto',
               background: 'var(--dark-2)', border: '1px solid rgba(201,169,110,.2)',
-              borderRadius: '20px', zIndex: 301, boxShadow: '0 24px 80px rgba(31,26,18,.30)',
+              borderRadius: '20px', boxShadow: '0 24px 80px rgba(31,26,18,.30)',
+              pointerEvents: 'auto',
+              position: 'relative',
             }}
           >
             <button onClick={onClose} style={{
@@ -87,10 +96,10 @@ export default function QuickView({ product, isOpen, onClose }) {
               <X size={18} />
             </button>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', height: 'min(88vh, 640px)' }}>
+            <div className="qv-grid">
 
               {/* Imagen */}
-              <div style={{ position: 'relative', background: 'var(--dark-3)', overflow: 'hidden' }}>
+              <div className="qv-image-pane" style={{ position: 'relative', background: 'var(--dark-3)', overflow: 'hidden' }}>
                 <img src={productImages[imgIdx]} alt={product.name}
                   onError={e => { e.currentTarget.src = '/img/placeholder-perfume.webp'; }}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -201,11 +210,22 @@ export default function QuickView({ product, isOpen, onClose }) {
             </div>
 
             <style>{`
+              .qv-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                height: min(88vh, 640px);
+              }
               @media(max-width:768px) {
-                div[style*="1fr 1fr"] { grid-template-columns: 1fr !important; }
+                .qv-grid {
+                  grid-template-columns: 1fr !important;
+                  height: auto !important;
+                  max-height: 90vh;
+                }
+                .qv-image-pane { aspect-ratio: 4/3; height: auto !important; }
               }
             `}</style>
           </motion.div>
+          </div>
         </>
       )}
     </AnimatePresence>

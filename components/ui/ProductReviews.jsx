@@ -85,7 +85,7 @@ function ReviewForm({ productSlug, onSuccess }) {
     return (
       <div style={{ padding: '32px', background: 'rgba(107,142,122,.08)', borderLeft: '3px solid var(--success)', marginTop: 32 }}>
         <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', color: 'var(--white)', marginBottom: 8 }}>¡Gracias por tu reseña!</p>
-        <p style={{ color: 'var(--gray)', fontSize: '.88rem' }}>Será publicada una vez revisada por nuestro equipo (24–48 horas).</p>
+        <p style={{ color: 'var(--gray)', fontSize: '.88rem' }}>Será publicada una vez revisada por nuestro equipo.</p>
       </div>
     );
   }

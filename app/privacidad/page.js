@@ -1,13 +1,15 @@
+import { SITE_URL } from '@/lib/site';
+
 export const metadata = {
-  title: 'Política de Privacidad',
-  description: 'Política de privacidad y tratamiento de datos personales de ScentualBliss.',
-  robots: { index: true },
+  title: 'Política de Privacidad | ScentualBliss',
+  description: 'Política de privacidad y tratamiento de datos personales de ScentualBliss conforme a la Ley 1581 de 2012.',
+  alternates: { canonical: `${SITE_URL}/privacidad` },
 };
 
 export default function PrivacidadPage() {
   return (
-    <main style={{ minHeight: '80vh', background: '#F6F3EE' }}>
-      <div style={{ borderBottom: '1px solid rgba(26,22,16,.07)', padding: '52px 0 36px' }}>
+    <main style={{ minHeight: '80vh', background: 'var(--bg-1)' }}>
+      <div style={{ borderBottom: '1px solid rgba(212,166,79,.12)', padding: '52px 0 36px' }}>
         <div className="container">
           <p style={{ fontSize: '.62rem', letterSpacing: '.32em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 14, fontWeight: 500 }}>Legal</p>
           <h1 style={{ fontFamily: 'var(--font-serif)', fontWeight: 300, color: 'var(--white)', fontSize: 'clamp(2rem, 4vw, 3.5rem)' }}>

@@ -1,13 +1,15 @@
+import { SITE_URL } from '@/lib/site';
+
 export const metadata = {
-  title: 'Términos y Condiciones',
-  description: 'Términos y condiciones de uso y compra en ScentualBliss.',
-  robots: { index: true },
+  title: 'Términos y Condiciones | ScentualBliss',
+  description: 'Términos y condiciones de uso y compra en ScentualBliss. Conoce tus derechos y obligaciones.',
+  alternates: { canonical: `${SITE_URL}/terminos` },
 };
 
 export default function TerminosPage() {
   return (
-    <main style={{ minHeight: '80vh', background: '#F6F3EE' }}>
-      <div style={{ borderBottom: '1px solid rgba(26,22,16,.07)', padding: '52px 0 36px' }}>
+    <main style={{ minHeight: '80vh', background: 'var(--bg-1)' }}>
+      <div style={{ borderBottom: '1px solid rgba(212,166,79,.12)', padding: '52px 0 36px' }}>
         <div className="container">
           <p style={{ fontSize: '.62rem', letterSpacing: '.32em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 14, fontWeight: 500 }}>Legal</p>
           <h1 style={{ fontFamily: 'var(--font-serif)', fontWeight: 300, color: 'var(--white)', fontSize: 'clamp(2rem, 4vw, 3.5rem)' }}>
@@ -54,12 +56,11 @@ const sections = [
   },
   {
     title: '5. Envíos',
-    content: `<p>Realizamos envíos a todo Colombia. Los tiempos estimados son:</p>
+    content: `<p>Realizamos envíos gratis a toda Colombia. Los tiempos estimados son:</p>
     <ul style="padding-left:20px;margin-top:8px;display:flex;flex-direction:column;gap:6px">
-      <li>Ciudades principales: 24–48 horas hábiles</li>
+      <li>Ciudades principales: pocos días hábiles</li>
       <li>Municipios y zonas rurales: 3–7 días hábiles</li>
-    </ul>
-    <p style="margin-top:12px">El envío es gratuito en pedidos mayores a $100 USD. Para pedidos menores, el costo se calcula según la dirección de destino.</p>`,
+    </ul>`,
   },
   {
     title: '6. Propiedad Intelectual',

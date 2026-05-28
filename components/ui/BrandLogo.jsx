@@ -85,7 +85,7 @@ export default function BrandLogo({ brand, size = 'md', variant = 'auto', classN
       )}
       <style>{`
         .brand-logo-text {
-          font-family: var(--font-serif), 'Cormorant Garamond', serif;
+          font-family: var(--font-serif);
           font-weight: 400;
           letter-spacing: .12em;
           text-transform: uppercase;

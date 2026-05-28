@@ -8,7 +8,7 @@ const faqs = [
   {
     category: 'Pedidos y Envíos',
     items: [
-      { q: '¿Cuánto tarda en llegar mi pedido?', a: 'El envío express llega en 24–48 horas hábiles. Los pedidos realizados antes de las 14:00 se procesan el mismo día.' },
+      { q: '¿Cuánto tarda en llegar mi pedido?', a: 'Envío gratis a toda Colombia. Los pedidos realizados antes de las 14:00 se procesan el mismo día.' },
       { q: '¿Hacen envíos internacionales?', a: 'Sí, enviamos a México, Colombia, Argentina, España y Estados Unidos. El tiempo de entrega internacional es de 5–10 días hábiles.' },
       { q: '¿Cómo rastreo mi pedido?', a: 'Recibirás un email con el número de rastreo en cuanto tu pedido sea despachado. También puedes contactarnos con tu número de orden.' },
       { q: '¿El envío tiene algún costo?', a: 'El envío es GRATIS en pedidos mayores a $100. Para pedidos menores, el costo es de $9.99.' },

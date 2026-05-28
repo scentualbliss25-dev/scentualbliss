@@ -121,7 +121,7 @@ export default function OrderConfirmPageClient() {
               </div>
               <div>
                 <p style={{ fontSize: '.75rem', color: 'var(--gray)', textTransform: 'uppercase', letterSpacing: '.1em', marginBottom: '6px' }}>Tiempo de Entrega</p>
-                <p style={{ fontWeight: 600, color: 'var(--white)', fontSize: '.95rem' }}>24–48 horas hábiles</p>
+                <p style={{ fontWeight: 600, color: 'var(--white)', fontSize: '.95rem' }}>Envío gratis a toda Colombia</p>
               </div>
               <div>
                 <p style={{ fontSize: '.75rem', color: 'var(--gray)', textTransform: 'uppercase', letterSpacing: '.1em', marginBottom: '6px' }}>Estado</p>

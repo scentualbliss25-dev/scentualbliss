@@ -1,8 +1,7 @@
 'use client';
 
 const ITEMS = [
-  'ENVÍO GRATIS DESDE COP $350.000',
-  '24-48H EN TODA COLOMBIA',
+  'ENVÍO GRATIS A TODA COLOMBIA',
   'PAGO SEGURO CON WOMPI',
   '100% AUTÉNTICOS · GARANTÍA',
   '10% OFF EN TU PRIMERA COMPRA',
@@ -25,7 +24,7 @@ export default function AnnouncementBar() {
       <style>{`
         .sb-announce {
           background: #050505;
-          color: #F2CF7A;
+          color: #ffd700;
           padding: 9px 0;
           font-size: .68rem;
           letter-spacing: .25em;
@@ -60,7 +59,7 @@ export default function AnnouncementBar() {
           width: 4px;
           height: 4px;
           border-radius: 50%;
-          background: #D4A64F;
+          background: #ffd700;
           opacity: .7;
         }
         @keyframes sb-announce-scroll {

@@ -41,7 +41,7 @@ const svg = `
 
   <!-- Texto ScentualBliss -->
   <text x="${W/2}" y="${H - 100}" font-family="Georgia, serif" font-size="32" font-style="italic" fill="#C9A96E" text-anchor="middle" opacity="0.85">ScentualBliss</text>
-  <text x="${W/2}" y="${H - 60}" font-family="Arial, sans-serif" font-size="13" font-weight="300" fill="#777" text-anchor="middle" letter-spacing="3">PERFUMERÍA DE LUJO</text>
+  <text x="${W/2}" y="${H - 60}" font-family="Arial, sans-serif" font-size="13" font-weight="300" fill="#777" text-anchor="middle" letter-spacing="3">PERFUMERÍA ORIGINAL</text>
 </svg>
 `;
 
