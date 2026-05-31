@@ -24,7 +24,7 @@ export default function ImportProductsPage() {
           </p>
         </div>
         <a href="/admin/products/import/template" download className="imp-tmpl-btn">
-          ↓ Descargar plantilla CSV
+          ↓ Descargar plantilla Excel
         </a>
       </header>
 

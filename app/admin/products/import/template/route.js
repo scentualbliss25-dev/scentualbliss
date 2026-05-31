@@ -1,22 +1,25 @@
 // GET /admin/products/import/template
-// Devuelve un CSV plantilla con los headers + 2 filas de ejemplo, listo
-// para descarga. Útil para que el admin sepa el formato exacto.
+// Devuelve un .xlsx plantilla con:
+//   - Hoja "Plantilla": headers congelados, 2 ejemplos resaltados,
+//     dropdowns de validación en columnas con valores fijos, formato
+//     número en precios, comentarios explicativos al hover de cada header.
+//   - Hoja "Instrucciones": guía completa de uso (cómo funciona, qué
+//     significa cada columna, valores permitidos, límites).
 //
 // Esta ruta está dentro de /admin/* → protegida por el middleware
 // (requiere cookie de sesión válida).
 
 import { NextResponse } from 'next/server';
-import { buildTemplateCsv } from '@/lib/products-import';
+import { buildTemplateXlsx } from '@/lib/products-import';
 
 export async function GET() {
-  // BOM al inicio (﻿) para que Excel detecte UTF-8 al abrir el CSV
-  // y muestre tildes/eñes correctamente.
-  const body = '﻿' + buildTemplateCsv();
-  return new NextResponse(body, {
+  const buffer = await buildTemplateXlsx();
+  return new NextResponse(buffer, {
     status: 200,
     headers: {
-      'Content-Type': 'text/csv; charset=utf-8',
-      'Content-Disposition': 'attachment; filename="plantilla-productos-scentualbliss.csv"',
+      'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'Content-Disposition': 'attachment; filename="plantilla-productos-scentualbliss.xlsx"',
+      'Content-Length': String(buffer.length),
       'Cache-Control': 'no-store',
     },
   });
