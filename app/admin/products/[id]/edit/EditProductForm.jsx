@@ -1,61 +1,100 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { updateProduct } from '../../_actions';
+import { updateProduct, createProduct, deleteProduct } from '../../_actions';
+import ImageUploader from '../../ImageUploader';
 import { productTypes, collections } from '@/lib/products-constants';
 
 /**
- * Form de edición de producto.
+ * Form de edición/creación de producto.
+ *
+ * Props:
+ *   - mode: 'edit' | 'create'
+ *   - product: row de Supabase (en 'create' puede ser objeto vacío)
+ *   - brands: string[] — para datalist de marcas
  *
  * Estructura: secciones tipo "cards" apiladas. Cada sección agrupa campos
- * relacionados (Info, Precio, Notas, Tamaños, Imágenes, Flags). Los
- * tamaños e imágenes son arrays dinámicos — el usuario puede agregar y
- * quitar filas. Al enviar, el server action `updateProduct` recibe todo
- * el FormData, hace UPDATE + delete-insert de sizes/images, invalida el
- * caché y redirige al listado con ?updated=<id>.
+ * relacionados (Info, Precio, Notas, Tamaños, Imágenes, Performance, Flags).
+ * Sticky footer con Cancelar y Guardar; en 'edit' además botón Eliminar.
  */
-export default function EditProductForm({ product, brands }) {
+export default function EditProductForm({ mode = 'edit', product = {}, brands = [] }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [isDeleting, startDelete] = useTransition();
   const [error, setError] = useState('');
+  const [confirmDel, setConfirmDel] = useState(false);
 
-  // Arrays dinámicos en client state (sizes e images).
+  // Auto-derivar slug del nombre si el usuario no ha tocado el slug
+  // manualmente. En modo edit no auto-derivamos (para no romper URLs
+  // existentes accidentalmente).
+  const slugTouched = useRef(mode === 'edit');
+  const [slug, setSlug] = useState(product.slug || '');
+  const [name, setName] = useState(product.name || '');
+
+  function onNameChange(e) {
+    const v = e.target.value;
+    setName(v);
+    if (!slugTouched.current && mode === 'create') {
+      setSlug(autoSlug(v));
+    }
+  }
+  function onSlugChange(e) {
+    slugTouched.current = true;
+    setSlug(e.target.value);
+  }
+
+  // Arrays dinámicos
   const [sizes, setSizes] = useState(
     product.product_sizes?.length
       ? product.product_sizes.map((s) => ({ ml: s.ml || '', price: s.price ?? '' }))
-      : [{ ml: '', price: '' }]
+      : [{ ml: '100ml', price: '' }]
   );
-  const [imageUrls, setImageUrls] = useState(
-    product.product_images?.length
-      ? product.product_images.map((i) => i.url || '')
-      : ['']
-  );
+  const initialImageUrls = (product.product_images || []).map((i) => i.url).filter(Boolean);
 
   function onSubmit(e) {
     e.preventDefault();
     setError('');
     const fd = new FormData(e.currentTarget);
     startTransition(async () => {
-      const res = await updateProduct(fd);
-      // Si el action redirige (caso éxito), no llegamos acá. Sólo errores.
+      const action = mode === 'edit' ? updateProduct : createProduct;
+      const res = await action(fd);
+      // Si el action redirige (caso éxito), no llegamos acá.
       if (res && !res.ok) setError(res.error || 'Error al guardar');
+    });
+  }
+
+  function onDelete() {
+    if (!product.id) return;
+    setError('');
+    const fd = new FormData();
+    fd.append('id', String(product.id));
+    startDelete(async () => {
+      const res = await deleteProduct(fd);
+      if (res && !res.ok) setError(res.error || 'Error al eliminar');
     });
   }
 
   return (
     <form onSubmit={onSubmit} className="ef" autoComplete="off">
-      <input type="hidden" name="id" value={product.id} />
+      {mode === 'edit' && <input type="hidden" name="id" value={product.id} />}
 
       {/* ── Información básica ────────────────────────────────────────── */}
       <Section title="Información" desc="Nombre, marca, tipo, descripción.">
         <Field label="Nombre" required>
-          <input name="name" defaultValue={product.name || ''} required />
+          <input name="name" value={name} onChange={onNameChange} required />
         </Field>
 
         <div className="row two">
-          <Field label="Slug" required hint="Sin espacios. Es la URL: /perfume/<slug>">
-            <input name="slug" defaultValue={product.slug || ''} required pattern="^[a-z0-9-]+$" />
+          <Field label="Slug" required hint="URL: /perfume/<slug>. Sólo minúsculas, números y guiones.">
+            <input
+              name="slug"
+              value={slug}
+              onChange={onSlugChange}
+              required
+              pattern="^[a-z0-9-]+$"
+              placeholder={mode === 'create' ? 'se genera del nombre' : ''}
+            />
           </Field>
           <Field label="Marca">
             <input
@@ -75,7 +114,9 @@ export default function EditProductForm({ product, brands }) {
             <select name="product_type" defaultValue={product.product_type || ''}>
               <option value="">—</option>
               {productTypes.map((t) => (
-                <option key={t.id} value={t.id}>{t.name.replace('Perfumes de ', '').replace('Perfumes ', '')}</option>
+                <option key={t.id} value={t.id}>
+                  {t.name.replace('Perfumes de ', '').replace('Perfumes ', '')}
+                </option>
               ))}
             </select>
           </Field>
@@ -107,16 +148,12 @@ export default function EditProductForm({ product, brands }) {
         </div>
 
         <Field label="Descripción" hint="Texto largo para la PDP.">
-          <textarea
-            name="description"
-            rows={5}
-            defaultValue={product.description || ''}
-          />
+          <textarea name="description" rows={5} defaultValue={product.description || ''} />
         </Field>
       </Section>
 
       {/* ── Precios ───────────────────────────────────────────────────── */}
-      <Section title="Precio base" desc="Precio fallback. Los tamaños abajo lo sobreescriben en la PDP.">
+      <Section title="Precio base" desc="Fallback si no hay tamaños. Los tamaños abajo lo sobreescriben en la PDP.">
         <div className="row two">
           <Field label="Precio base (COP)">
             <input name="base_price" type="number" min="0" step="100" defaultValue={product.base_price ?? ''} />
@@ -140,11 +177,8 @@ export default function EditProductForm({ product, brands }) {
         </Field>
       </Section>
 
-      {/* ── Tamaños (array dinámico) ──────────────────────────────────── */}
-      <Section
-        title="Tamaños y precios"
-        desc="Cada fila es un tamaño disponible. Mínimo un tamaño con precio."
-      >
+      {/* ── Tamaños ───────────────────────────────────────────────────── */}
+      <Section title="Tamaños y precios" desc="Cada fila es un tamaño disponible.">
         <div className="sizes">
           <div className="sizes-head">
             <span>Tamaño</span>
@@ -188,46 +222,9 @@ export default function EditProductForm({ product, brands }) {
         </div>
       </Section>
 
-      {/* ── Imágenes (URLs por ahora; uploader viene en Paso 4) ──────── */}
-      <Section
-        title="Imágenes"
-        desc="URLs de las imágenes del producto. La primera es la principal."
-      >
-        <div className="images">
-          {imageUrls.map((url, i) => (
-            <div key={i} className="img-row">
-              <span className="img-num">{i + 1}</span>
-              <input
-                name="image_url"
-                value={url}
-                onChange={(e) => setImageUrls((arr) => arr.map((u, j) => j === i ? e.target.value : u))}
-                placeholder="/img/producto.webp  o  https://…"
-              />
-              {url && (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img src={url} alt="" className="img-preview" loading="lazy" onError={(e) => { e.currentTarget.style.visibility = 'hidden'; }} />
-              )}
-              <button
-                type="button"
-                className="row-del"
-                onClick={() => setImageUrls((arr) => arr.filter((_, j) => j !== i))}
-                disabled={imageUrls.length === 1}
-                aria-label="Eliminar imagen"
-              >×</button>
-            </div>
-          ))}
-          <button
-            type="button"
-            className="row-add"
-            onClick={() => setImageUrls((arr) => [...arr, ''])}
-          >
-            + Agregar imagen
-          </button>
-          <p className="hint">
-            Upload directo desde el navegador llega en el siguiente paso.
-            Por ahora, usa una URL existente del catálogo o pega una externa.
-          </p>
-        </div>
+      {/* ── Imágenes ──────────────────────────────────────────────────── */}
+      <Section title="Imágenes" desc="Sube desde tu computador o pega URLs existentes. La primera es la principal.">
+        <ImageUploader initialUrls={initialImageUrls} slugHint={slug || name} />
       </Section>
 
       {/* ── Performance ───────────────────────────────────────────────── */}
@@ -278,22 +275,68 @@ export default function EditProductForm({ product, brands }) {
 
       {/* ── Footer fijo con acciones ───────────────────────────────────── */}
       <div className="ef-footer">
-        <button
-          type="button"
-          className="btn btn--ghost"
-          onClick={() => router.push('/admin/products')}
-          disabled={isPending}
-        >
-          Cancelar
-        </button>
-        <button type="submit" className="btn btn--primary" disabled={isPending}>
-          {isPending ? 'Guardando…' : 'Guardar cambios'}
-        </button>
+        {mode === 'edit' && (
+          confirmDel ? (
+            <div className="ef-del-confirm">
+              <span>¿Eliminar este producto? No se puede deshacer.</span>
+              <button
+                type="button"
+                className="btn btn--danger"
+                onClick={onDelete}
+                disabled={isDeleting}
+              >
+                {isDeleting ? 'Eliminando…' : 'Sí, eliminar'}
+              </button>
+              <button
+                type="button"
+                className="btn btn--ghost"
+                onClick={() => setConfirmDel(false)}
+                disabled={isDeleting}
+              >
+                Cancelar
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              className="btn btn--danger-ghost"
+              onClick={() => setConfirmDel(true)}
+              disabled={isPending || isDeleting}
+            >
+              Eliminar
+            </button>
+          )
+        )}
+
+        <div className="ef-footer-right">
+          <button
+            type="button"
+            className="btn btn--ghost"
+            onClick={() => router.push('/admin/products')}
+            disabled={isPending || isDeleting}
+          >
+            Cancelar
+          </button>
+          <button type="submit" className="btn btn--primary" disabled={isPending || isDeleting}>
+            {isPending
+              ? (mode === 'create' ? 'Creando…' : 'Guardando…')
+              : (mode === 'create' ? 'Crear producto' : 'Guardar cambios')}
+          </button>
+        </div>
       </div>
 
       <FormStyles />
     </form>
   );
+}
+
+function autoSlug(s) {
+  return String(s || '')
+    .toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80);
 }
 
 function Section({ title, desc, children }) {
@@ -365,32 +408,21 @@ function FormStyles() {
         flex-direction: column;
         gap: 1rem;
       }
-      .row {
-        display: grid;
-        gap: 1rem;
-      }
+      .row { display: grid; gap: 1rem; }
       .row.two   { grid-template-columns: 1fr 1fr; }
       .row.three { grid-template-columns: 1fr 1fr 1fr; }
       @media (max-width: 720px) {
         .row.two, .row.three { grid-template-columns: 1fr; }
       }
 
-      .field {
-        display: flex;
-        flex-direction: column;
-        gap: 0.35rem;
-        min-width: 0;
-      }
+      .field { display: flex; flex-direction: column; gap: 0.35rem; min-width: 0; }
       .field-label {
         font-size: 0.72rem;
         letter-spacing: 0.14em;
         text-transform: uppercase;
         color: rgba(28, 22, 17, 0.5);
       }
-      .field-label em {
-        color: #c46b1e;
-        font-style: normal;
-      }
+      .field-label em { color: #c46b1e; font-style: normal; }
       .field-hint {
         margin-top: 0.1rem;
         font-size: 0.72rem;
@@ -423,11 +455,7 @@ function FormStyles() {
       }
 
       /* Sizes editor */
-      .sizes {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-      }
+      .sizes { display: flex; flex-direction: column; gap: 0.5rem; }
       .sizes-head {
         display: grid;
         grid-template-columns: 1fr 1fr 40px;
@@ -446,11 +474,8 @@ function FormStyles() {
       }
 
       .row-del {
-        width: 32px;
-        height: 32px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
+        width: 32px; height: 32px;
+        display: inline-flex; align-items: center; justify-content: center;
         background: rgba(170, 50, 50, 0.07);
         border: 1px solid rgba(170, 50, 50, 0.18);
         color: #8a2a2a;
@@ -481,61 +506,13 @@ function FormStyles() {
         border-color: rgba(192, 154, 90, 0.6);
       }
 
-      /* Images */
-      .images {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-      .img-row {
-        display: grid;
-        grid-template-columns: 28px 1fr 40px 40px;
-        gap: 0.6rem;
-        align-items: center;
-      }
-      .img-num {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 28px;
-        height: 28px;
-        background: rgba(28, 22, 17, 0.06);
-        border-radius: 6px;
-        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-        font-size: 0.78rem;
-        color: rgba(28, 22, 17, 0.7);
-      }
-      .img-preview {
-        width: 40px;
-        height: 40px;
-        object-fit: cover;
-        border-radius: 6px;
-        background: rgba(28, 22, 17, 0.06);
-      }
-      .hint {
-        margin: 0.5rem 0 0;
-        font-size: 0.72rem;
-        color: rgba(28, 22, 17, 0.5);
-        font-style: italic;
-      }
-
-      /* Checks */
-      .checks {
-        display: flex;
-        flex-direction: column;
-        gap: 0.65rem;
-      }
+      .checks { display: flex; flex-direction: column; gap: 0.65rem; }
       .check {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-        font-size: 0.85rem;
-        color: #1c1611;
-        cursor: pointer;
+        display: flex; align-items: center; gap: 0.6rem;
+        font-size: 0.85rem; color: #1c1611; cursor: pointer;
       }
       .check input { width: auto; padding: 0; }
 
-      /* Error y footer */
       .ef-error {
         padding: 0.9rem 1.1rem;
         background: rgba(170, 50, 50, 0.08);
@@ -549,7 +526,9 @@ function FormStyles() {
         position: sticky;
         bottom: 0;
         display: flex;
-        justify-content: flex-end;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
         gap: 0.65rem;
         padding: 1rem 1.4rem;
         background: rgba(246, 241, 230, 0.92);
@@ -558,10 +537,24 @@ function FormStyles() {
         border-radius: 14px;
         margin-top: 0.5rem;
       }
+      .ef-footer-right {
+        display: flex;
+        gap: 0.5rem;
+        margin-left: auto;
+      }
+      .ef-del-confirm {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        font-size: 0.82rem;
+        color: #7a2424;
+      }
+
       .btn {
         display: inline-flex;
         align-items: center;
-        padding: 0.7rem 1.4rem;
+        padding: 0.7rem 1.3rem;
         border-radius: 9px;
         font-size: 0.85rem;
         letter-spacing: 0.03em;
@@ -588,10 +581,23 @@ function FormStyles() {
         background: rgba(28, 22, 17, 0.04);
         color: #1c1611;
       }
-      .btn:disabled {
-        opacity: 0.55;
-        cursor: not-allowed;
+      .btn--danger {
+        background: #aa3232;
+        color: #fff;
       }
+      .btn--danger:hover:not(:disabled) {
+        background: #8a2a2a;
+      }
+      .btn--danger-ghost {
+        background: transparent;
+        color: #7a2424;
+        border-color: rgba(170, 50, 50, 0.3);
+      }
+      .btn--danger-ghost:hover:not(:disabled) {
+        background: rgba(170, 50, 50, 0.07);
+        border-color: rgba(170, 50, 50, 0.5);
+      }
+      .btn:disabled { opacity: 0.55; cursor: not-allowed; }
     `}</style>
   );
 }

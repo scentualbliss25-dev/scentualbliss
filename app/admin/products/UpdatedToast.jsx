@@ -4,33 +4,42 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 /**
- * Toast efímero que aparece cuando el listado se carga con ?updated=<id>.
- * Tras 3.5s se auto-cierra y limpia el query param de la URL para que
- * no reaparezca si el usuario refresca.
+ * Toast efímero que aparece tras una acción exitosa (create/update/delete).
+ * Se cierra solo en 3.5s y limpia el query param para que no reaparezca al
+ * refrescar.
  */
 export default function UpdatedToast() {
   const sp = useSearchParams();
   const router = useRouter();
-  const updated = sp.get('updated');
   const [show, setShow] = useState(false);
 
+  const created = sp.get('created');
+  const updated = sp.get('updated');
+  const deleted = sp.get('deleted');
+  const hasFlag = created || updated || deleted;
+
   useEffect(() => {
-    if (!updated) return;
+    if (!hasFlag) return;
     setShow(true);
     const t = setTimeout(() => {
       setShow(false);
-      // Limpia el query param sin recarga.
       router.replace('/admin/products', { scroll: false });
     }, 3500);
     return () => clearTimeout(t);
-  }, [updated, router]);
+  }, [hasFlag, router]);
 
-  if (!updated || !show) return null;
+  if (!hasFlag || !show) return null;
+
+  let label = '';
+  let tone = 'ok';
+  if (created) label = `Producto #${created} creado. Ya está disponible en la tienda.`;
+  else if (updated) label = `Producto #${updated} guardado. Los cambios ya están en la tienda.`;
+  else if (deleted) { label = `Producto #${deleted} eliminado.`; tone = 'warn'; }
 
   return (
-    <div className="up-toast" role="status" aria-live="polite">
-      <span className="up-toast-mark" aria-hidden>✓</span>
-      <span>Producto #{updated} guardado. Los cambios ya están en la tienda.</span>
+    <div className={`up-toast up-toast--${tone}`} role="status" aria-live="polite">
+      <span className="up-toast-mark" aria-hidden>{tone === 'ok' ? '✓' : '✕'}</span>
+      <span>{label}</span>
       <style jsx>{`
         .up-toast {
           position: fixed;
@@ -42,8 +51,7 @@ export default function UpdatedToast() {
           align-items: center;
           gap: 0.65rem;
           padding: 0.85rem 1.25rem;
-          background: #1f6b48;
-          color: #f5fbef;
+          color: #fff;
           border-radius: 11px;
           font-size: 0.85rem;
           letter-spacing: 0.02em;
@@ -51,6 +59,8 @@ export default function UpdatedToast() {
           box-shadow: 0 18px 38px -16px rgba(0, 0, 0, 0.45);
           animation: up-in 0.25s ease-out;
         }
+        .up-toast--ok   { background: #1f6b48; color: #f5fbef; }
+        .up-toast--warn { background: #8a4a17; color: #fbf3eb; }
         .up-toast-mark {
           display: inline-flex;
           align-items: center;
@@ -58,7 +68,7 @@ export default function UpdatedToast() {
           width: 22px;
           height: 22px;
           border-radius: 50%;
-          background: rgba(245, 251, 239, 0.18);
+          background: rgba(255, 255, 255, 0.18);
           font-weight: 700;
         }
         @keyframes up-in {

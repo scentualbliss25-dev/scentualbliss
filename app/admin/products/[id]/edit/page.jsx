@@ -75,6 +75,7 @@ export default async function EditProductPage({ params }) {
       </header>
 
       <EditProductForm
+        mode="edit"
         product={{ ...product, product_sizes: sizes, product_images: images }}
         brands={brands}
       />

@@ -5,28 +5,46 @@ import { redirect } from 'next/navigation';
 import { supabaseAdmin } from '@/lib/supabase';
 import { PRODUCTS_CACHE_TAG } from '@/lib/products';
 
+// Nombre del bucket público de Supabase Storage para imágenes de producto.
+// Tiene que existir antes de que el upload funcione — ver instrucciones de
+// setup al final del Paso 4.
+const STORAGE_BUCKET = 'product-images';
+
+// ─── Helpers compartidos ────────────────────────────────────────────────
+
 /**
- * Server Action: actualiza un producto en Supabase.
- *
- * Recibe FormData del <form> de edición. Reconstruye:
- * - campos planos de products (name, brand, price, notas, etc.)
- * - sizes: array de {ml, price} (delete-then-insert para mantener simple)
- * - images: array de URLs (delete-then-insert)
- *
- * Tras el commit llama revalidateTag('products') → la próxima petición a
- * cualquier página de la tienda ve los cambios sin esperar al TTL del cache.
+ * Invalida el data cache de unstable_cache + el Full Route Cache de las
+ * páginas estáticas que dependen del catálogo. Llamar tras toda mutación
+ * (create/update/delete).
  */
-export async function updateProduct(formData) {
-  if (!supabaseAdmin) {
-    return { ok: false, error: 'Supabase no configurado en el servidor' };
-  }
+function revalidateAllProductRoutes() {
+  revalidateTag(PRODUCTS_CACHE_TAG);
+  revalidatePath('/');
+  revalidatePath('/tienda');
+  revalidatePath('/perfume/[slug]', 'page');
+  revalidatePath('/admin/products');
+}
 
-  const id = Number(formData.get('id'));
-  if (!Number.isFinite(id) || id <= 0) {
-    return { ok: false, error: 'ID de producto inválido' };
-  }
+/**
+ * Convierte un nombre arbitrario en un slug url-safe.
+ *   "Lattafa Khamrah EDP" → "lattafa-khamrah-edp"
+ */
+function slugify(input) {
+  return String(input || '')
+    .toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '') // quita acentos
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80);
+}
 
-  // ─── Campos planos del producto ────────────────────────────────────────
+/**
+ * Parsea los campos planos + sizes + images de un FormData del form de
+ * producto. Devuelve { data, sizes, images } con la shape lista para
+ * INSERT o UPDATE en Supabase. Hace validación mínima (name+slug
+ * requeridos) y normaliza tipos.
+ */
+function parseProductForm(formData, { productId } = {}) {
   const str = (k) => {
     const v = formData.get(k);
     return v == null ? null : String(v).trim() || null;
@@ -40,18 +58,17 @@ export async function updateProduct(formData) {
   const bool = (k) => formData.get(k) === 'on' || formData.get(k) === 'true';
 
   const name = str('name');
-  const slug = str('slug');
-  if (!name || !slug) {
-    return { ok: false, error: 'Nombre y slug son obligatorios' };
-  }
+  let slug = str('slug') || slugify(name);
+  if (!name) return { error: 'El nombre es obligatorio' };
+  if (!slug)  return { error: 'El slug es obligatorio (no se pudo derivar del nombre)' };
 
-  const update = {
+  const data = {
     name,
     slug,
     brand: str('brand'),
     product_type: str('product_type'),
     category: str('category'),
-    type: str('type'), // concentración (EDP, EDT, etc.)
+    type: str('type'),
     gender: str('gender'),
     description: str('description'),
     base_price: num('base_price'),
@@ -69,53 +86,59 @@ export async function updateProduct(formData) {
     bestseller: bool('bestseller'),
   };
 
-  // occasion viene como string CSV → array
   const occasionRaw = str('occasion');
   if (occasionRaw != null) {
-    update.occasion = occasionRaw
-      .split(',')
-      .map((s) => s.trim())
-      .filter(Boolean);
+    data.occasion = occasionRaw.split(',').map((s) => s.trim()).filter(Boolean);
   }
 
-  // ─── Sizes: campos paralelos sizes_ml[] + sizes_price[] ────────────────
-  const mls = formData.getAll('sizes_ml');
+  // ─── Sizes (arrays paralelos) ────────────────────────────────────────
+  const mls    = formData.getAll('sizes_ml');
   const prices = formData.getAll('sizes_price');
   const sizes = [];
   for (let i = 0; i < Math.max(mls.length, prices.length); i++) {
     const ml = String(mls[i] ?? '').trim();
     const price = Number(prices[i]);
     if (!ml || !Number.isFinite(price) || price <= 0) continue;
-    sizes.push({ product_id: id, ml, price, order_index: i });
+    const row = { ml, price, order_index: i };
+    if (productId != null) row.product_id = productId;
+    sizes.push(row);
   }
 
-  // ─── Images: array de URLs ─────────────────────────────────────────────
+  // ─── Images (array de URLs ya subidas o externas) ────────────────────
   const imgUrls = formData.getAll('image_url')
     .map((u) => String(u || '').trim())
     .filter(Boolean);
-  const images = imgUrls.map((url, i) => ({ product_id: id, url, order_index: i }));
+  const images = imgUrls.map((url, i) => {
+    const row = { url, order_index: i };
+    if (productId != null) row.product_id = productId;
+    return row;
+  });
 
-  // ─── Ejecuta las 3 operaciones ─────────────────────────────────────────
-  // (Supabase no expone transacciones desde el SDK JS — hacemos secuencial.
-  // Si una falla, intentamos no dejar el producto en estado inconsistente
-  // devolviendo el error sin tocar lo siguiente.)
-  const { error: updErr } = await supabaseAdmin
-    .from('products')
-    .update(update)
-    .eq('id', id);
+  return { data, sizes, images };
+}
 
-  if (updErr) {
-    return { ok: false, error: `Actualizando producto: ${updErr.message}` };
-  }
+// ─── Server Actions ─────────────────────────────────────────────────────
 
-  // Sizes: borrar y reinsertar (más simple que diff/upsert).
+/**
+ * Actualiza un producto existente.
+ */
+export async function updateProduct(formData) {
+  if (!supabaseAdmin) return { ok: false, error: 'Supabase no configurado en el servidor' };
+
+  const id = Number(formData.get('id'));
+  if (!Number.isFinite(id) || id <= 0) return { ok: false, error: 'ID de producto inválido' };
+
+  const parsed = parseProductForm(formData, { productId: id });
+  if (parsed.error) return { ok: false, error: parsed.error };
+  const { data, sizes, images } = parsed;
+
+  const { error: updErr } = await supabaseAdmin.from('products').update(data).eq('id', id);
+  if (updErr) return { ok: false, error: `Actualizando producto: ${updErr.message}` };
+
+  // Sizes: delete-then-insert.
   {
-    const { error: delErr } = await supabaseAdmin
-      .from('product_sizes')
-      .delete()
-      .eq('product_id', id);
-    if (delErr) return { ok: false, error: `Borrando sizes: ${delErr.message}` };
-
+    const { error } = await supabaseAdmin.from('product_sizes').delete().eq('product_id', id);
+    if (error) return { ok: false, error: `Borrando sizes: ${error.message}` };
     if (sizes.length) {
       const { error: insErr } = await supabaseAdmin.from('product_sizes').insert(sizes);
       if (insErr) return { ok: false, error: `Insertando sizes: ${insErr.message}` };
@@ -124,33 +147,141 @@ export async function updateProduct(formData) {
 
   // Images: idem.
   {
-    const { error: delErr } = await supabaseAdmin
-      .from('product_images')
-      .delete()
-      .eq('product_id', id);
-    if (delErr) return { ok: false, error: `Borrando imágenes: ${delErr.message}` };
-
+    const { error } = await supabaseAdmin.from('product_images').delete().eq('product_id', id);
+    if (error) return { ok: false, error: `Borrando imágenes: ${error.message}` };
     if (images.length) {
       const { error: insErr } = await supabaseAdmin.from('product_images').insert(images);
       if (insErr) return { ok: false, error: `Insertando imágenes: ${insErr.message}` };
     }
   }
 
-  // 🎯 Invalida el caché de productos.
-  //
-  // revalidateTag invalida el data cache de unstable_cache en products-db.js,
-  // PERO las páginas Static (home, /perfume/[slug], etc.) tienen además un
-  // Full Route Cache que sigue sirviendo el HTML pre-renderizado por hasta
-  // 5min. Por eso revalidamos también las rutas específicas que dependen
-  // de products → invalida ambos niveles de caché.
-  revalidateTag(PRODUCTS_CACHE_TAG);
-  revalidatePath('/');                                // Home (bestsellers/destacados)
-  revalidatePath('/tienda');                          // Listado público
-  revalidatePath('/perfume/[slug]', 'page');          // Todas las PDPs
-  // Si el slug cambió, también la PDP nueva debe regenerarse — pero como
-  // usamos 'page' (no exact match) ya estamos cubiertos.
-
-  // El redirect debe ir fuera del try/catch implícito de Server Actions.
-  // Usamos un searchParam para que el listado muestre un toast de éxito.
+  revalidateAllProductRoutes();
   redirect(`/admin/products?updated=${id}`);
+}
+
+/**
+ * Crea un producto nuevo. Si el slug ya existe → falla; el front debe
+ * sugerir uno distinto.
+ */
+export async function createProduct(formData) {
+  if (!supabaseAdmin) return { ok: false, error: 'Supabase no configurado en el servidor' };
+
+  const parsed = parseProductForm(formData);
+  if (parsed.error) return { ok: false, error: parsed.error };
+  const { data, sizes, images } = parsed;
+
+  // INSERT del producto principal, recuperando el id generado.
+  const { data: inserted, error: insErr } = await supabaseAdmin
+    .from('products')
+    .insert(data)
+    .select('id')
+    .single();
+  if (insErr) {
+    // Postgres 23505 = unique violation. El campo más probable es slug.
+    if (insErr.code === '23505') {
+      return { ok: false, error: `Ya existe un producto con el slug "${data.slug}". Elige otro.` };
+    }
+    return { ok: false, error: `Creando producto: ${insErr.message}` };
+  }
+  const newId = inserted.id;
+
+  // Insert sizes con el product_id recién obtenido.
+  if (sizes.length) {
+    const rows = sizes.map((s) => ({ ...s, product_id: newId }));
+    const { error } = await supabaseAdmin.from('product_sizes').insert(rows);
+    if (error) return { ok: false, error: `Insertando sizes: ${error.message}` };
+  }
+
+  if (images.length) {
+    const rows = images.map((img) => ({ ...img, product_id: newId }));
+    const { error } = await supabaseAdmin.from('product_images').insert(rows);
+    if (error) return { ok: false, error: `Insertando imágenes: ${error.message}` };
+  }
+
+  revalidateAllProductRoutes();
+  redirect(`/admin/products?created=${newId}`);
+}
+
+/**
+ * Elimina un producto. Borra primero sizes/images (por si las FK no
+ * tienen ON DELETE CASCADE) y luego el producto. Limpia el caché.
+ *
+ * IMPORTANTE: no borra las imágenes del Storage — quedan huérfanas
+ * intencionalmente para poder recuperarlas si fue un borrado accidental.
+ * Limpieza de huérfanas la hacemos en un cron aparte si crece.
+ */
+export async function deleteProduct(formData) {
+  if (!supabaseAdmin) return { ok: false, error: 'Supabase no configurado en el servidor' };
+
+  const id = Number(formData.get('id'));
+  if (!Number.isFinite(id) || id <= 0) return { ok: false, error: 'ID inválido' };
+
+  // Hijos primero por si las FK no tienen CASCADE configurado.
+  await supabaseAdmin.from('product_sizes').delete().eq('product_id', id);
+  await supabaseAdmin.from('product_images').delete().eq('product_id', id);
+
+  const { error } = await supabaseAdmin.from('products').delete().eq('id', id);
+  if (error) return { ok: false, error: `Eliminando producto: ${error.message}` };
+
+  revalidateAllProductRoutes();
+  redirect('/admin/products?deleted=' + id);
+}
+
+/**
+ * Sube UNA imagen a Supabase Storage y retorna la URL pública.
+ *
+ * Recibe FormData con:
+ *   file        — el archivo (Blob)
+ *   slugHint?   — opcional, para nombrar el archivo (ej: slug del producto)
+ *
+ * Devuelve { ok: true, url } o { ok: false, error }.
+ *
+ * No revalida caché — la imagen no aparece en la tienda hasta que el
+ * usuario guarde el producto que la referencia.
+ */
+export async function uploadProductImage(formData) {
+  if (!supabaseAdmin) return { ok: false, error: 'Supabase no configurado en el servidor' };
+
+  const file = formData.get('file');
+  if (!file || typeof file === 'string') {
+    return { ok: false, error: 'No se recibió ningún archivo' };
+  }
+
+  // Validación de tipo y tamaño en el server (defensa adicional al client).
+  const mime = file.type || '';
+  if (!/^image\/(jpeg|jpg|png|webp|avif)$/i.test(mime)) {
+    return { ok: false, error: `Tipo no soportado (${mime}). Usa JPG, PNG, WebP o AVIF.` };
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    return { ok: false, error: 'La imagen pesa más de 5MB. Comprímela antes de subir.' };
+  }
+
+  // Nombre único: <slugHint?>-<timestamp>-<rand>.<ext>
+  const ext = (mime.split('/')[1] || 'jpg').replace('jpeg', 'jpg');
+  const slugHint = slugify(String(formData.get('slugHint') || '')) || 'product';
+  const stamp = Date.now().toString(36);
+  const rand = Math.random().toString(36).slice(2, 7);
+  const path = `${slugHint}-${stamp}-${rand}.${ext}`;
+
+  const { error: upErr } = await supabaseAdmin.storage
+    .from(STORAGE_BUCKET)
+    .upload(path, file, {
+      contentType: mime,
+      cacheControl: '31536000, immutable', // 1 año — el path cambia con cada upload
+      upsert: false,
+    });
+
+  if (upErr) {
+    // Bucket inexistente → mensaje útil para el admin.
+    if (/not found/i.test(upErr.message)) {
+      return {
+        ok: false,
+        error: `El bucket "${STORAGE_BUCKET}" no existe en Supabase. Créalo desde Storage → New bucket (público).`,
+      };
+    }
+    return { ok: false, error: `Upload a Storage: ${upErr.message}` };
+  }
+
+  const { data: pub } = supabaseAdmin.storage.from(STORAGE_BUCKET).getPublicUrl(path);
+  return { ok: true, url: pub?.publicUrl, path };
 }
