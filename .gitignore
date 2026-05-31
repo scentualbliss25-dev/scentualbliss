@@ -61,3 +61,6 @@ public/img/brands-original/
 # Backup local del antiguo lib/products.js antes de migrar a Supabase.
 # Safety net que SOLO existe en disco local. No va al repo.
 lib/products.backup.js
+
+# Exports manuales del catálogo (xlsx, csv). Se regeneran cuando se necesiten.
+exports/
