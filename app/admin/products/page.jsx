@@ -112,9 +112,9 @@ export default async function AdminProductsPage({ searchParams }) {
           </p>
         </div>
         <div className="prods-head-actions">
-          <button type="button" className="btn btn--ghost" disabled title="Próximamente">
+          <Link href="/admin/products/import" className="btn btn--ghost">
             Importar CSV
-          </button>
+          </Link>
           <Link href="/admin/products/new" className="btn btn--primary">
             + Nuevo producto
           </Link>

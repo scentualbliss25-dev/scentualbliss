@@ -4,6 +4,7 @@ import { revalidateTag, revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { supabaseAdmin } from '@/lib/supabase';
 import { PRODUCTS_CACHE_TAG } from '@/lib/products';
+import { parseImportFile, validateRow } from '@/lib/products-import';
 
 // Nombre del bucket público de Supabase Storage para imágenes de producto.
 // Tiene que existir antes de que el upload funcione — ver instrucciones de
@@ -284,4 +285,193 @@ export async function uploadProductImage(formData) {
 
   const { data: pub } = supabaseAdmin.storage.from(STORAGE_BUCKET).getPublicUrl(path);
   return { ok: true, url: pub?.publicUrl, path };
+}
+
+// ─── Import masivo de productos (CSV/XLSX) ──────────────────────────────
+
+/**
+ * Paso 1 del flujo de import: parsea el archivo, valida cada fila, y
+ * cruza con la DB para marcar cuáles serán CREATE vs UPDATE.
+ *
+ * NO escribe nada en la DB. Solo devuelve el preview para que el usuario
+ * revise antes de confirmar.
+ *
+ * Entrada FormData: file (Blob)
+ * Salida: { ok, rows: [{ rowNumber, action, ok, errors[], data, sizes, images, slug, name }] }
+ */
+export async function previewImportAction(formData) {
+  if (!supabaseAdmin) return { ok: false, error: 'Supabase no configurado en el servidor' };
+
+  const file = formData.get('file');
+  if (!file || typeof file === 'string') {
+    return { ok: false, error: 'No se recibió ningún archivo' };
+  }
+
+  let raws;
+  try {
+    const buffer = Buffer.from(await file.arrayBuffer());
+    raws = await parseImportFile(buffer, file.name);
+  } catch (err) {
+    return { ok: false, error: `No se pudo leer el archivo: ${err.message}` };
+  }
+
+  if (!raws.length) {
+    return { ok: false, error: 'El archivo no tiene filas con datos' };
+  }
+  if (raws.length > 500) {
+    return { ok: false, error: `Demasiadas filas (${raws.length}). Máximo 500 por lote.` };
+  }
+
+  // Valida cada fila localmente (detecta duplicados intra-archivo).
+  const slugsInFile = new Set();
+  const validated = raws.map((raw, i) => {
+    const result = validateRow(raw, { rowNumber: i + 2, slugsInFile });
+    if (result.slug) slugsInFile.add(result.slug);
+    return { rowNumber: i + 2, ...result };
+  });
+
+  // Cruzar con la DB: por cada slug válido, ¿existe ya?
+  const validSlugs = [...new Set(validated.filter(r => r.ok && r.slug).map(r => r.slug))];
+  let existingMap = new Map();
+  if (validSlugs.length) {
+    const { data: existing } = await supabaseAdmin
+      .from('products')
+      .select('id, slug')
+      .in('slug', validSlugs);
+    existingMap = new Map((existing || []).map(p => [p.slug, p.id]));
+  }
+
+  const rows = validated.map(r => ({
+    ...r,
+    action: !r.ok ? 'error' : existingMap.has(r.slug) ? 'update' : 'create',
+    existingId: existingMap.get(r.slug) || null,
+  }));
+
+  const summary = rows.reduce((acc, r) => {
+    acc[r.action] = (acc[r.action] || 0) + 1;
+    return acc;
+  }, { create: 0, update: 0, error: 0 });
+
+  return { ok: true, rows, summary, total: rows.length };
+}
+
+/**
+ * Paso 2: ejecuta el import sobre las filas válidas. Recibe el archivo
+ * de nuevo (más simple que pasar el JSON enorme entre cliente y server,
+ * y re-valida en el servidor por seguridad).
+ *
+ * Hace UPSERT manual: INSERT si no existe el slug, UPDATE si sí.
+ * Para sizes/images hace delete-then-insert por producto.
+ *
+ * Si una fila falla, las demás continúan. Reporte detallado al final.
+ *
+ * Tras terminar invalida el caché completo para que los cambios se vean
+ * inmediatamente en la tienda.
+ */
+export async function executeImportAction(formData) {
+  if (!supabaseAdmin) return { ok: false, error: 'Supabase no configurado en el servidor' };
+
+  // Reusa el preview para parsear/validar (DRY).
+  const preview = await previewImportAction(formData);
+  if (!preview.ok) return preview;
+
+  const results = [];
+  let createdCount = 0;
+  let updatedCount = 0;
+  let errorCount = 0;
+
+  for (const row of preview.rows) {
+    if (!row.ok) {
+      errorCount++;
+      results.push({
+        rowNumber: row.rowNumber,
+        name: row.name,
+        slug: row.slug,
+        action: 'error',
+        ok: false,
+        error: row.errors.join('; '),
+      });
+      continue;
+    }
+
+    try {
+      let productId = row.existingId;
+
+      if (productId) {
+        // UPDATE
+        const { error } = await supabaseAdmin
+          .from('products')
+          .update(row.data)
+          .eq('id', productId);
+        if (error) throw new Error(`UPDATE: ${error.message}`);
+      } else {
+        // INSERT
+        const { data: inserted, error } = await supabaseAdmin
+          .from('products')
+          .insert(row.data)
+          .select('id')
+          .single();
+        if (error) {
+          if (error.code === '23505') throw new Error(`Slug "${row.slug}" ya existe (carrera)`);
+          throw new Error(`INSERT: ${error.message}`);
+        }
+        productId = inserted.id;
+      }
+
+      // Sizes (delete-then-insert)
+      await supabaseAdmin.from('product_sizes').delete().eq('product_id', productId);
+      if (row.sizes?.length) {
+        const sizeRows = row.sizes.map((s, i) => ({
+          product_id: productId, ml: s.ml, price: s.price, order_index: i,
+        }));
+        const { error } = await supabaseAdmin.from('product_sizes').insert(sizeRows);
+        if (error) throw new Error(`sizes: ${error.message}`);
+      }
+
+      // Images (delete-then-insert)
+      await supabaseAdmin.from('product_images').delete().eq('product_id', productId);
+      if (row.images?.length) {
+        const imgRows = row.images.map((url, i) => ({
+          product_id: productId, url, order_index: i,
+        }));
+        const { error } = await supabaseAdmin.from('product_images').insert(imgRows);
+        if (error) throw new Error(`images: ${error.message}`);
+      }
+
+      if (row.action === 'create') createdCount++;
+      else updatedCount++;
+
+      results.push({
+        rowNumber: row.rowNumber,
+        name: row.name,
+        slug: row.slug,
+        action: row.action,
+        ok: true,
+        id: productId,
+      });
+    } catch (err) {
+      errorCount++;
+      results.push({
+        rowNumber: row.rowNumber,
+        name: row.name,
+        slug: row.slug,
+        action: 'error',
+        ok: false,
+        error: err.message,
+      });
+    }
+  }
+
+  // Invalidar caché completo
+  revalidateTag(PRODUCTS_CACHE_TAG);
+  revalidatePath('/');
+  revalidatePath('/tienda');
+  revalidatePath('/perfume/[slug]', 'page');
+  revalidatePath('/admin/products');
+
+  return {
+    ok: true,
+    summary: { created: createdCount, updated: updatedCount, errors: errorCount, total: results.length },
+    results,
+  };
 }
