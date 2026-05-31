@@ -1,7 +1,7 @@
 'use client';
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { updateOrderAction, deleteOrderAction } from '../_actions';
+import { updateOrderAction, deleteOrderAction, resendOrderNotificationsAction } from '../_actions';
 
 const STATUS_OPTIONS = [
   { value: 'pending',  label: 'Pendiente',   color: '#b45309' },
@@ -59,6 +59,22 @@ export function OrderActions({ order }) {
     });
   };
 
+  const [resendBusy, setResendBusy] = useState(null); // 'admin' | 'customer' | 'both' | null
+  const handleResend = (target) => {
+    setResendBusy(target);
+    startTransition(async () => {
+      const r = await resendOrderNotificationsAction(order.id, target);
+      if (r.ok) {
+        const labels = { admin: 'al admin', customer: 'al cliente', both: 'al admin y al cliente' };
+        setSavedMsg({ type: 'success', text: `✓ Email reenviado ${labels[target]}` });
+      } else {
+        setSavedMsg({ type: 'error', text: '✗ ' + (r.error || 'Falló el reenvío') });
+      }
+      setResendBusy(null);
+      setTimeout(() => setSavedMsg(null), 4500);
+    });
+  };
+
   const waGeneral = buildWhatsAppLink(order, 'general');
   const waShipped = buildWhatsAppLink(order, 'shipped');
 
@@ -80,6 +96,38 @@ export function OrderActions({ order }) {
           )}
           <button onClick={handleDelete} disabled={isPending} className="oa-btn oa-btn-delete">
             🗑 Eliminar orden
+          </button>
+        </div>
+      </div>
+
+      {/* Reenviar notificaciones por email */}
+      <div className="oa-section">
+        <h3 className="oa-title">📧 Reenviar emails</h3>
+        <p style={{ margin: '0 0 12px', fontSize: '.78rem', color: '#6b7280', lineHeight: 1.5 }}>
+          Útil si la orden quedó sin notificación (ej: Resend no estaba configurado cuando llegó el webhook).
+        </p>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <button
+            onClick={() => handleResend('customer')}
+            disabled={isPending || !order.customer_email}
+            className="oa-btn oa-btn-resend"
+            title={!order.customer_email ? 'La orden no tiene customer_email' : `Enviar a ${order.customer_email}`}
+          >
+            {resendBusy === 'customer' ? 'Enviando…' : '👤 Reenviar al cliente'}
+          </button>
+          <button
+            onClick={() => handleResend('admin')}
+            disabled={isPending}
+            className="oa-btn oa-btn-resend"
+          >
+            {resendBusy === 'admin' ? 'Enviando…' : '🔔 Reenviar al admin'}
+          </button>
+          <button
+            onClick={() => handleResend('both')}
+            disabled={isPending || !order.customer_email}
+            className="oa-btn oa-btn-primary"
+          >
+            {resendBusy === 'both' ? 'Enviando…' : 'Reenviar ambos'}
           </button>
         </div>
       </div>
@@ -198,6 +246,16 @@ export function OrderActions({ order }) {
         .oa-btn-wa-shipped { background: #1d4ed8; color: #fff; }
         .oa-btn-delete { background: #ef4444; color: #fff; }
         .oa-btn-delete:hover:not(:disabled) { background: #dc2626; }
+        .oa-btn-resend {
+          background: #fff;
+          color: #1f2937;
+          border: 1px solid #d1d5db;
+        }
+        .oa-btn-resend:hover:not(:disabled) {
+          background: #faf6ee;
+          border-color: #c9a96e;
+          color: #6b4f24;
+        }
         .oa-select, .oa-input, .oa-textarea {
           padding: 8px 12px;
           border: 1px solid #d1d5db;

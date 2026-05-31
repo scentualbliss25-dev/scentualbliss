@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { fetchTransactionByReference } from '@/lib/wompi';
 import { supabaseAdmin } from '@/lib/supabase';
+import { sendOrderEmail, sendCustomerOrderConfirmation } from '@/lib/notifications';
 
 // === Sync con Wompi ===
 export async function syncOrderAction(orderId) {
@@ -147,6 +148,64 @@ export async function bulkDeleteOrdersAction(orderIds) {
 
   revalidatePath('/admin/orders');
   return { ok: true, deleted: orderIds.length };
+}
+
+/**
+ * Reenvía emails de notificación de una orden.
+ *
+ * target:
+ *   - 'admin'    → solo a ADMIN_EMAIL ("nueva orden aprobada")
+ *   - 'customer' → solo al cliente ("tu pedido está confirmado")
+ *   - 'both'     → ambos en paralelo
+ *
+ * Útil cuando una orden quedó sin notificar (porque RESEND_API_KEY estaba
+ * vacía cuando llegó el webhook, o por algún error transitorio). Lee la
+ * orden fresca de Supabase y dispara los emails con los datos actuales.
+ */
+export async function resendOrderNotificationsAction(orderId, target = 'both') {
+  if (!supabaseAdmin) return { ok: false, error: 'Supabase no configurado' };
+  if (!['admin', 'customer', 'both'].includes(target)) {
+    return { ok: false, error: `Target inválido: ${target}` };
+  }
+
+  // Cargar orden + items en una sola query.
+  const { data: order, error } = await supabaseAdmin
+    .from('orders')
+    .select('*, order_items(*)')
+    .eq('id', orderId)
+    .single();
+
+  if (error || !order) return { ok: false, error: 'Orden no encontrada' };
+
+  const items = order.order_items || [];
+
+  // Ejecuta en paralelo lo que aplique. Cada función ya hace catch interno
+  // y retorna { sent, reason?/error? } sin throw.
+  const tasks = [];
+  if (target === 'admin' || target === 'both') {
+    tasks.push(sendOrderEmail(order, items).then(r => ({ kind: 'admin', ...r })));
+  }
+  if (target === 'customer' || target === 'both') {
+    tasks.push(sendCustomerOrderConfirmation(order, items).then(r => ({ kind: 'customer', ...r })));
+  }
+
+  const results = await Promise.all(tasks);
+  const anyFailed = results.some(r => !r.sent);
+  const allReasons = results
+    .filter(r => !r.sent)
+    .map(r => `${r.kind}: ${r.reason || r.error || 'falló'}`)
+    .join(' · ');
+
+  console.log(
+    `[resend-notif] order=${order.reference} target=${target}`,
+    results.map(r => `${r.kind}:${r.sent}`).join(' '),
+  );
+
+  return {
+    ok: !anyFailed,
+    error: anyFailed ? allReasons : null,
+    results,
+  };
 }
 
 async function decrementInventoryForOrder(orderId) {
