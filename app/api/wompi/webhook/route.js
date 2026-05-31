@@ -46,9 +46,18 @@ export async function POST(req) {
       return NextResponse.json({ ok: true, found: false });
     }
 
-    // Si la transacción quedó aprobada: notificar admin + decrementar inventario
+    // Si la transacción quedó aprobada: notificar admin/cliente + decrementar inventario.
+    //
+    // IMPORTANTE: usamos `await` (NO fire-and-forget). En Vercel Functions, apenas
+    // retornamos la respuesta al webhook, el container muere y las promesas en
+    // background se cancelan a mitad — antes incluso de que se haga la llamada
+    // HTTP a Resend. Por eso los emails automáticos no llegaban. Wompi tolera
+    // webhooks lentos (hasta 30s), así que esperar 1-2s extra es aceptable.
+    //
+    // Las 3 tareas corren en paralelo (Promise.allSettled) para que el fallo de
+    // una no aborte las otras — los emails de cliente, admin, y la decrementación
+    // de inventario son independientes.
     if (status === 'approved') {
-      // Cargar orden completa para notificaciones
       const { data: fullOrder } = await supabaseAdmin
         .from('orders')
         .select('*, order_items(*)')
@@ -56,12 +65,19 @@ export async function POST(req) {
         .single();
 
       if (fullOrder) {
-        // Fire-and-forget: no bloquear respuesta al webhook si falla algún canal
-        notifyAdminNewOrder(fullOrder, fullOrder.order_items || []).catch(e => console.error('[notify]', e));
-        sendOrderPush(fullOrder).catch(e => console.error('[push]', e));
+        const items = fullOrder.order_items || [];
+        const [notifyRes, pushRes, invRes] = await Promise.allSettled([
+          notifyAdminNewOrder(fullOrder, items),
+          sendOrderPush(fullOrder),
+          decrementInventory(updated.id),
+        ]);
+        if (notifyRes.status === 'rejected') console.error('[notify]', notifyRes.reason);
+        if (pushRes.status === 'rejected')   console.error('[push]',   pushRes.reason);
+        if (invRes.status === 'rejected')    console.error('[inv]',    invRes.reason);
+      } else {
+        // fullOrder vino null — extraño pero no fatal; al menos decrementamos.
+        await decrementInventory(updated.id).catch(e => console.error('[inv]', e));
       }
-
-      await decrementInventory(updated.id);
     }
 
     return NextResponse.json({ ok: true, orderId: updated.id, status });
