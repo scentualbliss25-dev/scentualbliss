@@ -126,6 +126,27 @@ const QUIZ_STEPS = [
         weight: {}, productType: null },
     ],
   },
+  {
+    q: '¿Cuánto querés <em>invertir</em>?',
+    field: 'budget',
+    options: [
+      { icon: '🌱', text: 'Para empezar tu colección',
+        sub: 'Hasta $200.000 — primera fragancia o regalo con encanto',
+        weight: {}, priceMin: null, priceMax: 200000 },
+      { icon: '✨', text: 'Equilibrio perfecto',
+        sub: 'Entre $200.000 y $400.000 — calidad y carácter sin extremos',
+        weight: {}, priceMin: 200000, priceMax: 400000 },
+      { icon: '💎', text: 'Selección premium',
+        sub: 'Entre $400.000 y $700.000 — fragancias con firma propia',
+        weight: {}, priceMin: 400000, priceMax: 700000 },
+      { icon: '👑', text: 'Piezas exclusivas',
+        sub: 'Desde $700.000 — lujo y artesanía sin techo',
+        weight: {}, priceMin: 700000, priceMax: null },
+      { icon: '🎲', text: 'Sin preferencia',
+        sub: 'Mostrame las mejores opciones según mi perfil',
+        weight: {}, priceMin: null, priceMax: null },
+    ],
+  },
 ];
 
 const FAMILY_NAMES = {
@@ -866,6 +887,10 @@ function Quiz() {
     if (stepDef.field === 'occasion' && opt.occasionTags) nextPrefs.occasionTags = opt.occasionTags;
     if (stepDef.field === 'style') nextPrefs.productType = opt.productType ?? null;
     if (stepDef.field === 'gender' && opt.genderTags) nextPrefs.genderTags = opt.genderTags;
+    if (stepDef.field === 'budget') {
+      nextPrefs.priceMin = opt.priceMin ?? null;
+      nextPrefs.priceMax = opt.priceMax ?? null;
+    }
     setPrefs(nextPrefs);
 
     if (step === QUIZ_STEPS.length - 1) setDone(true); else setStep(step + 1);
@@ -892,6 +917,10 @@ function Quiz() {
       // Género: si eligió "Para mujer" / "Para hombre" → solo géneros compatibles
       // (genderTags ya incluye Unisex en los casos correspondientes)
       if (prefs.genderTags?.length && p.gender && !prefs.genderTags.includes(p.gender)) return false;
+      // Presupuesto: rango opcional. Si el usuario eligió un rango concreto,
+      // descartamos productos fuera de él. "Sin preferencia" deja ambos en null.
+      if (prefs.priceMin != null && p.price < prefs.priceMin) return false;
+      if (prefs.priceMax != null && p.price > prefs.priceMax) return false;
       return true;
     };
 
@@ -951,6 +980,15 @@ function Quiz() {
     else if (prefs.occasionTags?.some(t => t.includes('Eventos'))) parts.push('para ocasiones especiales');
     else if (prefs.occasionTags?.includes('Casual')) parts.push('para el día a día');
     if (prefs.productType) parts.push(`del tipo ${TYPE_DISPLAY[prefs.productType].toLowerCase()}`);
+    // Rango de presupuesto (si el usuario lo eligió y no fue "Sin preferencia")
+    const fmt = (n) => `$${Math.round(n / 1000)}.000`;
+    if (prefs.priceMin != null && prefs.priceMax != null) {
+      parts.push(`entre ${fmt(prefs.priceMin)} y ${fmt(prefs.priceMax)}`);
+    } else if (prefs.priceMax != null) {
+      parts.push(`hasta ${fmt(prefs.priceMax)}`);
+    } else if (prefs.priceMin != null) {
+      parts.push(`desde ${fmt(prefs.priceMin)}`);
+    }
     return parts.length ? ` Elegidos ${parts.join(' y ')}.` : '';
   })();
 
