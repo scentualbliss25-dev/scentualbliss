@@ -584,7 +584,11 @@ function PCard({ product, onQuick }) {
   const handleAdd = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    const size = product.size?.[0] || product.sizes?.[0] || '100ml';
+    // selectedSize debe ser SIEMPRE un string (ej "100ml"), nunca el objeto
+    // {ml, price} entero. Si pasa el objeto, el CartDrawer intenta renderizarlo
+    // como children → "Objects are not valid as a React child (found: object
+    // with keys {ml, price})" y revienta toda la home.
+    const size = product.sizes?.[0]?.ml || product.size?.[0] || '100ml';
     addItem(product, size);
     toast.success(`${product.name} añadido al carrito`, { ...TOAST_STYLE, duration: 2400 });
   };
