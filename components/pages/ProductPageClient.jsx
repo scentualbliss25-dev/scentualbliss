@@ -126,7 +126,15 @@ export default function ProductPageClient({ product, resolvedImages, related = [
   // El "tipo de producto" es Diseñador / Nicho / Árabe (product.productType)
   // NOT product.type que es la concentración (EDP / EDT / Parfum).
   const primaryCat = CATEGORY_LABELS[product.productType] || CATEGORY_LABELS[product.category] || CATEGORY_LABELS['disenador'];
-  const scentCat = CATEGORY_LABELS[product.category];
+  // Familias olfativas: array de hasta 5. Fallback a [product.category] para
+  // productos viejos que solo tengan la singular poblada.
+  const scentCats = (Array.isArray(product.categories) && product.categories.length
+      ? product.categories
+      : (product.category ? [product.category] : [])
+    )
+    .map(id => ({ id, ...(CATEGORY_LABELS[id] || {}) }))
+    .filter(c => c.label);
+  const scentCat = scentCats[0]; // primera = principal (compat con UI vieja)
 
   // Imagenes resueltas: prioridad → resolvedImages (server-side fs scan) → product.images → fallback
   const hasRealImages = product.images?.length && !product.images[0]?.includes('placeholder');
@@ -289,12 +297,14 @@ export default function ProductPageClient({ product, resolvedImages, related = [
               </span>
               <span style={{ color: 'var(--dark-4)' }}>·</span>
               <span style={{ fontSize: '.72rem', color: 'var(--gray)', letterSpacing: '.08em', textTransform: 'uppercase' }}>{product.gender}</span>
-              {scentCat && (
+              {scentCats.length > 0 && (
                 <>
                   <span style={{ color: 'var(--dark-4)' }}>·</span>
-                  <span style={{ fontSize: '.7rem', padding: '2px 10px', borderRadius: '99px', background: scentCat.bg, color: scentCat.color, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase' }}>
-                    {scentCat.label}
-                  </span>
+                  {scentCats.map((c) => (
+                    <span key={c.id} style={{ fontSize: '.7rem', padding: '2px 10px', borderRadius: '99px', background: c.bg, color: c.color, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase' }}>
+                      {c.label}
+                    </span>
+                  ))}
                 </>
               )}
             </div>
@@ -499,7 +509,7 @@ export default function ProductPageClient({ product, resolvedImages, related = [
                     ['Proyección', product.sillage],
                     ['Temporada', product.season],
                     ['Género', product.gender],
-                    ['Familia', scentCat?.label || '—'],
+                    [scentCats.length > 1 ? 'Familias' : 'Familia', scentCats.map(c => c.label).join(' · ') || '—'],
                     ['Tipo', primaryCat?.label || '—'],
                   ].filter(([,v]) => v).map(([k, v]) => (
                     <div key={k} style={{ padding: '12px 16px', background: 'var(--dark-2)', borderRadius: '8px', border: '1px solid var(--dark-4)' }}>

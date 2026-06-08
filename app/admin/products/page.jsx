@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { supabaseAdmin } from '@/lib/supabase';
-import { productTypeLabels } from '@/lib/products-constants';
+import { productTypeLabels, categoryLabels } from '@/lib/products-constants';
 import ProductsSearchForm from './ProductsSearchForm';
 import UpdatedToast from './UpdatedToast';
 
@@ -29,7 +29,7 @@ async function fetchProducts({ page, q, type, brand }) {
     .from('products')
     .select(`
       id, slug, name, brand, product_type, gender,
-      featured, bestseller, stock,
+      featured, bestseller, stock, categories,
       product_sizes ( ml, price, order_index ),
       product_images ( url, order_index )
     `, { count: 'exact' });
@@ -67,6 +67,7 @@ async function fetchProducts({ page, q, type, brand }) {
       featured: p.featured,
       bestseller: p.bestseller,
       stock: Number(p.stock) || 0,
+      categories: Array.isArray(p.categories) ? p.categories : [],
       lowestPrice: lowest?.price,
       lowestMl: lowest?.ml,
       thumb,
@@ -172,6 +173,16 @@ export default async function AdminProductsPage({ searchParams }) {
                     <span className="type-chip">
                       {productTypeLabels[r.productType] || r.productType || '—'}
                     </span>
+                    {r.categories?.length > 0 && (
+                      <div className="cat-chips">
+                        {r.categories.slice(0, 3).map((c) => (
+                          <span key={c} className="cat-chip">{categoryLabels[c] || c}</span>
+                        ))}
+                        {r.categories.length > 3 && (
+                          <span className="cat-chip cat-chip--more">+{r.categories.length - 3}</span>
+                        )}
+                      </div>
+                    )}
                   </td>
                   <td style={{ textAlign: 'right' }}>
                     {r.lowestPrice != null
@@ -395,6 +406,26 @@ function ProductsStyles() {
         background: rgba(192, 154, 90, 0.12);
         color: #8a6936;
         letter-spacing: 0.04em;
+      }
+      .cat-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.22rem;
+        margin-top: 0.35rem;
+      }
+      .cat-chip {
+        display: inline-flex;
+        padding: 0.1rem 0.42rem;
+        border-radius: 5px;
+        font-size: 0.66rem;
+        background: rgba(28, 22, 17, 0.05);
+        color: rgba(28, 22, 17, 0.65);
+        letter-spacing: 0.02em;
+      }
+      .cat-chip--more {
+        background: rgba(192, 154, 90, 0.14);
+        color: #6b4f24;
+        font-weight: 500;
       }
       .prods-price {
         font-weight: 500;

@@ -109,7 +109,7 @@ export default function EditProductForm({ mode = 'edit', product = {}, brands = 
           </Field>
         </div>
 
-        <div className="row three">
+        <div className="row two">
           <Field label="Tipo">
             <select name="product_type" defaultValue={product.product_type || ''}>
               <option value="">—</option>
@@ -120,18 +120,18 @@ export default function EditProductForm({ mode = 'edit', product = {}, brands = 
               ))}
             </select>
           </Field>
-          <Field label="Familia olfativa">
-            <select name="category" defaultValue={product.category || ''}>
-              <option value="">—</option>
-              {collections.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
-          </Field>
           <Field label="Concentración" hint="EDP, EDT, Extrait…">
             <input name="type" defaultValue={product.type || ''} placeholder="EDP" />
           </Field>
         </div>
+
+        <CategoriesPicker
+          defaultValues={
+            Array.isArray(product.categories) && product.categories.length
+              ? product.categories
+              : (product.category ? [product.category] : [])
+          }
+        />
 
         <div className="row two">
           <Field label="Género">
@@ -366,6 +366,150 @@ function Field({ label, hint, required, children }) {
 
 function updateAt(setter, idx, patch) {
   setter((arr) => arr.map((item, i) => (i === idx ? { ...item, ...patch } : item)));
+}
+
+/**
+ * Selector multi-checkbox para familias olfativas. Máximo 5 por producto
+ * (limit de UX + CHECK constraint en Supabase). Cada item renderiza un
+ * <input type="checkbox" name="category"> — el form padre los lee con
+ * formData.getAll('category') en el server action.
+ *
+ * Estado client para deshabilitar el 6º cuando ya hay 5 marcados.
+ */
+function CategoriesPicker({ defaultValues = [] }) {
+  const [selected, setSelected] = useState(() => new Set(defaultValues));
+  const MAX = 5;
+
+  function onChange(id, checked) {
+    setSelected(prev => {
+      const next = new Set(prev);
+      if (checked) {
+        if (next.size >= MAX) return prev; // bloquea el 6º
+        next.add(id);
+      } else {
+        next.delete(id);
+      }
+      return next;
+    });
+  }
+
+  return (
+    <fieldset className="cp">
+      <legend className="cp-legend">
+        <span>Familias olfativas</span>
+        <span className={`cp-count ${selected.size >= MAX ? 'is-full' : ''}`}>
+          {selected.size} / {MAX}
+        </span>
+      </legend>
+      <p className="cp-hint">
+        Elige una o varias (hasta {MAX}). La primera marcada será la familia principal.
+      </p>
+      <div className="cp-grid">
+        {collections.map((c) => {
+          const isChecked = selected.has(c.id);
+          const isDisabled = !isChecked && selected.size >= MAX;
+          return (
+            <label key={c.id} className={`cp-chip ${isChecked ? 'is-on' : ''} ${isDisabled ? 'is-disabled' : ''}`}>
+              <input
+                type="checkbox"
+                name="category"
+                value={c.id}
+                checked={isChecked}
+                disabled={isDisabled}
+                onChange={(e) => onChange(c.id, e.target.checked)}
+              />
+              <span className="cp-dot" style={{ background: c.color }} aria-hidden />
+              <span className="cp-name">{c.name}</span>
+            </label>
+          );
+        })}
+      </div>
+      <style jsx>{`
+        .cp {
+          border: 1px solid rgba(28, 22, 17, 0.1);
+          border-radius: 12px;
+          padding: 0.95rem 1.1rem 1.1rem;
+          margin: 0;
+          background: #fff;
+        }
+        .cp-legend {
+          display: flex;
+          align-items: baseline;
+          gap: 0.75rem;
+          padding: 0 0.35rem;
+          font-size: 0.72rem;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: rgba(28, 22, 17, 0.55);
+        }
+        .cp-count {
+          font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+          font-size: 0.7rem;
+          letter-spacing: 0.04em;
+          color: rgba(28, 22, 17, 0.55);
+        }
+        .cp-count.is-full {
+          color: #8a6936;
+          font-weight: 600;
+        }
+        .cp-hint {
+          margin: 0.35rem 0 0.8rem;
+          font-size: 0.78rem;
+          color: rgba(28, 22, 17, 0.55);
+          line-height: 1.45;
+        }
+        .cp-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+          gap: 0.5rem;
+        }
+        .cp-chip {
+          display: flex;
+          align-items: center;
+          gap: 0.55rem;
+          padding: 0.6rem 0.8rem;
+          background: rgba(28, 22, 17, 0.03);
+          border: 1px solid rgba(28, 22, 17, 0.1);
+          border-radius: 9px;
+          font-size: 0.85rem;
+          color: #1c1611;
+          cursor: pointer;
+          transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+        }
+        .cp-chip:hover:not(.is-disabled) {
+          background: rgba(192, 154, 90, 0.07);
+          border-color: rgba(192, 154, 90, 0.35);
+        }
+        .cp-chip.is-on {
+          background: rgba(192, 154, 90, 0.14);
+          border-color: rgba(192, 154, 90, 0.6);
+          color: #6b4f24;
+          font-weight: 500;
+        }
+        .cp-chip.is-disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+        }
+        .cp-chip input[type="checkbox"] {
+          width: auto;
+          margin: 0;
+          padding: 0;
+          accent-color: #8a6936;
+          cursor: inherit;
+        }
+        .cp-dot {
+          display: inline-block;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          flex-shrink: 0;
+        }
+        .cp-name {
+          flex: 1;
+        }
+      `}</style>
+    </fieldset>
+  );
 }
 
 function FormStyles() {

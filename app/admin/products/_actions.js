@@ -63,12 +63,24 @@ function parseProductForm(formData, { productId } = {}) {
   if (!name) return { error: 'El nombre es obligatorio' };
   if (!slug)  return { error: 'El slug es obligatorio (no se pudo derivar del nombre)' };
 
+  // Familias olfativas: el form envía 0..N values con name="category".
+  // Filtra vacíos, deduplica, valida máximo 5 (limit de UX + CHECK constraint
+  // en Supabase). La primera queda como `category` (singular) para compat
+  // hacia atrás temporal con código que aún lee `p.category`.
+  const categories = [...new Set(formData.getAll('category')
+    .map(v => String(v || '').trim())
+    .filter(Boolean))];
+  if (categories.length > 5) {
+    return { error: `Máximo 5 familias olfativas por producto (recibimos ${categories.length})` };
+  }
+
   const data = {
     name,
     slug,
     brand: str('brand'),
     product_type: str('product_type'),
-    category: str('category'),
+    category: categories[0] || null,  // compat con código viejo
+    categories,                        // todas las familias (text[] en DB)
     type: str('type'),
     gender: str('gender'),
     description: str('description'),
