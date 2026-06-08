@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { filterAndSort, PAGE_SIZE } from '@/lib/shop-filters';
+import { getAllProducts } from '@/lib/products';
 
 export async function GET(request) {
   const sp = new URL(request.url).searchParams;
@@ -12,7 +13,11 @@ export async function GET(request) {
     q: sp.get('q') || '',
   };
 
-  const filtered = filterAndSort(filters);
+  // Tras migrar a Supabase, filterAndSort requiere el array de productos como
+  // primer argumento (antes lo importaba como módulo). Sin esto el endpoint
+  // devolvía siempre [] → "Cargar más" en /tienda nunca cargaba nada.
+  const allProducts = await getAllProducts();
+  const filtered = filterAndSort(allProducts, filters);
   const start = (page - 1) * PAGE_SIZE;
   const items = filtered.slice(start, start + PAGE_SIZE);
   const total = filtered.length;
