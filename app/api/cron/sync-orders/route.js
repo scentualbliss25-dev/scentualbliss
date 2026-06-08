@@ -1,7 +1,15 @@
-// Cron de Vercel — corre cada hora (config en vercel.json).
+// Cron de Vercel — corre 1 vez al día (6 AM, config en vercel.json).
 // Sincroniza todas las órdenes pendientes con Wompi.
 // Es respaldo del webhook por si Wompi no notifica (cambios de estado tardíos,
-// webhook caído, etc.).
+// webhook caído, etc.). Para sync ad-hoc el admin tiene el botón
+// "Sincronizar pendientes" en /admin/orders.
+//
+// Antes existía un GitHub Actions workflow (.github/workflows/sync-orders.yml)
+// que llamaba este endpoint cada 10 min, pero se eliminó porque:
+//   - El webhook de Wompi cubre el 99.9% de los casos al instante.
+//   - El cron diario de Vercel cubre el 0.1% restante.
+//   - El botón manual en el admin cubre los casos urgentes.
+//   - El workflow generaba emails de "Run failed" sin valor real añadido.
 import { NextResponse } from 'next/server';
 import { syncAllPendingAction } from '@/app/admin/orders/_actions';
 
