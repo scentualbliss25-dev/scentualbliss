@@ -91,6 +91,16 @@ export default function ProductPageClient({ product, resolvedImages, related = [
       .catch(() => {});
   }, [product?.slug]);
 
+  // "X personas están viendo esto" — número random.
+  // CRÍTICO: Math.random() en render directo causaba hydration mismatch
+  // (server generaba un número, cliente otro → React reventaba el árbol
+  // entero → "Algo salió mal"). Lo calculamos en useEffect (solo cliente)
+  // y mostramos solo cuando ya existe el valor.
+  const [liveViewers, setLiveViewers] = useState(null);
+  useEffect(() => {
+    setLiveViewers(Math.floor(Math.random() * 20) + 8);
+  }, []);
+
   // Sin fallback al rating/reviews hardcoded de lib/products.js: si no hay
   // reseñas reales en Supabase, mostramos 0 y la UI se adapta (oculta el
   // bloque de estrellas y muestra "Aún sin reseñas").
@@ -417,13 +427,15 @@ export default function ProductPageClient({ product, resolvedImages, related = [
               ))}
             </div>
 
-            {/* Live Viewers */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px', background: 'rgba(124,158,135,.07)', border: '1px solid rgba(124,158,135,.2)', borderRadius: '8px', marginBottom: '28px' }}>
-              <Users size={15} style={{ color: 'var(--success)' }} />
-              <span style={{ fontSize: '.82rem', color: 'var(--success)', fontWeight: 600 }}>
-                🟢 {Math.floor(Math.random() * 20) + 8} personas están viendo esto ahora mismo
-              </span>
-            </div>
+            {/* Live Viewers — solo se monta tras hidratar para evitar mismatch SSR/CSR */}
+            {liveViewers !== null && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px', background: 'rgba(124,158,135,.07)', border: '1px solid rgba(124,158,135,.2)', borderRadius: '8px', marginBottom: '28px' }}>
+                <Users size={15} style={{ color: 'var(--success)' }} />
+                <span style={{ fontSize: '.82rem', color: 'var(--success)', fontWeight: 600 }}>
+                  🟢 {liveViewers} personas están viendo esto ahora mismo
+                </span>
+              </div>
+            )}
 
             {/* TABS */}
             <div style={{ borderTop: '1px solid var(--dark-4)', paddingTop: '24px' }}>
