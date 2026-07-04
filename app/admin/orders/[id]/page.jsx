@@ -10,18 +10,25 @@ export const revalidate = 0;
 export const metadata = { robots: { index: false, follow: false } };
 
 const STATUS_STYLES = {
-  approved:  { bg: '#10b98122', color: '#059669', label: 'Aprobada' },
-  pending:   { bg: '#f59e0b22', color: '#b45309', label: 'Pendiente' },
-  declined:  { bg: '#ef444422', color: '#b91c1c', label: 'Rechazada' },
-  voided:    { bg: '#6b728022', color: '#374151', label: 'Anulada' },
-  error:     { bg: '#ef444422', color: '#b91c1c', label: 'Error' },
-  shipped:   { bg: '#dbeafe',   color: '#1d4ed8', label: 'Enviada' },
-  delivered: { bg: '#d1fae5',   color: '#047857', label: 'Entregada' },
+  approved:  { bg: 'rgba(34, 145, 99, 0.13)',  color: '#1f6b48', label: 'Aprobada' },
+  pending:   { bg: 'rgba(196, 107, 30, 0.14)', color: '#8d4a17', label: 'Pendiente' },
+  declined:  { bg: 'rgba(170, 50, 50, 0.13)',  color: '#8a2a2a', label: 'Rechazada' },
+  voided:    { bg: 'rgba(28, 22, 17, 0.08)',   color: 'rgba(28, 22, 17, 0.65)', label: 'Anulada' },
+  error:     { bg: 'rgba(170, 50, 50, 0.13)',  color: '#8a2a2a', label: 'Error' },
+  shipped:   { bg: 'rgba(70, 110, 195, 0.13)', color: '#2c5394', label: 'Enviada' },
+  delivered: { bg: 'rgba(34, 145, 99, 0.13)',  color: '#1f6b48', label: 'Entregada' },
 };
 
 export default async function OrderDetailPage({ params }) {
   const { id } = await params;
-  if (!supabaseAdmin) return <main style={{ padding: 40 }}>Supabase no configurado.</main>;
+  if (!supabaseAdmin) {
+    return (
+      <div className="od">
+        <p style={{ color: 'rgba(28, 22, 17, 0.6)' }}>Supabase no configurado.</p>
+        <OrderDetailStyles />
+      </div>
+    );
+  }
 
   const { data: order, error } = await supabaseAdmin
     .from('orders')
@@ -31,52 +38,45 @@ export default async function OrderDetailPage({ params }) {
 
   if (error || !order) notFound();
 
-  const status = STATUS_STYLES[order.status] || { bg: '#e5e7eb', color: '#374151', label: order.status };
+  const status = STATUS_STYLES[order.status] || { bg: 'rgba(28, 22, 17, 0.08)', color: 'rgba(28, 22, 17, 0.6)', label: order.status };
 
   const Field = ({ label, value, mono }) => (
     <div>
-      <p style={{ fontSize: '.7rem', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 4 }}>{label}</p>
-      <p style={{ fontSize: '.92rem', color: '#1f2937', margin: 0, fontFamily: mono ? 'ui-monospace, monospace' : 'inherit', wordBreak: 'break-word' }}>
-        {value || '—'}
-      </p>
+      <p className="od-field-label">{label}</p>
+      <p className={`od-field-value ${mono ? 'is-mono' : ''}`}>{value || '—'}</p>
     </div>
   );
 
   return (
-    <main style={{ padding: '32px 24px', maxWidth: 1100, margin: '0 auto', fontFamily: 'system-ui, -apple-system, sans-serif', color: '#1f2937' }}>
-      <Link href="/admin/orders" style={{ fontSize: '.82rem', color: '#2563eb', textDecoration: 'none', display: 'inline-block', marginBottom: 14 }}>← Volver a órdenes</Link>
+    <div className="od">
+      <Link href="/admin/orders" className="od-back">← Volver a órdenes</Link>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
+      <div className="od-titlebar">
         <div>
-          <h1 style={{ fontSize: '1.4rem', fontWeight: 700, margin: 0, fontFamily: 'ui-monospace, monospace' }}>{order.reference}</h1>
-          <p style={{ fontSize: '.85rem', color: '#6b7280', marginTop: 4 }}>
+          <h1 className="od-ref">{order.reference}</h1>
+          <p className="od-date">
             {new Date(order.created_at).toLocaleString('es-CO', { dateStyle: 'long', timeStyle: 'short' })}
           </p>
         </div>
-        <span style={{
-          background: status.bg, color: status.color,
-          padding: '6px 14px', borderRadius: 99,
-          fontSize: '.78rem', fontWeight: 600,
-          textTransform: 'uppercase', letterSpacing: '.06em',
-        }}>{status.label}</span>
+        <span className="od-status" style={{ background: status.bg, color: status.color }}>{status.label}</span>
       </div>
 
-      <div style={{ marginBottom: 20 }}>
+      <div className="od-sync">
         <SyncOrderButton orderId={order.id} />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }} className="od-grid-2">
-        <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 8, padding: 18 }}>
-          <h2 style={{ fontSize: '.78rem', textTransform: 'uppercase', color: '#6b7280', letterSpacing: '.08em', marginBottom: 14, marginTop: 0 }}>Cliente</h2>
-          <div style={{ display: 'grid', gap: 12 }}>
+      <div className="od-grid-2">
+        <div className="od-card">
+          <h2 className="od-card-title">Cliente</h2>
+          <div className="od-field-grid">
             <Field label="Nombre" value={order.customer_name} />
             <Field label="Email"  value={order.customer_email} />
             <Field label="Teléfono" value={order.customer_phone} />
           </div>
         </div>
-        <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 8, padding: 18 }}>
-          <h2 style={{ fontSize: '.78rem', textTransform: 'uppercase', color: '#6b7280', letterSpacing: '.08em', marginBottom: 14, marginTop: 0 }}>Envío</h2>
-          <div style={{ display: 'grid', gap: 12 }}>
+        <div className="od-card">
+          <h2 className="od-card-title">Envío</h2>
+          <div className="od-field-grid">
             <Field label="Dirección" value={order.shipping_address} />
             <Field label="Ciudad"    value={order.shipping_city} />
             <Field label="Departamento" value={order.shipping_department} />
@@ -86,35 +86,35 @@ export default async function OrderDetailPage({ params }) {
 
       {/* Tracking visible si existe */}
       {(order.tracking_carrier || order.tracking_number) && (
-        <div style={{ background: '#dbeafe', border: '1px solid #93c5fd', borderRadius: 8, padding: 16, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 24 }}>📦</span>
+        <div className="od-tracking">
+          <span className="od-tracking-icon">📦</span>
           <div>
-            <p style={{ margin: 0, fontSize: '.78rem', color: '#1e40af', textTransform: 'uppercase', letterSpacing: '.06em', fontWeight: 600 }}>En tránsito</p>
-            <p style={{ margin: '4px 0 0', fontSize: '.95rem', color: '#1e3a8a' }}>
+            <p className="od-tracking-eyebrow">En tránsito</p>
+            <p className="od-tracking-detail">
               <strong>{order.tracking_carrier || 'Operador'}</strong>
-              {order.tracking_number && <span style={{ marginLeft: 10, fontFamily: 'ui-monospace, monospace' }}>· {order.tracking_number}</span>}
+              {order.tracking_number && <span className="od-tracking-num">· {order.tracking_number}</span>}
             </p>
           </div>
         </div>
       )}
 
       {/* Items */}
-      <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 8, marginBottom: 16, overflow: 'hidden' }}>
-        <div style={{ padding: '12px 18px', borderBottom: '1px solid #e5e7eb', background: '#f9fafb' }}>
-          <h2 style={{ fontSize: '.78rem', textTransform: 'uppercase', color: '#6b7280', letterSpacing: '.08em', margin: 0 }}>Productos ({order.order_items?.length || 0})</h2>
+      <div className="od-card od-card--flush">
+        <div className="od-card-head">
+          <h2 className="od-card-title" style={{ margin: 0 }}>Productos ({order.order_items?.length || 0})</h2>
         </div>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '.88rem' }}>
+        <div className="od-tablewrap">
+          <table className="od-table">
             <tbody>
               {(order.order_items || []).map(item => (
-                <tr key={item.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
-                  <td style={{ padding: '14px 18px' }}>
-                    <div style={{ fontWeight: 500 }}>{item.product_name}</div>
-                    {item.selected_size && <div style={{ fontSize: '.78rem', color: '#6b7280' }}>{item.selected_size}</div>}
+                <tr key={item.id}>
+                  <td>
+                    <div className="od-item-name">{item.product_name}</div>
+                    {item.selected_size && <div className="od-item-size">{item.selected_size}</div>}
                   </td>
-                  <td style={{ padding: '14px 18px', textAlign: 'center', color: '#6b7280', fontSize: '.85rem', whiteSpace: 'nowrap' }}>×{item.quantity}</td>
-                  <td style={{ padding: '14px 18px', textAlign: 'right', whiteSpace: 'nowrap' }}>{formatCOP(Number(item.unit_price)) || '$0'}</td>
-                  <td style={{ padding: '14px 18px', textAlign: 'right', fontWeight: 600, whiteSpace: 'nowrap' }}>{formatCOP(Number(item.total_price)) || '$0'}</td>
+                  <td className="od-item-qty">×{item.quantity}</td>
+                  <td className="od-item-price">{formatCOP(Number(item.unit_price)) || '$0'}</td>
+                  <td className="od-item-total">{formatCOP(Number(item.total_price)) || '$0'}</td>
                 </tr>
               ))}
             </tbody>
@@ -123,23 +123,23 @@ export default async function OrderDetailPage({ params }) {
       </div>
 
       {/* Totales */}
-      <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 8, padding: 18, marginBottom: 20 }}>
-        <div style={{ display: 'grid', gap: 8, maxWidth: 320, marginLeft: 'auto' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '.88rem' }}>
-            <span style={{ color: '#6b7280' }}>Subtotal</span>
+      <div className="od-card">
+        <div className="od-totals">
+          <div className="od-total-row">
+            <span>Subtotal</span>
             <span>{formatCOP(Number(order.subtotal)) || '$0'}</span>
           </div>
           {Number(order.discount) > 0 && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '.88rem', color: '#059669' }}>
+            <div className="od-total-row od-total-row--discount">
               <span>Descuento</span>
               <span>−{formatCOP(Number(order.discount))}</span>
             </div>
           )}
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '.88rem' }}>
-            <span style={{ color: '#6b7280' }}>Envío</span>
+          <div className="od-total-row">
+            <span>Envío</span>
             <span>{Number(order.shipping_cost) > 0 ? formatCOP(Number(order.shipping_cost)) : 'Gratis'}</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.05rem', fontWeight: 700, paddingTop: 8, borderTop: '1px solid #e5e7eb' }}>
+          <div className="od-total-row od-total-row--grand">
             <span>Total</span>
             <span>{formatCOP(Number(order.total)) || '$0'}</span>
           </div>
@@ -147,22 +147,184 @@ export default async function OrderDetailPage({ params }) {
       </div>
 
       {/* Acciones admin (cambiar estado, tracking, notas, eliminar) */}
-      <h2 style={{ fontSize: '.92rem', fontWeight: 700, margin: '24px 0 12px' }}>Gestión de la orden</h2>
+      <h2 className="od-section-title">Gestión de la orden</h2>
       <OrderActions order={order} />
 
       {/* Meta técnica */}
-      <div style={{ marginTop: 24, padding: '16px 18px', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 8, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14, fontSize: '.78rem' }} className="od-meta">
+      <div className="od-meta">
         <Field label="Método de pago" value={order.payment_method} />
         <Field label="Wompi TX ID" value={order.wompi_tx_id} mono />
         <Field label="Última actualización" value={new Date(order.updated_at).toLocaleString('es-CO')} />
       </div>
 
-      <style>{`
-        @media (max-width: 768px) {
-          .od-grid-2 { grid-template-columns: 1fr !important; }
-          .od-meta { grid-template-columns: 1fr !important; }
-        }
-      `}</style>
-    </main>
+      <OrderDetailStyles />
+    </div>
+  );
+}
+
+function OrderDetailStyles() {
+  return (
+    <style>{`
+      .od {
+        padding: 2.25rem 2.25rem 4rem;
+        max-width: 1100px;
+        margin: 0 auto;
+        font-family: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+        color: #2a1f15;
+      }
+      .od-back {
+        font-size: 0.82rem;
+        color: #8a6936;
+        text-decoration: none;
+        display: inline-block;
+        margin-bottom: 1.1rem;
+      }
+      .od-back:hover { text-decoration: underline; }
+
+      .od-titlebar {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 1.25rem;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .od-ref {
+        font-size: 1.4rem;
+        font-weight: 500;
+        margin: 0;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        color: #1c1611;
+      }
+      .od-date {
+        font-size: 0.85rem;
+        color: rgba(28, 22, 17, 0.55);
+        margin-top: 4px;
+      }
+      .od-status {
+        padding: 6px 14px;
+        border-radius: 99px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      .od-sync { margin-bottom: 1.25rem; }
+
+      .od-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+      }
+      .od-card {
+        background: #fff;
+        border: 1px solid rgba(28, 22, 17, 0.08);
+        border-radius: 14px;
+        padding: 1.15rem;
+        margin-bottom: 1rem;
+      }
+      .od-card--flush { padding: 0; overflow: hidden; }
+      .od-card-head {
+        padding: 0.85rem 1.15rem;
+        border-bottom: 1px solid rgba(28, 22, 17, 0.08);
+        background: rgba(28, 22, 17, 0.02);
+      }
+      .od-card-title {
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        color: rgba(28, 22, 17, 0.55);
+        letter-spacing: 0.1em;
+        margin: 0 0 0.9rem;
+      }
+      .od-field-grid { display: grid; gap: 0.75rem; }
+      .od-field-label {
+        font-size: 0.7rem;
+        color: rgba(28, 22, 17, 0.5);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin: 0 0 4px;
+      }
+      .od-field-value {
+        font-size: 0.92rem;
+        color: #1c1611;
+        margin: 0;
+        word-break: break-word;
+      }
+      .od-field-value.is-mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.82rem;
+      }
+
+      .od-tracking {
+        background: rgba(70, 110, 195, 0.09);
+        border: 1px solid rgba(70, 110, 195, 0.3);
+        border-radius: 12px;
+        padding: 1rem 1.15rem;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+      .od-tracking-icon { font-size: 24px; }
+      .od-tracking-eyebrow {
+        margin: 0;
+        font-size: 0.78rem;
+        color: #2c5394;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        font-weight: 600;
+      }
+      .od-tracking-detail { margin: 4px 0 0; font-size: 0.95rem; color: #1c1611; }
+      .od-tracking-num { margin-left: 10px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+      .od-tablewrap { overflow-x: auto; }
+      .od-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+      .od-table tr { border-bottom: 1px solid rgba(28, 22, 17, 0.05); }
+      .od-table tr:last-child { border-bottom: none; }
+      .od-table td { padding: 0.85rem 1.15rem; }
+      .od-item-name { font-weight: 500; color: #1c1611; }
+      .od-item-size { font-size: 0.78rem; color: rgba(28, 22, 17, 0.55); }
+      .od-item-qty { text-align: center; color: rgba(28, 22, 17, 0.55); font-size: 0.85rem; white-space: nowrap; }
+      .od-item-price { text-align: right; white-space: nowrap; color: #2a1f15; }
+      .od-item-total { text-align: right; font-weight: 600; white-space: nowrap; color: #1c1611; }
+
+      .od-totals { display: grid; gap: 8px; max-width: 320px; margin-left: auto; }
+      .od-total-row { display: flex; justify-content: space-between; font-size: 0.88rem; color: rgba(28, 22, 17, 0.55); }
+      .od-total-row--discount { color: #1f6b48; }
+      .od-total-row--grand {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: #1c1611;
+        padding-top: 8px;
+        border-top: 1px solid rgba(28, 22, 17, 0.1);
+      }
+
+      .od-section-title {
+        font-size: 0.92rem;
+        font-weight: 500;
+        color: #1c1611;
+        margin: 1.5rem 0 0.75rem;
+      }
+
+      .od-meta {
+        margin-top: 1.5rem;
+        padding: 1rem 1.15rem;
+        background: rgba(28, 22, 17, 0.02);
+        border: 1px solid rgba(28, 22, 17, 0.08);
+        border-radius: 12px;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 14px;
+        font-size: 0.78rem;
+      }
+
+      @media (max-width: 768px) {
+        .od-grid-2 { grid-template-columns: 1fr; }
+        .od-meta { grid-template-columns: 1fr; }
+      }
+    `}</style>
   );
 }

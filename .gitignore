@@ -64,3 +64,4 @@ lib/products.backup.js
 
 # Exports manuales del catálogo (xlsx, csv). Se regeneran cuando se necesiten.
 exports/
+.env*

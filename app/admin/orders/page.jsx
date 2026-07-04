@@ -11,9 +11,9 @@ export default async function AdminOrdersPage() {
   } catch (err) {
     console.error('[AdminOrders SSR ERROR]', err);
     return (
-      <main style={{ padding: 40, fontFamily: 'monospace', color: '#1f2937', background: '#fff' }}>
-        <h1 style={{ color: '#dc2626', fontSize: '1.4rem', marginBottom: 16 }}>Error al cargar órdenes</h1>
-        <pre style={{ background: '#1F1A14', color: '#FAF6EE', padding: 20, borderRadius: 8, overflow: 'auto', fontSize: '12px', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+      <div className="ord-errpage">
+        <h1>Error al cargar órdenes</h1>
+        <pre>
 {`MESSAGE: ${err?.message || 'unknown'}
 NAME: ${err?.name || 'unknown'}
 DIGEST: ${err?.digest || 'none'}
@@ -21,10 +21,9 @@ CODE: ${err?.code || 'none'}
 STACK:
 ${(err?.stack || '').split('\n').slice(0, 15).join('\n')}`}
         </pre>
-        <p style={{ marginTop: 20, color: '#6b7280', fontFamily: 'system-ui', fontSize: '.9rem' }}>
-          Por favor mándale este mensaje al desarrollador.
-        </p>
-      </main>
+        <p>Por favor mándale este mensaje al desarrollador.</p>
+        <ErrPageStyles />
+      </div>
     );
   }
 }
@@ -32,10 +31,11 @@ ${(err?.stack || '').split('\n').slice(0, 15).join('\n')}`}
 async function renderOrders() {
   if (!supabaseAdmin) {
     return (
-      <main style={{ padding: 40, fontFamily: 'system-ui', color: '#1f2937', background: '#fff' }}>
+      <div className="ord-errpage">
         <h1>Supabase no configurado</h1>
         <p>Falta NEXT_PUBLIC_SUPABASE_URL o claves en las env vars de Vercel.</p>
-      </main>
+        <ErrPageStyles />
+      </div>
     );
   }
 
@@ -47,26 +47,104 @@ async function renderOrders() {
 
   if (error) {
     return (
-      <main style={{ padding: 40, fontFamily: 'monospace', color: '#1f2937', background: '#fff' }}>
-        <h1 style={{ color: '#dc2626' }}>Error consultando órdenes</h1>
-        <pre style={{ background: '#1F1A14', color: '#FAF6EE', padding: 16, borderRadius: 8, overflow: 'auto' }}>{JSON.stringify(error, null, 2)}</pre>
-      </main>
+      <div className="ord-errpage">
+        <h1>Error consultando órdenes</h1>
+        <pre>{JSON.stringify(error, null, 2)}</pre>
+        <ErrPageStyles />
+      </div>
     );
   }
 
   return (
-    <main style={{ padding: '32px 24px', maxWidth: 1400, margin: '0 auto', fontFamily: 'system-ui, -apple-system, sans-serif', color: '#1f2937', background: '#fff', minHeight: '100vh' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
+    <div className="ord">
+      <header className="ord-head">
         <div>
-          <h1 style={{ fontSize: '1.6rem', fontWeight: 700, margin: 0 }}>Órdenes</h1>
-          <p style={{ fontSize: '.82rem', color: '#6b7280', margin: '4px 0 0' }}>
-            Últimas {orders?.length || 0} órdenes
-          </p>
+          <p className="ord-eyebrow">Ventas</p>
+          <h1 className="ord-title">Órdenes</h1>
+          <p className="ord-sub">Últimas {orders?.length || 0} órdenes</p>
         </div>
         <AdminHeader />
-      </div>
+      </header>
 
       <AdminOrdersTable orders={orders || []} />
-    </main>
+
+      <OrdersPageStyles />
+    </div>
+  );
+}
+
+function OrdersPageStyles() {
+  return (
+    <style>{`
+      .ord {
+        padding: 2.5rem 2.25rem 3rem;
+        max-width: 1400px;
+        margin: 0 auto;
+        font-family: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+        color: #2a1f15;
+      }
+      .ord-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        flex-wrap: wrap;
+        gap: 1.25rem;
+        margin-bottom: 1.75rem;
+      }
+      .ord-eyebrow {
+        margin: 0 0 0.3rem;
+        font-size: 0.7rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #8a6936;
+      }
+      .ord-title {
+        margin: 0 0 0.35rem;
+        font-size: 1.85rem;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+        color: #1c1611;
+      }
+      .ord-sub {
+        margin: 0;
+        font-size: 0.83rem;
+        color: rgba(28, 22, 17, 0.55);
+      }
+    `}</style>
+  );
+}
+
+function ErrPageStyles() {
+  return (
+    <style>{`
+      .ord-errpage {
+        padding: 2.5rem 2.25rem;
+        max-width: 900px;
+        margin: 0 auto;
+        font-family: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+        color: #2a1f15;
+      }
+      .ord-errpage h1 {
+        color: #aa3232;
+        font-size: 1.3rem;
+        font-weight: 500;
+        margin: 0 0 1rem;
+      }
+      .ord-errpage pre {
+        background: #1c1611;
+        color: #f3ead7;
+        padding: 1.25rem;
+        border-radius: 10px;
+        overflow: auto;
+        font-size: 0.78rem;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .ord-errpage p {
+        margin-top: 1.25rem;
+        color: rgba(28, 22, 17, 0.55);
+        font-size: 0.85rem;
+      }
+    `}</style>
   );
 }

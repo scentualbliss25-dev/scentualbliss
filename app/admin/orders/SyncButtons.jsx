@@ -21,12 +21,13 @@ export function SyncOrderButton({ orderId }) {
         disabled={isPending}
         style={{
           padding: '8px 14px',
-          background: '#1f2937',
-          color: '#fff',
+          background: 'linear-gradient(135deg, #c09a5a, #8a6936)',
+          color: '#1c1611',
           border: 0,
-          borderRadius: 6,
+          borderRadius: 8,
           fontSize: '.82rem',
           fontWeight: 500,
+          fontFamily: 'inherit',
           cursor: isPending ? 'wait' : 'pointer',
           opacity: isPending ? 0.7 : 1,
         }}
@@ -34,7 +35,7 @@ export function SyncOrderButton({ orderId }) {
         {isPending ? 'Sincronizando…' : 'Sincronizar con Wompi'}
       </button>
       {msg && (
-        <span style={{ fontSize: '.82rem', color: msg.ok ? '#059669' : '#b91c1c' }}>
+        <span style={{ fontSize: '.82rem', color: msg.ok ? '#1f6b48' : '#8a2a2a' }}>
           {msg.ok
             ? `${msg.oldStatus} → ${msg.newStatus}`
             : `✗ ${msg.error}`}
@@ -63,12 +64,13 @@ export function SyncAllPendingButton() {
         disabled={isPending}
         style={{
           padding: '7px 13px',
-          background: '#fff',
-          color: '#1f2937',
-          border: '1px solid #d1d5db',
-          borderRadius: 6,
+          background: 'transparent',
+          color: 'rgba(28, 22, 17, 0.65)',
+          border: '1px solid rgba(28, 22, 17, 0.15)',
+          borderRadius: 8,
           fontSize: '.78rem',
           fontWeight: 500,
+          fontFamily: 'inherit',
           cursor: isPending ? 'wait' : 'pointer',
           opacity: isPending ? 0.7 : 1,
         }}
@@ -76,7 +78,7 @@ export function SyncAllPendingButton() {
         {isPending ? 'Sincronizando…' : '↻ Sincronizar pendientes'}
       </button>
       {msg && (
-        <div style={{ fontSize: '.78rem', color: msg.ok ? '#374151' : '#b91c1c' }}>
+        <div style={{ fontSize: '.78rem', color: msg.ok ? '#1c1611' : '#8a2a2a' }}>
           {msg.ok ? (
             <details open>
               <summary style={{ cursor: 'pointer' }}>{msg.synced} consultadas</summary>

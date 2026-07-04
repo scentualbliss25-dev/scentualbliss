@@ -5,11 +5,13 @@ import { formatCOP } from '@/lib/format';
 import { bulkDeleteOrdersAction } from './_actions';
 
 const STATUS_STYLES = {
-  approved: { bg: '#10b98122', color: '#059669', label: 'Aprobada' },
-  pending:  { bg: '#f59e0b22', color: '#b45309', label: 'Pendiente' },
-  declined: { bg: '#ef444422', color: '#b91c1c', label: 'Rechazada' },
-  voided:   { bg: '#6b728022', color: '#374151', label: 'Anulada' },
-  error:    { bg: '#ef444422', color: '#b91c1c', label: 'Error' },
+  approved:  { bg: 'rgba(34, 145, 99, 0.13)',  color: '#1f6b48', label: 'Aprobada' },
+  pending:   { bg: 'rgba(196, 107, 30, 0.14)', color: '#8d4a17', label: 'Pendiente' },
+  declined:  { bg: 'rgba(170, 50, 50, 0.13)',  color: '#8a2a2a', label: 'Rechazada' },
+  voided:    { bg: 'rgba(28, 22, 17, 0.08)',   color: 'rgba(28, 22, 17, 0.65)', label: 'Anulada' },
+  error:     { bg: 'rgba(170, 50, 50, 0.13)',  color: '#8a2a2a', label: 'Error' },
+  shipped:   { bg: 'rgba(70, 110, 195, 0.13)', color: '#2c5394', label: 'Enviada' },
+  delivered: { bg: 'rgba(34, 145, 99, 0.13)',  color: '#1f6b48', label: 'Entregada' },
 };
 
 const FILTERS = [
@@ -20,7 +22,7 @@ const FILTERS = [
 ];
 
 function StatusBadge({ status }) {
-  const s = STATUS_STYLES[status] || { bg: '#e5e7eb', color: '#374151', label: status || '?' };
+  const s = STATUS_STYLES[status] || { bg: 'rgba(28, 22, 17, 0.08)', color: 'rgba(28, 22, 17, 0.6)', label: status || '?' };
   return (
     <span style={{
       background: s.bg, color: s.color,
@@ -128,11 +130,11 @@ export function OrdersTable({ orders }) {
       {/* Stats */}
       <div className="ot-stats">
         {[
-          { label: 'Órdenes', value: stats.total, color: '#1f2937' },
-          { label: 'Aprobadas', value: stats.approved, color: '#059669' },
-          { label: 'Pendientes', value: stats.pending, color: '#b45309' },
-          { label: 'Ingresos', value: formatCOP(stats.revenue) || '$0', color: '#1f2937' },
-          { label: 'Ticket promedio', value: formatCOP(stats.avgTicket) || '$0', color: '#1f2937' },
+          { label: 'Órdenes', value: stats.total, color: '#1c1611' },
+          { label: 'Aprobadas', value: stats.approved, color: '#1f6b48' },
+          { label: 'Pendientes', value: stats.pending, color: '#8d4a17' },
+          { label: 'Ingresos', value: formatCOP(stats.revenue) || '$0', color: '#8a6936' },
+          { label: 'Ticket promedio', value: formatCOP(stats.avgTicket) || '$0', color: '#1c1611' },
         ].map(s => (
           <div key={s.label} className="ot-stat">
             <p className="ot-stat-label">{s.label}</p>
@@ -235,12 +237,12 @@ export function OrdersTable({ orders }) {
                       </td>
                       <td>
                         <div style={{ fontWeight: 500 }}>{o.customer_name || '—'}</div>
-                        <div style={{ fontSize: '.78rem', color: '#6b7280' }}>{o.customer_email}</div>
+                        <div style={{ fontSize: '.78rem', color: 'rgba(28, 22, 17, 0.55)' }}>{o.customer_email}</div>
                       </td>
-                      <td style={{ textAlign: 'center', color: '#6b7280' }}>{o.order_items?.length || 0}</td>
+                      <td style={{ textAlign: 'center', color: 'rgba(28, 22, 17, 0.55)' }}>{o.order_items?.length || 0}</td>
                       <td style={{ textAlign: 'right', fontWeight: 600 }}>{formatCOP(Number(o.total)) || '$0'}</td>
                       <td style={{ textAlign: 'center' }}><StatusBadge status={o.status} /></td>
-                      <td style={{ textAlign: 'right', color: '#6b7280', fontSize: '.78rem' }}>
+                      <td style={{ textAlign: 'right', color: 'rgba(28, 22, 17, 0.55)', fontSize: '.78rem' }}>
                         {new Date(o.created_at).toLocaleString('es-CO', { dateStyle: 'short', timeStyle: 'short' })}
                       </td>
                       <td style={{ textAlign: 'center' }}>
@@ -281,12 +283,12 @@ export function OrdersTable({ orders }) {
                   </div>
                   <div className="ot-card-body">
                     <div><strong>{o.customer_name}</strong></div>
-                    <div style={{ fontSize: '.82rem', color: '#6b7280' }}>{o.customer_email}</div>
-                    <div style={{ fontSize: '.82rem', color: '#6b7280' }}>{o.shipping_city}</div>
+                    <div style={{ fontSize: '.82rem', color: 'rgba(28, 22, 17, 0.55)' }}>{o.customer_email}</div>
+                    <div style={{ fontSize: '.82rem', color: 'rgba(28, 22, 17, 0.55)' }}>{o.shipping_city}</div>
                   </div>
                   <div className="ot-card-footer">
-                    <span style={{ fontWeight: 700 }}>{formatCOP(Number(o.total)) || '$0'}</span>
-                    <span style={{ fontSize: '.74rem', color: '#9ca3af' }}>
+                    <span style={{ fontWeight: 700, color: '#1c1611' }}>{formatCOP(Number(o.total)) || '$0'}</span>
+                    <span style={{ fontSize: '.74rem', color: 'rgba(28, 22, 17, 0.4)' }}>
                       {new Date(o.created_at).toLocaleDateString('es-CO')}
                     </span>
                   </div>
@@ -316,20 +318,20 @@ export function OrdersTable({ orders }) {
         }
         .ot-stat {
           background: #fff;
-          border: 1px solid #e5e7eb;
-          border-radius: 8px;
-          padding: 14px;
+          border: 1px solid rgba(28, 22, 17, 0.08);
+          border-radius: 12px;
+          padding: 14px 16px;
         }
         .ot-stat-label {
           font-size: .66rem;
-          color: #6b7280;
+          color: rgba(28, 22, 17, 0.5);
           text-transform: uppercase;
-          letter-spacing: .06em;
+          letter-spacing: .12em;
           margin: 0 0 6px;
         }
         .ot-stat-value {
           font-size: 1.25rem;
-          font-weight: 700;
+          font-weight: 500;
           margin: 0;
         }
 
@@ -344,8 +346,8 @@ export function OrdersTable({ orders }) {
         .ot-tabs {
           display: inline-flex;
           background: #fff;
-          border: 1px solid #e5e7eb;
-          border-radius: 8px;
+          border: 1px solid rgba(28, 22, 17, 0.08);
+          border-radius: 9px;
           padding: 4px;
           gap: 2px;
         }
@@ -355,61 +357,67 @@ export function OrdersTable({ orders }) {
           padding: 7px 14px;
           font-size: .82rem;
           font-weight: 500;
-          color: #6b7280;
+          color: rgba(28, 22, 17, 0.55);
           cursor: pointer;
-          border-radius: 6px;
+          border-radius: 7px;
+          font-family: inherit;
           transition: all .15s ease;
         }
-        .ot-tab:hover { color: #1f2937; }
+        .ot-tab:hover { color: #1c1611; }
         .ot-tab.is-active {
-          background: #1f2937;
-          color: #fff;
+          background: linear-gradient(135deg, #c09a5a, #8a6936);
+          color: #1c1611;
         }
         .ot-tab-count {
-          background: rgba(255,255,255,.15);
+          background: rgba(255,255,255,.3);
           padding: 1px 7px;
           border-radius: 99px;
           font-size: .7rem;
           margin-left: 4px;
         }
         .ot-tab:not(.is-active) .ot-tab-count {
-          background: #f3f4f6;
-          color: #6b7280;
+          background: rgba(28, 22, 17, 0.06);
+          color: rgba(28, 22, 17, 0.55);
         }
 
         .ot-search { display: flex; gap: 8px; }
         .ot-search-input {
           padding: 8px 12px;
-          border: 1px solid #d1d5db;
-          border-radius: 6px;
+          border: 1px solid rgba(28, 22, 17, 0.15);
+          border-radius: 8px;
           font-size: .85rem;
           min-width: 260px;
+          font-family: inherit;
+          color: #1c1611;
         }
         .ot-search-input:focus {
-          outline: 2px solid #c9a96e;
-          outline-offset: -1px;
+          outline: none;
+          border-color: rgba(192, 154, 90, 0.55);
+          box-shadow: 0 0 0 3px rgba(192, 154, 90, 0.12);
         }
         .ot-export-btn {
           padding: 8px 14px;
-          background: #fff;
-          color: #1f2937;
-          border: 1px solid #d1d5db;
-          border-radius: 6px;
+          background: transparent;
+          color: rgba(28, 22, 17, 0.65);
+          border: 1px solid rgba(28, 22, 17, 0.15);
+          border-radius: 8px;
           font-size: .82rem;
           font-weight: 500;
+          font-family: inherit;
           cursor: pointer;
           white-space: nowrap;
+          transition: background 0.15s, border-color 0.15s, color 0.15s;
         }
-        .ot-export-btn:hover { background: #f9fafb; }
+        .ot-export-btn:hover { background: rgba(28, 22, 17, 0.04); border-color: rgba(28, 22, 17, 0.25); color: #1c1611; }
 
         .ot-bulkbar {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          background: #1f2937;
-          color: #fff;
+          background: #1c1611;
+          color: #f3ead7;
           padding: 10px 16px;
-          border-radius: 8px;
+          border-radius: 10px;
           margin-bottom: 12px;
           font-size: .85rem;
         }
@@ -420,24 +428,26 @@ export function OrdersTable({ orders }) {
           font-weight: 500;
           cursor: pointer;
           border: 0;
+          font-family: inherit;
         }
-        .ot-bulk-cancel { background: rgba(255,255,255,.1); color: #fff; }
-        .ot-bulk-delete { background: #ef4444; color: #fff; }
+        .ot-bulk-cancel { background: rgba(255,255,255,.1); color: #f3ead7; }
+        .ot-bulk-delete { background: #aa3232; color: #fff; }
         .ot-bulk-delete:disabled { opacity: .6; cursor: wait; }
 
         .ot-empty {
           padding: 80px 20px;
           text-align: center;
-          background: #f9fafb;
-          border-radius: 8px;
-          color: #6b7280;
+          background: #fff;
+          border: 1px solid rgba(28, 22, 17, 0.08);
+          border-radius: 12px;
+          color: rgba(28, 22, 17, 0.5);
           font-size: .9rem;
         }
 
         .ot-table-wrap {
           background: #fff;
-          border: 1px solid #e5e7eb;
-          border-radius: 8px;
+          border: 1px solid rgba(28, 22, 17, 0.08);
+          border-radius: 14px;
           overflow: hidden;
           overflow-x: auto;
         }
@@ -447,37 +457,39 @@ export function OrdersTable({ orders }) {
           font-size: .85rem;
         }
         .ot-table thead tr {
-          background: #f9fafb;
-          border-bottom: 1px solid #e5e7eb;
+          background: rgba(28, 22, 17, 0.02);
+          border-bottom: 1px solid rgba(28, 22, 17, 0.07);
         }
         .ot-table th {
           text-align: left;
-          padding: 12px 16px;
-          font-weight: 600;
+          padding: 0.95rem 1rem;
+          font-weight: 500;
           font-size: .7rem;
           text-transform: uppercase;
-          letter-spacing: .06em;
-          color: #6b7280;
+          letter-spacing: .12em;
+          color: rgba(28, 22, 17, 0.55);
           white-space: nowrap;
         }
         .ot-table tbody tr {
-          border-bottom: 1px solid #f3f4f6;
+          border-bottom: 1px solid rgba(28, 22, 17, 0.05);
           transition: background .15s ease;
         }
-        .ot-table tbody tr:hover { background: #fafafa; }
-        .ot-table tbody tr.is-selected { background: #fef3c7; }
+        .ot-table tbody tr:last-child { border-bottom: none; }
+        .ot-table tbody tr:hover { background: rgba(192, 154, 90, 0.045); }
+        .ot-table tbody tr.is-selected { background: rgba(192, 154, 90, 0.14); }
         .ot-table td {
-          padding: 14px 16px;
+          padding: 0.85rem 1rem;
           vertical-align: middle;
+          color: #2a1f15;
         }
         .ot-ref {
-          color: #2563eb;
+          color: #8a6936;
           text-decoration: none;
-          font-family: ui-monospace, monospace;
+          font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
           font-size: .78rem;
           font-weight: 500;
         }
-        .ot-ref:hover { text-decoration: underline; }
+        .ot-ref:hover { color: #5d4724; text-decoration: underline; }
 
         .ot-action {
           display: inline-flex;
@@ -485,14 +497,14 @@ export function OrdersTable({ orders }) {
           justify-content: center;
           width: 30px;
           height: 30px;
-          border-radius: 6px;
-          background: #f3f4f6;
-          color: #1f2937;
+          border-radius: 7px;
+          background: rgba(28, 22, 17, 0.05);
+          color: #1c1611;
           text-decoration: none;
           font-size: .9rem;
           transition: all .15s ease;
         }
-        .ot-action:hover { background: #e5e7eb; }
+        .ot-action:hover { background: rgba(28, 22, 17, 0.1); }
         .ot-action-wa:hover { background: #25D366; color: #fff; }
 
         .ot-cards { display: none; }
@@ -515,11 +527,11 @@ export function OrdersTable({ orders }) {
           .ot-cards { display: flex; flex-direction: column; gap: 10px; }
           .ot-card {
             background: #fff;
-            border: 1px solid #e5e7eb;
-            border-radius: 10px;
+            border: 1px solid rgba(28, 22, 17, 0.08);
+            border-radius: 12px;
             padding: 14px;
           }
-          .ot-card.is-selected { background: #fef3c7; border-color: #f59e0b; }
+          .ot-card.is-selected { background: rgba(192, 154, 90, 0.14); border-color: rgba(192, 154, 90, 0.5); }
           .ot-card-header {
             display: flex;
             align-items: center;
@@ -527,12 +539,12 @@ export function OrdersTable({ orders }) {
             margin-bottom: 10px;
           }
           .ot-card-header .ot-ref { flex: 1; }
-          .ot-card-body { margin-bottom: 10px; font-size: .9rem; }
+          .ot-card-body { margin-bottom: 10px; font-size: .9rem; color: #2a1f15; }
           .ot-card-footer {
             display: flex;
             justify-content: space-between;
             padding: 8px 0;
-            border-top: 1px solid #f3f4f6;
+            border-top: 1px solid rgba(28, 22, 17, 0.06);
             margin-bottom: 10px;
             font-size: .92rem;
           }
@@ -541,16 +553,16 @@ export function OrdersTable({ orders }) {
             flex: 1;
             padding: 8px;
             text-align: center;
-            background: #f3f4f6;
-            color: #1f2937;
+            background: rgba(28, 22, 17, 0.05);
+            color: #1c1611;
             text-decoration: none;
-            border-radius: 6px;
+            border-radius: 7px;
             font-size: .82rem;
             font-weight: 500;
           }
           .ot-card-action-primary {
-            background: #1f2937;
-            color: #fff;
+            background: linear-gradient(135deg, #c09a5a, #8a6936);
+            color: #1c1611;
           }
         }
       `}</style>

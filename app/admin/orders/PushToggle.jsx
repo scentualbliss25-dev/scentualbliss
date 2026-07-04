@@ -102,14 +102,14 @@ export function PushToggle() {
 
   if (status === 'unsupported') {
     return (
-      <div style={pillStyle('#6b7280', '#f3f4f6')}>
+      <div style={pillStyle('rgba(28, 22, 17, 0.55)', 'rgba(28, 22, 17, 0.06)')}>
         🔕 Notificaciones no soportadas en este navegador
       </div>
     );
   }
   if (status === 'denied') {
     return (
-      <div style={pillStyle('#b91c1c', '#fee2e2')}>
+      <div style={pillStyle('#8a2a2a', 'rgba(170, 50, 50, 0.13)')}>
         🚫 Notificaciones bloqueadas — habilítalas en ajustes del navegador
       </div>
     );
@@ -120,8 +120,8 @@ export function PushToggle() {
       onClick={status === 'on' ? handleUnsubscribe : handleSubscribe}
       disabled={busy}
       style={pillStyle(
-        status === 'on' ? '#059669' : '#1f2937',
-        status === 'on' ? '#d1fae5' : '#f9fafb',
+        status === 'on' ? '#1f6b48' : '#1c1611',
+        status === 'on' ? 'rgba(34, 145, 99, 0.13)' : 'rgba(28, 22, 17, 0.06)',
         true
       )}
     >
@@ -138,6 +138,7 @@ function pillStyle(color, bg, clickable) {
     borderRadius: 8,
     fontSize: '.82rem',
     fontWeight: 600,
+    fontFamily: 'inherit',
     border: `1px solid ${color}33`,
     cursor: clickable ? 'pointer' : 'default',
   };
