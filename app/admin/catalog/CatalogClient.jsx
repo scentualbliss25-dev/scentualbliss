@@ -202,8 +202,10 @@ export default function CatalogClient({ products = [], loadError = null }) {
                   <div className="doc-cover-rule" aria-hidden />
                   <h2 className="doc-cover-title">Catálogo de Perfumes</h2>
                   <p className="doc-cover-tag">Perfumería original</p>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/img/placeholder-perfume.png" alt="" className="doc-cover-bottle" />
+                  <div className="doc-cover-bottlewrap" aria-hidden>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src="/img/placeholder-perfume.png" alt="" className="doc-cover-bottle" />
+                  </div>
                   <p className="doc-cover-meta">
                     {filterSummary.length ? filterSummary.join('  ·  ') : 'Colección completa'}
                   </p>
@@ -509,7 +511,6 @@ function CatalogStyles() {
          el medio real de la hoja, no solo horizontalmente. */
       .doc-cover {
         display: flex;
-        align-items: center;
         justify-content: center;
         min-height: calc(100vh - 6rem);
         padding: 1rem;
@@ -519,6 +520,11 @@ function CatalogStyles() {
         flex-direction: column;
         align-items: center;
         text-align: center;
+        /* Márgenes auto arriba/abajo: técnica de centrado vertical más
+           confiable que align-items dentro de un <td> con salto de
+           página forzado (align-items se ignoraba ahí en Chromium). */
+        margin-top: auto;
+        margin-bottom: auto;
       }
       .doc-cover-logo {
         width: min(430px, 78%);
@@ -546,10 +552,21 @@ function CatalogStyles() {
         text-transform: uppercase;
         color: #c09a5a;
       }
-      .doc-cover-bottle {
-        width: min(300px, 60%);
-        height: auto;
+      /* La imagen fuente trae "ScentualBliss / Perfumería de lujo"
+         impreso en la parte baja — la recortamos para no repetir el
+         nombre de la marca (ya está arriba, en grande). */
+      .doc-cover-bottlewrap {
+        width: min(260px, 55%);
+        height: min(260px, 41vh);
+        overflow: hidden;
         margin-bottom: 2.2rem;
+      }
+      .doc-cover-bottle {
+        width: 100%;
+        height: auto;
+        display: block;
+        transform: scale(1.55) translateY(-6%);
+        transform-origin: top center;
       }
       .doc-cover-meta {
         margin: 0 0 0.3rem;
@@ -725,10 +742,11 @@ function CatalogStyles() {
         .doc-pagehead { padding: 6mm 8mm 3mm; }
         .doc tbody td { padding: 4mm 8mm 6mm; }
 
-        /* min-height = A4 útil menos el encabezado de marca (thead) que
-           se repite arriba, así el bloque centra en el medio real de la
-           hoja en vez de en el medio del contenido restante. */
-        .doc-cover { break-after: page; min-height: 275mm; padding: 0; }
+        /* height (no min-height): fuerza el alto exacto de la portada a
+           una hoja A4 completa (menos el encabezado que se repite
+           arriba) para que el margin:auto del contenido centre en el
+           medio real de la hoja física. */
+        .doc-cover { break-after: page; height: 275mm; min-height: 0; padding: 0; }
 
         .doc-brandgroup { break-before: auto; }
         .doc-brand-heading { break-after: avoid; }
