@@ -523,8 +523,14 @@ function TrustBar() {
 // ============================================================
 // FAMILIES
 // ============================================================
+// Solo las 6 familias clásicas se muestran en esta vitrina del home — el
+// resto de familias (agregadas para cubrir el inventario real) siguen
+// disponibles como filtro en /tienda, solo no tienen su propio panel aquí.
+const HOME_FAMILY_IDS = ['floral', 'frutal', 'fresco', 'citrico', 'dulce', 'amaderado'];
+const homeFamilies = collections.filter((c) => HOME_FAMILY_IDS.includes(c.id));
+
 function Families() {
-  const [active, setActive] = useState(collections[4]?.id || 'dulce');
+  const [active, setActive] = useState(homeFamilies[4]?.id || 'dulce');
   return (
     <section className="section section-alt">
       <div className="container">
@@ -535,7 +541,7 @@ function Families() {
         </div>
         <Reveal>
           <div className="families">
-            {collections.map((f, i) => (
+            {homeFamilies.map((f, i) => (
               <Link
                 key={f.id}
                 href={`/tienda?cat=${f.id}`}
