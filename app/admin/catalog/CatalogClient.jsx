@@ -520,11 +520,6 @@ function CatalogStyles() {
         flex-direction: column;
         align-items: center;
         text-align: center;
-        /* Márgenes auto arriba/abajo: técnica de centrado vertical más
-           confiable que align-items dentro de un <td> con salto de
-           página forzado (align-items se ignoraba ahí en Chromium). */
-        margin-top: auto;
-        margin-bottom: auto;
       }
       .doc-cover-logo {
         width: min(430px, 78%);
@@ -742,11 +737,18 @@ function CatalogStyles() {
         .doc-pagehead { padding: 6mm 8mm 3mm; }
         .doc tbody td { padding: 4mm 8mm 6mm; }
 
-        /* height (no min-height): fuerza el alto exacto de la portada a
-           una hoja A4 completa (menos el encabezado que se repite
-           arriba) para que el margin:auto del contenido centre en el
-           medio real de la hoja física. */
-        .doc-cover { break-after: page; height: 275mm; min-height: 0; padding: 0; }
+        /* El centrado con flex/align-items no se respeta de forma fiable
+           dentro de un <td> con salto de página forzado en la impresión
+           de Chromium (probado: min-height y height + margin:auto
+           fallan). Se usa padding calculado a mano para que el bloque
+           de contenido (~185mm de alto) quede centrado en la hoja A4
+           útil (~277mm bajo el encabezado repetido). */
+        .doc-cover {
+          display: block;
+          break-after: page;
+          min-height: 0;
+          padding: 46mm 0 0;
+        }
 
         .doc-brandgroup { break-before: auto; }
         .doc-brand-heading { break-after: avoid; }
