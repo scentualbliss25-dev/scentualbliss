@@ -646,6 +646,9 @@ function CatalogStyles() {
 
         /* Ocultar el shell del admin y la toolbar */
         html, body { background: #fff !important; }
+        /* La textura de ruido del sitio (overlay fijo) se repite en cada
+           página impresa y ensucia el blanco del PDF con un velo beige. */
+        body::after { display: none !important; }
         .no-print { display: none !important; }
         .admin-sidebar { display: none !important; }
         .admin-shell { display: block !important; background: #fff !important; }
