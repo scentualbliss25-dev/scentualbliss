@@ -645,6 +645,7 @@ function CatalogStyles() {
         }
 
         /* Ocultar el shell del admin y la toolbar */
+        html, body { background: #fff !important; }
         .no-print { display: none !important; }
         .admin-sidebar { display: none !important; }
         .admin-shell { display: block !important; background: #fff !important; }
@@ -661,6 +662,9 @@ function CatalogStyles() {
 
         .doc-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 4mm !important; }
         .doc-card { break-inside: avoid; page-break-inside: avoid; }
+        /* Imagen más compacta en papel → caben 3 filas (9 perfumes) por página */
+        .doc-card-imgwrap { aspect-ratio: auto; height: 38mm; }
+        .doc-card-imgwrap img { max-height: 34mm; }
       }
     `}</style>
   );
