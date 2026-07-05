@@ -196,63 +196,39 @@ export default function CatalogClient({ products = [], loadError = null }) {
             <td>
               {/* Portada */}
               <section className="doc-cover">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/img/logo-transparent.svg" alt="ScentualBliss" className="doc-cover-logo" />
-                <div className="doc-cover-rule" aria-hidden />
-                <h2 className="doc-cover-title">Catálogo de Perfumes</h2>
-                <p className="doc-cover-tag">Fragancias de diseñador, nicho y árabes</p>
-                {filtered.length > 0 && (
-                  <div className="doc-cover-bottles">
-                    {filtered.slice(0, 3).map((p) => (
-                      <div key={p.id} className="doc-cover-bottle">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={p.thumb} alt="" loading="eager" />
-                      </div>
-                    ))}
-                  </div>
-                )}
-                <p className="doc-cover-meta">
-                  {filterSummary.length ? filterSummary.join('  ·  ') : 'Colección completa'}
-                </p>
-                <p className="doc-cover-meta doc-cover-meta--soft">
-                  {filtered.length} fragancia{filtered.length !== 1 ? 's' : ''} · {today}
-                </p>
-                <p className="doc-cover-web">scentualbliss.com.co</p>
+                <div className="doc-cover-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/img/logo-transparent.svg" alt="ScentualBliss" className="doc-cover-logo" />
+                  <div className="doc-cover-rule" aria-hidden />
+                  <h2 className="doc-cover-title">Catálogo de Perfumes</h2>
+                  <p className="doc-cover-tag">Perfumería original</p>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/img/placeholder-perfume.png" alt="" className="doc-cover-bottle" />
+                  <p className="doc-cover-meta">
+                    {filterSummary.length ? filterSummary.join('  ·  ') : 'Colección completa'}
+                  </p>
+                  <p className="doc-cover-meta doc-cover-meta--soft">
+                    {filtered.length} fragancia{filtered.length !== 1 ? 's' : ''} · {today}
+                  </p>
+                  <p className="doc-cover-web">scentualbliss.com.co</p>
+                </div>
               </section>
 
-              {/* Grid de productos */}
-              <div className="doc-grid">
-                {filtered.map((p) => (
-                  <article key={p.id} className="doc-card">
-                    <div className="doc-card-imgwrap">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={p.thumb} alt={`${p.brand} ${p.name}`} loading="eager" />
+              {/* Grid de productos, agrupado por marca cuando el orden es por marca */}
+              {sort === 'brand' ? (
+                groupByBrand(filtered).map(([brand, items]) => (
+                  <div key={brand} className="doc-brandgroup">
+                    <h3 className="doc-brand-heading">{brand}</h3>
+                    <div className="doc-grid">
+                      {items.map((p) => <ProductCard key={p.id} p={p} />)}
                     </div>
-                    <div className="doc-card-body">
-                      <p className="doc-card-brand">{p.brand || '—'}</p>
-                      <h3 className="doc-card-name">{p.name}</h3>
-                      <div className="doc-card-meta">
-                        {p.conc && <span className="doc-chip doc-chip--gold">{p.conc}</span>}
-                        {p.productType && <span className="doc-chip">{productTypeLabels[p.productType] || p.productType}</span>}
-                        {p.gender && <span className="doc-chip">{p.gender}</span>}
-                      </div>
-                      {p.displaySizes.length > 0 ? (
-                        <ul className="doc-card-prices">
-                          {p.displaySizes.map((s, i) => (
-                            <li key={i}>
-                              <span className="doc-price-ml">{s.ml || 'Precio'}</span>
-                              <span className="doc-price-dots" aria-hidden />
-                              <strong className="doc-price-val">{formatCOP(s.price)}</strong>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p className="doc-card-consult">Consultar precio</p>
-                      )}
-                    </div>
-                  </article>
-                ))}
-              </div>
+                  </div>
+                ))
+              ) : (
+                <div className="doc-grid">
+                  {filtered.map((p) => <ProductCard key={p.id} p={p} />)}
+                </div>
+              )}
 
               {filtered.length === 0 && (
                 <p className="doc-empty no-print">
@@ -266,6 +242,52 @@ export default function CatalogClient({ products = [], loadError = null }) {
 
       <CatalogStyles />
     </div>
+  );
+}
+
+// Agrupa una lista ya ordenada (por marca) en [[marca, items[]], ...]
+// preservando el orden — no reordena, solo detecta cambios de marca.
+function groupByBrand(list) {
+  const groups = [];
+  for (const p of list) {
+    const key = p.brand || 'Otras marcas';
+    const last = groups[groups.length - 1];
+    if (last && last[0] === key) last[1].push(p);
+    else groups.push([key, [p]]);
+  }
+  return groups;
+}
+
+function ProductCard({ p }) {
+  return (
+    <article className="doc-card">
+      <div className="doc-card-imgwrap">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={p.thumb} alt={`${p.brand} ${p.name}`} loading="eager" />
+      </div>
+      <div className="doc-card-body">
+        <p className="doc-card-brand">{p.brand || '—'}</p>
+        <h3 className="doc-card-name">{p.name}</h3>
+        <div className="doc-card-meta">
+          {p.conc && <span className="doc-chip doc-chip--gold">{p.conc}</span>}
+          {p.productType && <span className="doc-chip">{productTypeLabels[p.productType] || p.productType}</span>}
+          {p.gender && <span className="doc-chip">{p.gender}</span>}
+        </div>
+        {p.displaySizes.length > 0 ? (
+          <ul className="doc-card-prices">
+            {p.displaySizes.map((s, i) => (
+              <li key={i}>
+                <span className="doc-price-ml">{s.ml || 'Precio'}</span>
+                <span className="doc-price-dots" aria-hidden />
+                <strong className="doc-price-val">{formatCOP(s.price)}</strong>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="doc-card-consult">Consultar precio</p>
+        )}
+      </div>
+    </article>
   );
 }
 
@@ -483,14 +505,20 @@ function CatalogStyles() {
 
       .doc tbody td { padding: 0 1.4rem 1.6rem; background: #0e0a07; }
 
-      /* Portada */
+      /* Portada — ocupa toda la página para centrar el contenido en
+         el medio real de la hoja, no solo horizontalmente. */
       .doc-cover {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: calc(100vh - 6rem);
+        padding: 1rem;
+      }
+      .doc-cover-center {
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
         text-align: center;
-        padding: 3rem 1rem 2.6rem;
       }
       .doc-cover-logo {
         width: min(430px, 78%);
@@ -512,33 +540,16 @@ function CatalogStyles() {
         font-family: inherit;
       }
       .doc-cover-tag {
-        margin: 0 0 1.9rem;
+        margin: 0 0 2.2rem;
         font-size: 0.8rem;
         letter-spacing: 0.3em;
         text-transform: uppercase;
         color: #c09a5a;
       }
-      .doc-cover-bottles {
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 2rem;
-      }
       .doc-cover-bottle {
-        width: 118px;
-        height: 118px;
-        background: #fff;
-        border: 1.5px solid #c09a5a;
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 10px;
-        box-shadow: 0 0 0 4px rgba(192, 154, 90, 0.12);
-      }
-      .doc-cover-bottle img {
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: contain;
+        width: min(300px, 60%);
+        height: auto;
+        margin-bottom: 2.2rem;
       }
       .doc-cover-meta {
         margin: 0 0 0.3rem;
@@ -553,6 +564,20 @@ function CatalogStyles() {
         letter-spacing: 0.22em;
         text-transform: uppercase;
         color: #c09a5a;
+      }
+
+      /* Agrupación por marca */
+      .doc-brandgroup { margin-bottom: 1.1rem; }
+      .doc-brand-heading {
+        margin: 0 0 0.6rem;
+        padding-bottom: 0.35rem;
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #e8cfa0;
+        border-bottom: 1.5px solid #c09a5a;
+        font-family: inherit;
       }
 
       /* Grid de cards */
@@ -700,8 +725,13 @@ function CatalogStyles() {
         .doc-pagehead { padding: 6mm 8mm 3mm; }
         .doc tbody td { padding: 4mm 8mm 6mm; }
 
-        .doc-cover { break-after: page; padding-top: 30mm; }
+        /* min-height = A4 útil menos el encabezado de marca (thead) que
+           se repite arriba, así el bloque centra en el medio real de la
+           hoja en vez de en el medio del contenido restante. */
+        .doc-cover { break-after: page; min-height: 275mm; padding: 0; }
 
+        .doc-brandgroup { break-before: auto; }
+        .doc-brand-heading { break-after: avoid; }
         .doc-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 4mm !important; }
         .doc-card { break-inside: avoid; page-break-inside: avoid; }
         /* Imagen más compacta en papel → caben 3 filas (9 perfumes) por página */
