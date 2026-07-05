@@ -202,10 +202,7 @@ export default function CatalogClient({ products = [], loadError = null }) {
                   <div className="doc-cover-rule" aria-hidden />
                   <h2 className="doc-cover-title">Catálogo de Perfumes</h2>
                   <p className="doc-cover-tag">Perfumería original</p>
-                  <div className="doc-cover-bottlewrap" aria-hidden>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/img/placeholder-perfume.png" alt="" className="doc-cover-bottle" />
-                  </div>
+                  <PerfumeSilhouettes />
                   <p className="doc-cover-meta">
                     {filterSummary.length ? filterSummary.join('  ·  ') : 'Colección completa'}
                   </p>
@@ -290,6 +287,60 @@ function ProductCard({ p }) {
         )}
       </div>
     </article>
+  );
+}
+
+// Siluetas genéricas de varios perfumes (sin marca), solo delineado
+// dorado — decoración de portada. Dibujadas a mano en línea, no fotos
+// de productos reales.
+function PerfumeSilhouettes() {
+  return (
+    <svg viewBox="0 0 360 150" className="doc-cover-silhouettes" aria-hidden fill="none">
+      <defs>
+        <linearGradient id="silGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#e8cfa0" />
+          <stop offset="50%" stopColor="#c9a96e" />
+          <stop offset="100%" stopColor="#a07840" />
+        </linearGradient>
+      </defs>
+
+      {/* Frasco 1: clásico, tapa cuadrada */}
+      <g stroke="url(#silGrad)" strokeWidth="1.6" strokeLinejoin="round">
+        <rect x="18" y="42" width="16" height="8" rx="1.5" />
+        <rect x="10" y="50" width="32" height="58" rx="6" />
+        <line x1="16" y1="66" x2="36" y2="66" />
+      </g>
+
+      {/* Frasco 2: atomizador alto */}
+      <g stroke="url(#silGrad)" strokeWidth="1.6" strokeLinejoin="round">
+        <circle cx="98" cy="26" r="6" />
+        <rect x="93" y="34" width="10" height="7" />
+        <path d="M84 41 h28 l-4 12 h-20 z" />
+        <rect x="80" y="53" width="36" height="55" rx="8" />
+      </g>
+
+      {/* Frasco 3: redondo, perfume de mujer */}
+      <g stroke="url(#silGrad)" strokeWidth="1.6" strokeLinejoin="round">
+        <rect x="168" y="38" width="14" height="10" rx="2" />
+        <path d="M154 108 v-38 a21 21 0 0 1 42 0 v38 z" />
+      </g>
+
+      {/* Frasco 4: facetado / nicho */}
+      <g stroke="url(#silGrad)" strokeWidth="1.6" strokeLinejoin="round">
+        <path d="M236 40 h20 l4 8 h-28 z" />
+        <path d="M232 48 h28 v52 l-14 8 l-14 -8 z" />
+        <line x1="232" y1="70" x2="260" y2="70" />
+      </g>
+
+      {/* Frasco 5: cuadrado ancho, tapa redonda grande */}
+      <g stroke="url(#silGrad)" strokeWidth="1.6" strokeLinejoin="round">
+        <circle cx="322" cy="34" r="9" />
+        <rect x="316" y="43" width="12" height="6" />
+        <rect x="300" y="49" width="44" height="59" rx="5" />
+        <line x1="306" y1="64" x2="338" y2="64" />
+        <line x1="306" y1="90" x2="338" y2="90" />
+      </g>
+    </svg>
   );
 }
 
@@ -522,46 +573,35 @@ function CatalogStyles() {
         text-align: center;
       }
       .doc-cover-logo {
-        width: min(430px, 78%);
+        width: min(540px, 92%);
         height: auto;
         margin-bottom: 0.6rem;
       }
       .doc-cover-rule {
-        width: 110px;
+        width: 130px;
         height: 2px;
-        margin: 1.5rem 0;
+        margin: 1.7rem 0;
         background: linear-gradient(90deg, transparent, #c09a5a, transparent);
       }
       .doc-cover-title {
         margin: 0 0 0.5rem;
-        font-size: 2.05rem;
+        font-size: 2.3rem;
         font-weight: 400;
         letter-spacing: 0.08em;
         color: #f3ead7;
         font-family: inherit;
       }
       .doc-cover-tag {
-        margin: 0 0 2.2rem;
-        font-size: 0.8rem;
-        letter-spacing: 0.3em;
+        margin: 0 0 2.4rem;
+        font-size: 0.85rem;
+        letter-spacing: 0.32em;
         text-transform: uppercase;
         color: #c09a5a;
       }
-      /* La imagen fuente trae "ScentualBliss / Perfumería de lujo"
-         impreso en la parte baja — la recortamos para no repetir el
-         nombre de la marca (ya está arriba, en grande). */
-      .doc-cover-bottlewrap {
-        width: min(260px, 55%);
-        height: min(260px, 41vh);
-        overflow: hidden;
-        margin-bottom: 2.2rem;
-      }
-      .doc-cover-bottle {
-        width: 100%;
+      .doc-cover-silhouettes {
+        width: min(420px, 82%);
         height: auto;
-        display: block;
-        transform: scale(1.55) translateY(-6%);
-        transform-origin: top center;
+        margin-bottom: 2.4rem;
       }
       .doc-cover-meta {
         margin: 0 0 0.3rem;
