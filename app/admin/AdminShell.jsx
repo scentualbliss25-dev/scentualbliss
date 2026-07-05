@@ -24,6 +24,7 @@ const NAV_SECTIONS = [
     label: 'Catálogo',
     items: [
       { label: 'Productos', href: '/admin/products', icon: BoxIcon },
+      { label: 'Catálogo PDF', href: '/admin/catalog', icon: FileDownIcon },
     ],
   },
   {
@@ -405,6 +406,16 @@ function BagIcon(p) {
     <svg {...iconProps} {...p}>
       <path d="M6 7h12l-1 13H7L6 7z" />
       <path d="M9 7V5a3 3 0 016 0v2" />
+    </svg>
+  );
+}
+function FileDownIcon(p) {
+  return (
+    <svg {...iconProps} {...p}>
+      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+      <path d="M14 2v6h6" />
+      <path d="M12 12v6" />
+      <path d="M9 15l3 3 3-3" />
     </svg>
   );
 }
