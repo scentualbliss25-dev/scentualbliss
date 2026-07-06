@@ -10,9 +10,11 @@ import {
 import { PageTransition } from '@/components/ui/ScrollAnimations';
 import { useCartStore, useCartTotal } from '@/lib/store/cartStore';
 import { formatCOP } from '@/lib/format';
+// Umbral de envío, costo y cupones: compartidos con la validación
+// server-side de /api/wompi/checkout — NO redefinirlos acá inline, o los
+// dos lados se desincronizan y el servidor rechaza compras legítimas.
+import { FREE_SHIPPING_THRESHOLD, SHIPPING_COST, COUPONS } from '@/lib/checkout-rules';
 
-const FREE_SHIPPING_THRESHOLD = 350000; // COP
-const SHIPPING_COST = 15000; // COP
 const PHONE_WHATSAPP = '573169376436';
 
 const steps = ['Información', 'Pago'];
@@ -46,6 +48,7 @@ export default function CheckoutPageClient() {
   const [loading, setLoading] = useState(false);
   const [coupon, setCoupon] = useState('');
   const [couponApplied, setCouponApplied] = useState(false);
+  const [couponRate, setCouponRate] = useState(0);
   const [couponError, setCouponError] = useState('');
 
   // Reserva timer
@@ -83,7 +86,7 @@ export default function CheckoutPageClient() {
     return () => { clearTimeout(t1); clearInterval(t2); };
   }, [items.length]);
 
-  const discount = couponApplied ? total * 0.15 : 0;
+  const discount = couponApplied ? total * couponRate : 0;
   const subtotalAfterDiscount = total - discount;
   const shipping = subtotalAfterDiscount >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
   const grand = subtotalAfterDiscount + shipping;
@@ -94,8 +97,10 @@ export default function CheckoutPageClient() {
   const ss = (secondsLeft % 60).toString().padStart(2, '0');
 
   const handleCoupon = () => {
-    if (coupon.trim().toUpperCase() === 'BLISS15') {
+    const rate = COUPONS[coupon.trim().toUpperCase()];
+    if (rate != null) {
       setCouponApplied(true);
+      setCouponRate(rate);
       setCouponError('');
     } else {
       setCouponError('Código no válido o expirado');

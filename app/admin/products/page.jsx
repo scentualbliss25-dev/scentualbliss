@@ -35,8 +35,14 @@ async function fetchProducts({ page, q, type, brand }) {
     `, { count: 'exact' });
 
   if (q) {
-    // ilike sobre name OR brand OR slug
-    query = query.or(`name.ilike.%${q}%,brand.ilike.%${q}%,slug.ilike.%${q}%`);
+    // ilike sobre name OR brand OR slug.
+    // Los caracteres , ( ) " tienen significado en la sintaxis de filtros
+    // de PostgREST — interpolarlos sin limpiar permitiría inyectar filtros
+    // arbitrarios en el query. Se reemplazan por espacio.
+    const safeQ = q.replace(/[,()"\\]/g, ' ').trim().slice(0, 80);
+    if (safeQ) {
+      query = query.or(`name.ilike.%${safeQ}%,brand.ilike.%${safeQ}%,slug.ilike.%${safeQ}%`);
+    }
   }
   if (type) query = query.eq('product_type', type);
   if (brand) query = query.eq('brand', brand);

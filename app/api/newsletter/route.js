@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { rateLimit, clientIp } from '@/lib/rate-limit';
+
+const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
 
 // POST /api/newsletter  { email }
 export async function POST(req) {
@@ -7,14 +10,18 @@ export async function POST(req) {
     return NextResponse.json({ error: 'Servicio no configurado' }, { status: 503 });
   }
 
+  // Anti-spam: sin esto cualquiera puede llenar la tabla con basura.
+  if (!rateLimit(`newsletter:${clientIp(req)}`, { max: 5, windowMs: 60_000 })) {
+    return NextResponse.json({ error: 'Demasiados intentos. Espera un minuto.' }, { status: 429 });
+  }
+
   try {
     const { email } = await req.json();
 
-    if (!email || !email.includes('@')) {
+    const normalized = String(email || '').trim().toLowerCase();
+    if (!normalized || normalized.length > 254 || !EMAIL_RE.test(normalized)) {
       return NextResponse.json({ error: 'Email inválido' }, { status: 400 });
     }
-
-    const normalized = email.trim().toLowerCase();
 
     const { error } = await supabaseAdmin
       .from('newsletter_subs')

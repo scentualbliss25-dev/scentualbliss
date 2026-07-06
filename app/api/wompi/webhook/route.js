@@ -29,6 +29,37 @@ export async function POST(req) {
       return NextResponse.json({ ok: true, persisted: false });
     }
 
+    // Buscar la orden ANTES de actualizar: necesitamos su total para
+    // verificar que lo que se pagó en Wompi coincide con lo que se debía.
+    const { data: existing, error: findErr } = await supabaseAdmin
+      .from('orders')
+      .select('id, status, total')
+      .eq('reference', tx.reference)
+      .single();
+
+    if (findErr || !existing) {
+      console.warn(`[Wompi webhook] No se encontró orden con reference=${tx.reference}`, findErr?.message);
+      return NextResponse.json({ ok: true, found: false });
+    }
+
+    // ─── Verificación de monto ───────────────────────────────────────
+    // Segunda línea de defensa contra manipulación de precios: aunque el
+    // checkout ya valida contra la DB, si por cualquier vía llegara a
+    // existir una orden cuyo pago aprobado NO coincide con su total, se
+    // marca 'error' (visible en el admin) en vez de 'approved', y no se
+    // notifica ni descuenta inventario.
+    const expectedCents = Math.round(Number(existing.total) * 100);
+    if (status === 'approved' && Number(tx.amount_in_cents) !== expectedCents) {
+      console.error(
+        `[Wompi webhook] MONTO NO COINCIDE en ${tx.reference}: pagado=${tx.amount_in_cents} esperado=${expectedCents} — orden marcada como error`
+      );
+      await supabaseAdmin
+        .from('orders')
+        .update({ status: 'error', wompi_tx_id: tx.id, updated_at: new Date().toISOString() })
+        .eq('id', existing.id);
+      return NextResponse.json({ ok: true, orderId: existing.id, flagged: 'amount_mismatch' });
+    }
+
     // Actualizar orden
     const { data: updated, error: updateErr } = await supabaseAdmin
       .from('orders')
@@ -37,12 +68,12 @@ export async function POST(req) {
         wompi_tx_id: tx.id,
         updated_at: new Date().toISOString(),
       })
-      .eq('reference', tx.reference)
+      .eq('id', existing.id)
       .select('id, status')
       .single();
 
     if (updateErr || !updated) {
-      console.warn(`[Wompi webhook] No se encontró orden con reference=${tx.reference}`, updateErr?.message);
+      console.warn(`[Wompi webhook] No se pudo actualizar orden ${tx.reference}`, updateErr?.message);
       return NextResponse.json({ ok: true, found: false });
     }
 

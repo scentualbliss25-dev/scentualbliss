@@ -19,6 +19,26 @@ const nextConfig = {
       bodySizeLimit: '5mb',
     },
   },
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          // Fuerza HTTPS por 2 años (el sitio ya vive solo en HTTPS vía Vercel)
+          { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains' },
+          // El browser no debe "adivinar" content-types (bloquea MIME sniffing)
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          // Nadie puede embeber el sitio en un iframe externo (clickjacking,
+          // especialmente relevante para el panel /admin)
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          // No filtrar la URL completa como referrer a otros sitios
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          // APIs del browser que este sitio no usa — negadas explícitamente
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+        ],
+      },
+    ];
+  },
 };
 
 // En DEV no envolvemos con Sentry: el plugin de webpack genera vendor

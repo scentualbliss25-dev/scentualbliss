@@ -1,5 +1,15 @@
+import crypto from 'node:crypto';
 import { NextResponse } from 'next/server';
 import { signSession, ADMIN_COOKIE_NAME, ADMIN_SESSION_MAX_AGE_SEC } from '@/lib/admin-auth';
+
+// Comparación constant-time real: hasheamos ambos lados a longitud fija y
+// comparamos con timingSafeEqual — ni la longitud ni el contenido del
+// password filtran información por timing.
+function passwordsMatch(provided, expected) {
+  const a = crypto.createHash('sha256').update(String(provided)).digest();
+  const b = crypto.createHash('sha256').update(String(expected)).digest();
+  return crypto.timingSafeEqual(a, b);
+}
 
 // Pequeño rate-limit en memoria para frenar fuerza bruta básica.
 // (Por IP. Se resetea cuando la función serverless se recicla, lo cual está
@@ -55,10 +65,7 @@ export async function POST(req) {
     return NextResponse.json({ error: 'Contraseña requerida' }, { status: 400 });
   }
 
-  // Comparación constant-time básica (las longitudes pueden diferir, pero
-  // ya sabemos que `expected` no es secreto público — su longitud no filtra
-  // info útil. Lo importante es no early-return en mid-string).
-  if (password.length !== expected.length || password !== expected) {
+  if (!passwordsMatch(password, expected)) {
     return NextResponse.json({ error: 'Contraseña incorrecta' }, { status: 401 });
   }
 

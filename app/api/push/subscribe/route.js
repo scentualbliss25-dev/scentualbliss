@@ -1,12 +1,37 @@
 // API: gestiona suscripciones a notificaciones push del admin
 // POST: agregar suscripción nueva (idempotente por endpoint)
 // DELETE: eliminar suscripción por endpoint
+//
+// SOLO ADMIN: estas suscripciones reciben las notificaciones de nuevas
+// órdenes (nombre del cliente, total, referencia). El middleware no cubre
+// /api/push/*, así que la sesión se verifica aquí mismo — sin esto,
+// cualquier visitante podría suscribir su navegador y recibir los datos
+// de cada venta.
 
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { verifySession, ADMIN_COOKIE_NAME } from '@/lib/admin-auth';
+
+function getCookie(req, name) {
+  const fromNext = req.cookies?.get?.(name)?.value;
+  if (fromNext) return fromNext;
+  const header = req.headers.get('cookie') || '';
+  const m = header.match(new RegExp(`(?:^|;\\s*)${name}=([^;]+)`));
+  return m ? decodeURIComponent(m[1]) : null;
+}
+
+async function requireAdmin(req) {
+  const expected = process.env.ADMIN_PASSWORD;
+  if (!expected) return false;
+  const cookie = getCookie(req, ADMIN_COOKIE_NAME);
+  return verifySession(cookie, expected);
+}
 
 export async function POST(req) {
   try {
+    if (!(await requireAdmin(req))) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+    }
     if (!supabaseAdmin) {
       return NextResponse.json({ error: 'DB no configurada' }, { status: 503 });
     }
@@ -39,6 +64,9 @@ export async function POST(req) {
 
 export async function DELETE(req) {
   try {
+    if (!(await requireAdmin(req))) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+    }
     if (!supabaseAdmin) {
       return NextResponse.json({ error: 'DB no configurada' }, { status: 503 });
     }
