@@ -54,24 +54,6 @@ export default async function PublicCatalogPage({ searchParams }) {
           margin: 0 auto;
           padding: 1.5rem 1.25rem 3rem;
         }
-        .pubcat-bar {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          flex-wrap: wrap;
-          gap: 1rem;
-          margin-bottom: 1.25rem;
-          padding: 0.9rem 1.1rem;
-          background: #fff;
-          border: 1px solid rgba(28, 22, 17, 0.08);
-          border-radius: 12px;
-          font-family: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
-        }
-        .pubcat-bar p {
-          margin: 0;
-          font-size: 0.85rem;
-          color: rgba(28, 22, 17, 0.6);
-        }
         @media print {
           .no-print { display: none !important; }
           /* Oculta el navbar/footer del sitio — el PDF solo debe llevar

@@ -16,6 +16,11 @@ function norm(s) {
  * marca, sin recargar la página). Filtra sobre la lista que YA vino
  * filtrada por el servidor (los query params del enlace compartido) —
  * la búsqueda solo acota más, no reemplaza esos filtros.
+ *
+ * La barra queda `position: fixed` (no sticky): el navbar del sitio
+ * declara sticky pero un overflow-x:hidden preexistente en <body> lo
+ * rompe en la práctica, así que no podemos apoyarnos en "quedar debajo
+ * de un sticky que funciona". Fixed + spacer propio es más confiable.
  */
 export default function CatalogSearchClient({ products, filterSummary, todayLabel, sort, loadError }) {
   const [query, setQuery] = useState('');
@@ -28,32 +33,33 @@ export default function CatalogSearchClient({ products, filterSummary, todayLabe
 
   return (
     <>
+      {/* Reserva el espacio de la barra fija para que el contenido de
+          abajo no arranque tapado por ella. */}
+      <div className="pubcat-bar-spacer no-print" aria-hidden />
+
       <div className="pubcat-bar no-print">
-        <p>Catálogo compartido de ScentualBliss{loadError ? ` · Error: ${loadError}` : ''}</p>
+        <div className="pubcat-search">
+          <SearchIcon />
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Busca por nombre o marca…"
+            aria-label="Buscar perfume por nombre o marca"
+          />
+          {query && (
+            <button type="button" className="pubcat-search-clear" onClick={() => setQuery('')} aria-label="Limpiar búsqueda">
+              ×
+            </button>
+          )}
+          <span className="pubcat-search-count">
+            {filtered.length} {filtered.length === 1 ? 'resultado' : 'resultados'}
+          </span>
+        </div>
         <DownloadButton count={filtered.length} />
       </div>
 
-      {/* Reserva el espacio que ocupa la barra fija, para que el contenido
-          de abajo no arranque tapado por ella. */}
-      <div className="pubcat-search-spacer no-print" aria-hidden />
-      <div className="pubcat-search no-print">
-        <SearchIcon />
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Busca por nombre o marca… (ej. Sauvage, Lattafa)"
-          aria-label="Buscar perfume por nombre o marca"
-        />
-        {query && (
-          <button type="button" className="pubcat-search-clear" onClick={() => setQuery('')} aria-label="Limpiar búsqueda">
-            ×
-          </button>
-        )}
-        <span className="pubcat-search-count">
-          {filtered.length} {filtered.length === 1 ? 'resultado' : 'resultados'}
-        </span>
-      </div>
+      {loadError && <p className="pubcat-error no-print">Error: {loadError}</p>}
 
       {query && filtered.length === 0 ? (
         <p className="pubcat-empty no-print">
@@ -64,32 +70,42 @@ export default function CatalogSearchClient({ products, filterSummary, todayLabe
       )}
 
       <style jsx>{`
-        /* El navbar del sitio declara position:sticky pero un overflow-x:
-           hidden en <body> (preexistente, no lo agregué yo) lo rompe en la
-           práctica — no se queda pegado. Para que este buscador SÍ esté
-           siempre visible sin depender de eso, usa position:fixed con su
-           propio espacio reservado (spacer) en vez de sticky. */
-        .pubcat-search {
+        /* Altura total reservada por la barra fija (para el spacer). */
+        .pubcat-bar-spacer { height: calc(64px + var(--nav-h, 72px) + var(--announce-h, 40px) + 1.5rem); }
+
+        .pubcat-bar {
           position: fixed;
-          top: 0.85rem;
+          /* En scroll=0 el navbar + la barra de anuncios todavía están ahí
+             (en flujo normal, no sticky) con z-index más alto — si la
+             barra quedara más arriba que eso quedaría tapada. Se ubica
+             debajo de ambos usando las mismas variables que definen sus
+             alturas en globals.css. */
+          top: calc(var(--nav-h, 72px) + var(--announce-h, 40px) + 0.6rem);
           left: 50%;
           transform: translateX(-50%);
           width: calc(100% - 2.5rem);
           max-width: calc(1280px - 2.5rem);
-          height: 52px;
           box-sizing: border-box;
           z-index: 40;
           display: flex;
           align-items: center;
-          gap: 0.65rem;
-          padding: 0 1rem;
+          flex-wrap: wrap;
+          gap: 0.6rem;
+          padding: 0.6rem;
           background: #fff;
           border: 1px solid rgba(192, 154, 90, 0.35);
           border-radius: 12px;
           box-shadow: 0 12px 30px -16px rgba(28, 22, 17, 0.35);
           font-family: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
         }
-        .pubcat-search-spacer { height: calc(52px + 1.25rem); }
+        .pubcat-search {
+          flex: 1 1 260px;
+          display: flex;
+          align-items: center;
+          gap: 0.55rem;
+          min-width: 0;
+          padding: 0 0.5rem;
+        }
         .pubcat-search :global(svg) {
           flex-shrink: 0;
           color: #8a6936;
@@ -99,7 +115,7 @@ export default function CatalogSearchClient({ products, filterSummary, todayLabe
           min-width: 0;
           border: none;
           outline: none;
-          font-size: 0.92rem;
+          font-size: 0.9rem;
           font-family: inherit;
           color: #1c1611;
           background: transparent;
@@ -110,8 +126,8 @@ export default function CatalogSearchClient({ products, filterSummary, todayLabe
         .pubcat-search input::-webkit-search-cancel-button { display: none; }
         .pubcat-search-clear {
           flex-shrink: 0;
-          width: 22px;
-          height: 22px;
+          width: 20px;
+          height: 20px;
           display: inline-flex;
           align-items: center;
           justify-content: center;
@@ -119,19 +135,28 @@ export default function CatalogSearchClient({ products, filterSummary, todayLabe
           border-radius: 50%;
           background: rgba(28, 22, 17, 0.08);
           color: #1c1611;
-          font-size: 1rem;
+          font-size: 0.95rem;
           line-height: 1;
           cursor: pointer;
         }
         .pubcat-search-clear:hover { background: rgba(28, 22, 17, 0.15); }
         .pubcat-search-count {
           flex-shrink: 0;
-          font-size: 0.74rem;
+          font-size: 0.72rem;
           letter-spacing: 0.04em;
           color: rgba(28, 22, 17, 0.45);
           white-space: nowrap;
           border-left: 1px solid rgba(28, 22, 17, 0.1);
-          padding-left: 0.65rem;
+          padding-left: 0.6rem;
+        }
+        .pubcat-error {
+          margin: 0 0 1rem;
+          padding: 0.7rem 1rem;
+          background: rgba(170, 50, 50, 0.08);
+          border: 1px solid rgba(170, 50, 50, 0.25);
+          border-radius: 10px;
+          font-size: 0.82rem;
+          color: #7a2424;
         }
         .pubcat-empty {
           padding: 3rem 1rem;
@@ -142,10 +167,11 @@ export default function CatalogSearchClient({ products, filterSummary, todayLabe
           color: rgba(28, 22, 17, 0.55);
           font-size: 0.9rem;
         }
-        @media (max-width: 480px) {
-          .pubcat-search { width: calc(100% - 1.5rem); padding: 0 0.75rem; gap: 0.5rem; }
-          .pubcat-search input { font-size: 0.85rem; }
+        @media (max-width: 560px) {
+          .pubcat-bar { padding: 0.5rem; }
+          .pubcat-search { flex-basis: 100%; padding: 0 0.35rem; }
           .pubcat-search-count { display: none; }
+          .pubcat-bar :global(.pubcat-download) { flex: 1; }
         }
       `}</style>
     </>
