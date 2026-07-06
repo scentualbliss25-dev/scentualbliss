@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import CatalogDocument from '../admin/catalog/CatalogDocument';
 import DownloadButton from './DownloadButton';
 
@@ -17,15 +17,14 @@ function norm(s) {
  * filtrada por el servidor (los query params del enlace compartido) —
  * la búsqueda solo acota más, no reemplaza esos filtros.
  *
- * UX: NO es una barra fija arriba (tapaba contenido al scrollear). Es
- * una burbuja flotante (como la de WhatsApp, en la esquina opuesta)
- * que se abre/cierra bajo demanda — no ocupa espacio ni estorba
- * mientras no se usa.
+ * Decisión de diseño (tras iterar con barra fija y burbuja flotante,
+ * ninguna terminó de funcionar bien): buscador simple integrado en el
+ * flujo normal de la página, arriba de todo. Sin sticky ni fixed — es
+ * el patrón que cualquiera ya conoce de una tienda online, no compite
+ * con el navbar ni tapa contenido en ningún momento.
  */
 export default function CatalogSearchClient({ products, filterSummary, todayLabel, sort, loadError }) {
   const [query, setQuery] = useState('');
-  const [open, setOpen] = useState(false);
-  const inputRef = useRef(null);
 
   const filtered = useMemo(() => {
     const q = norm(query);
@@ -33,19 +32,32 @@ export default function CatalogSearchClient({ products, filterSummary, todayLabe
     return products.filter((p) => norm(p.name).includes(q) || norm(p.brand).includes(q));
   }, [products, query]);
 
-  useEffect(() => {
-    if (open) inputRef.current?.focus();
-  }, [open]);
-
-  function onClose() {
-    setOpen(false);
-  }
-
   return (
     <>
-      <div className="pubcat-bar no-print">
-        <p>Catálogo compartido de ScentualBliss{loadError ? ` · Error: ${loadError}` : ''}</p>
-        <DownloadButton count={filtered.length} />
+      <div className="pubcat-hero no-print">
+        <p className="pubcat-eyebrow">Catálogo compartido de ScentualBliss{loadError ? ` · Error: ${loadError}` : ''}</p>
+        <div className="pubcat-searchrow">
+          <div className="pubcat-search">
+            <SearchIcon />
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Busca tu fragancia por nombre o marca…"
+              aria-label="Buscar perfume por nombre o marca"
+            />
+            {query && (
+              <button type="button" className="pubcat-search-clear" onClick={() => setQuery('')} aria-label="Limpiar búsqueda">
+                ×
+              </button>
+            )}
+          </div>
+          <DownloadButton count={filtered.length} />
+        </div>
+        <p className="pubcat-count">
+          {filtered.length} {filtered.length === 1 ? 'fragancia' : 'fragancias'}
+          {query ? ` para "${query}"` : ' en el catálogo'}
+        </p>
       </div>
 
       {query && filtered.length === 0 ? (
@@ -56,61 +68,71 @@ export default function CatalogSearchClient({ products, filterSummary, todayLabe
         <CatalogDocument products={filtered} filterSummary={filterSummary} todayLabel={todayLabel} sort={sort} />
       )}
 
-      {/* ── Burbuja flotante de búsqueda (esquina opuesta al bubble de WhatsApp) ── */}
-      <div className="pubcat-fab-wrap no-print">
-        {open && (
-          <div className="pubcat-fab-panel">
-            <div className="pubcat-fab-row">
-              <SearchIcon />
-              <input
-                ref={inputRef}
-                type="search"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Busca por nombre o marca…"
-                aria-label="Buscar perfume por nombre o marca"
-                onKeyDown={(e) => { if (e.key === 'Escape') onClose(); }}
-              />
-            </div>
-            <div className="pubcat-fab-foot">
-              <span>{filtered.length} {filtered.length === 1 ? 'resultado' : 'resultados'}</span>
-              {query && (
-                <button type="button" onClick={() => setQuery('')}>Limpiar</button>
-              )}
-            </div>
-          </div>
-        )}
-
-        <button
-          type="button"
-          className={`pubcat-fab ${open ? 'is-open' : ''}`}
-          onClick={() => setOpen((v) => !v)}
-          aria-label={open ? 'Cerrar buscador' : 'Buscar en el catálogo'}
-          aria-expanded={open}
-        >
-          {open ? <CloseIcon /> : <SearchIcon />}
-          {!open && query && <span className="pubcat-fab-dot" aria-hidden />}
-        </button>
-      </div>
-
       <style jsx>{`
-        .pubcat-bar {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          flex-wrap: wrap;
-          gap: 1rem;
-          margin-bottom: 1.25rem;
-          padding: 0.9rem 1.1rem;
-          background: #fff;
-          border: 1px solid rgba(28, 22, 17, 0.08);
-          border-radius: 12px;
+        .pubcat-hero {
+          margin-bottom: 1.5rem;
+          padding: 1.4rem 1.5rem;
+          background: #14100c;
+          border: 1px solid rgba(192, 154, 90, 0.3);
+          border-radius: 16px;
           font-family: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
         }
-        .pubcat-bar p {
-          margin: 0;
-          font-size: 0.85rem;
-          color: rgba(28, 22, 17, 0.6);
+        .pubcat-eyebrow {
+          margin: 0 0 1rem;
+          font-size: 0.7rem;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: #c09a5a;
+        }
+        .pubcat-searchrow {
+          display: flex;
+          gap: 0.75rem;
+          align-items: stretch;
+        }
+        .pubcat-search {
+          flex: 1;
+          min-width: 0;
+          display: flex;
+          align-items: center;
+          gap: 0.65rem;
+          padding: 0 1rem;
+          background: #fff;
+          border-radius: 10px;
+        }
+        .pubcat-search :global(svg) { flex-shrink: 0; color: #8a6936; }
+        .pubcat-search input {
+          flex: 1;
+          min-width: 0;
+          border: none;
+          outline: none;
+          padding: 0.85rem 0;
+          font-size: 0.95rem;
+          font-family: inherit;
+          color: #1c1611;
+          background: transparent;
+        }
+        .pubcat-search input::placeholder { color: rgba(28, 22, 17, 0.4); }
+        .pubcat-search input::-webkit-search-cancel-button { display: none; }
+        .pubcat-search-clear {
+          flex-shrink: 0;
+          width: 22px;
+          height: 22px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border: none;
+          border-radius: 50%;
+          background: rgba(28, 22, 17, 0.08);
+          color: #1c1611;
+          font-size: 1rem;
+          line-height: 1;
+          cursor: pointer;
+        }
+        .pubcat-search-clear:hover { background: rgba(28, 22, 17, 0.15); }
+        .pubcat-count {
+          margin: 0.75rem 0 0;
+          font-size: 0.78rem;
+          color: rgba(243, 234, 215, 0.55);
         }
         .pubcat-empty {
           padding: 3rem 1rem;
@@ -121,105 +143,9 @@ export default function CatalogSearchClient({ products, filterSummary, todayLabe
           color: rgba(28, 22, 17, 0.55);
           font-size: 0.9rem;
         }
-
-        /* Burbuja — misma esquina/escala que el bubble de WhatsApp (que
-           vive en left:24px, bottom:24px, z-index:250), reflejada en la
-           derecha para no chocar con él. */
-        .pubcat-fab-wrap {
-          position: fixed;
-          right: 24px;
-          bottom: 24px;
-          z-index: 240;
-          display: flex;
-          flex-direction: column;
-          align-items: flex-end;
-          gap: 0.75rem;
-          font-family: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
-        }
-        .pubcat-fab {
-          width: 56px;
-          height: 56px;
-          border-radius: 50%;
-          border: none;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: linear-gradient(135deg, #c09a5a, #8a6936);
-          color: #1c1611;
-          cursor: pointer;
-          box-shadow: 0 10px 28px -8px rgba(28, 22, 17, 0.45);
-          transition: transform 0.18s, box-shadow 0.18s;
-          position: relative;
-        }
-        .pubcat-fab:hover { transform: scale(1.06); box-shadow: 0 14px 32px -8px rgba(28, 22, 17, 0.55); }
-        .pubcat-fab.is-open { background: #1c1611; color: #f3ead7; }
-        .pubcat-fab-dot {
-          position: absolute;
-          top: 4px;
-          right: 4px;
-          width: 10px;
-          height: 10px;
-          border-radius: 50%;
-          background: #aa3232;
-          border: 2px solid #fff;
-        }
-
-        .pubcat-fab-panel {
-          width: min(320px, calc(100vw - 48px));
-          background: #fff;
-          border: 1px solid rgba(192, 154, 90, 0.4);
-          border-radius: 14px;
-          box-shadow: 0 20px 45px -16px rgba(28, 22, 17, 0.4);
-          padding: 0.9rem;
-          animation: pubcat-fab-in 0.16s ease-out;
-        }
-        @keyframes pubcat-fab-in {
-          from { opacity: 0; transform: translateY(8px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        .pubcat-fab-row {
-          display: flex;
-          align-items: center;
-          gap: 0.6rem;
-          padding-bottom: 0.6rem;
-          border-bottom: 1px solid rgba(28, 22, 17, 0.08);
-        }
-        .pubcat-fab-row :global(svg) { flex-shrink: 0; color: #8a6936; }
-        .pubcat-fab-row input {
-          flex: 1;
-          min-width: 0;
-          border: none;
-          outline: none;
-          font-size: 0.92rem;
-          font-family: inherit;
-          color: #1c1611;
-          background: transparent;
-        }
-        .pubcat-fab-row input::placeholder { color: rgba(28, 22, 17, 0.4); }
-        .pubcat-fab-row input::-webkit-search-cancel-button { display: none; }
-        .pubcat-fab-foot {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding-top: 0.55rem;
-          font-size: 0.76rem;
-          color: rgba(28, 22, 17, 0.5);
-        }
-        .pubcat-fab-foot button {
-          border: none;
-          background: none;
-          color: #8a6936;
-          font-family: inherit;
-          font-size: 0.76rem;
-          font-weight: 600;
-          cursor: pointer;
-          padding: 0;
-        }
-        .pubcat-fab-foot button:hover { color: #5d4724; text-decoration: underline; }
-
-        @media (max-width: 480px) {
-          .pubcat-fab-wrap { right: 16px; bottom: 16px; }
-          .pubcat-fab { width: 50px; height: 50px; }
+        @media (max-width: 600px) {
+          .pubcat-hero { padding: 1.1rem; }
+          .pubcat-searchrow { flex-direction: column; }
         }
       `}</style>
     </>
@@ -228,20 +154,10 @@ export default function CatalogSearchClient({ products, filterSummary, todayLabe
 
 function SearchIcon() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
          strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
       <circle cx="11" cy="11" r="7" />
       <line x1="21" y1="21" x2="16.65" y2="16.65" />
-    </svg>
-  );
-}
-
-function CloseIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-         strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <line x1="18" y1="6" x2="6" y2="18" />
-      <line x1="6" y1="6" x2="18" y2="18" />
     </svg>
   );
 }
