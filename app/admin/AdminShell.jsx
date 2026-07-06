@@ -17,26 +17,26 @@ const NAV_SECTIONS = [
   {
     label: 'General',
     items: [
-      { label: 'Dashboard', href: '/admin', icon: HomeIcon, exact: true },
+      { label: 'Dashboard', href: '/admin', exact: true },
     ],
   },
   {
     label: 'Catálogo',
     items: [
-      { label: 'Productos', href: '/admin/products', icon: BoxIcon },
-      { label: 'Catálogo PDF', href: '/admin/catalog', icon: FileDownIcon },
+      { label: 'Productos', href: '/admin/products' },
+      { label: 'Catálogo PDF', href: '/admin/catalog' },
     ],
   },
   {
     label: 'Ventas',
     items: [
-      { label: 'Órdenes', href: '/admin/orders', icon: BagIcon },
+      { label: 'Órdenes', href: '/admin/orders' },
     ],
   },
   {
     label: 'Marketing',
     items: [
-      { label: 'Newsletter', href: '/admin/newsletter', icon: MailIcon, soon: true },
+      { label: 'Newsletter', href: '/admin/newsletter', soon: true },
     ],
   },
 ];
@@ -81,7 +81,8 @@ export default function AdminShell({ children }) {
         </button>
 
         <div className="admin-brand">
-          <BrandMark className="admin-brand-mark" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/img/logo-icon.svg" alt="ScentualBliss" className="admin-brand-mark" />
           {!collapsed && (
             <div className="admin-brand-text">
               <span className="admin-brand-name">ScentualBliss</span>
@@ -96,7 +97,6 @@ export default function AdminShell({ children }) {
               {!collapsed && <div className="admin-nav-section-label">{section.label}</div>}
               <ul className="admin-nav-list">
                 {section.items.map((item) => {
-                  const Icon = item.icon;
                   const active = isActive(item);
                   return (
                     <li key={item.href}>
@@ -107,8 +107,9 @@ export default function AdminShell({ children }) {
                         onClick={item.soon ? (e) => e.preventDefault() : undefined}
                         title={collapsed ? item.label : undefined}
                       >
-                        <Icon className="admin-nav-icon" />
-                        {!collapsed && (
+                        {collapsed ? (
+                          <span className="admin-nav-mono">{item.label[0]}</span>
+                        ) : (
                           <>
                             <span className="admin-nav-label">{item.label}</span>
                             {item.soon && <span className="admin-nav-soon">Próximo</span>}
@@ -131,8 +132,7 @@ export default function AdminShell({ children }) {
             disabled={loggingOut}
             title="Cerrar sesión"
           >
-            <LogoutIcon className="admin-nav-icon" />
-            {!collapsed && <span>{loggingOut ? 'Saliendo…' : 'Cerrar sesión'}</span>}
+            {collapsed ? '⏻' : (loggingOut ? 'Saliendo…' : 'Cerrar sesión')}
           </button>
         </div>
       </aside>
@@ -228,6 +228,8 @@ export default function AdminShell({ children }) {
         }
         .admin-brand-mark {
           flex-shrink: 0;
+          width: 32px;
+          height: auto;
           filter: drop-shadow(0 4px 10px rgba(192, 154, 90, 0.35));
         }
         .admin-brand-text {
@@ -283,30 +285,24 @@ export default function AdminShell({ children }) {
         .admin-nav-link {
           display: flex;
           align-items: center;
-          gap: 0.75rem;
-          padding: 0.6rem 0.85rem;
-          border-radius: 10px;
-          color: rgba(243, 234, 215, 0.75);
+          padding: 0.65rem 0.85rem;
+          border-radius: 9px;
+          color: rgba(243, 234, 215, 0.6);
           text-decoration: none;
-          font-size: 0.875rem;
+          font-size: 0.87rem;
+          font-weight: 400;
           letter-spacing: 0.02em;
           transition: background 0.18s, color 0.18s;
           position: relative;
         }
         .admin-nav-link:hover:not(.is-soon) {
-          background: rgba(192, 154, 90, 0.1);
+          background: rgba(192, 154, 90, 0.08);
           color: var(--ink);
-        }
-        .admin-nav-link:hover:not(.is-soon) .admin-nav-icon {
-          color: var(--gold);
         }
         .admin-nav-link.is-active {
-          background: linear-gradient(135deg, rgba(192, 154, 90, 0.22), rgba(192, 154, 90, 0.08));
-          color: var(--ink);
-          font-weight: 500;
-        }
-        .admin-nav-link.is-active .admin-nav-icon {
+          background: rgba(192, 154, 90, 0.1);
           color: var(--gold);
+          font-weight: 500;
         }
         .admin-nav-link.is-active::before {
           content: '';
@@ -314,25 +310,28 @@ export default function AdminShell({ children }) {
           left: -0.75rem;
           top: 50%;
           transform: translateY(-50%);
-          width: 3px;
+          width: 2px;
           height: 60%;
-          background: linear-gradient(180deg, #e8cfa0, #a07840);
+          background: var(--gold);
           border-radius: 0 2px 2px 0;
         }
         .admin-nav-link.is-soon {
           opacity: 0.4;
           cursor: not-allowed;
         }
-        .admin-nav-icon {
-          flex-shrink: 0;
-          color: rgba(243, 234, 215, 0.5);
-          transition: color 0.18s;
-        }
         .admin-nav-label {
           flex: 1;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
+        }
+        .admin-nav-mono {
+          display: block;
+          width: 100%;
+          text-align: center;
+          font-size: 0.8rem;
+          font-weight: 600;
+          letter-spacing: 0.02em;
         }
         .admin-nav-soon {
           font-size: 0.58rem;
@@ -421,82 +420,6 @@ const iconProps = {
   strokeLinejoin: 'round',
 };
 
-// Ícono oficial de la marca (mismo trazo que /img/logo-icon.svg) —
-// reemplaza el círculo con iniciales "SB" por la llama/tulipán real.
-function BrandMark({ className }) {
-  return (
-    <svg viewBox="0 0 100 110" width="34" height="37" fill="none" className={className} aria-hidden>
-      <defs>
-        <linearGradient id="brandMarkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#e8cfa0" />
-          <stop offset="50%" stopColor="#c9a96e" />
-          <stop offset="100%" stopColor="#a07840" />
-        </linearGradient>
-      </defs>
-      <path d="M 50 4 Q 40 26, 50 38 Q 60 26, 50 4 Z M 50 12 Q 44 24, 50 32 Q 56 24, 50 12 Z"
-            fill="url(#brandMarkGrad)" stroke="url(#brandMarkGrad)" strokeWidth="1" />
-      <path d="M 50 48 Q 14 48, 10 80 Q 6 102, 28 104 Q 50 104, 50 80 Z"
-            fill="none" stroke="url(#brandMarkGrad)" strokeWidth="4" strokeLinejoin="round" />
-      <path d="M 50 48 Q 86 48, 90 80 Q 94 102, 72 104 Q 50 104, 50 80 Z"
-            fill="none" stroke="url(#brandMarkGrad)" strokeWidth="4" strokeLinejoin="round" />
-      <line x1="50" y1="40" x2="50" y2="80" stroke="url(#brandMarkGrad)" strokeWidth="3" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function HomeIcon(p) {
-  return (
-    <svg {...iconProps} {...p}>
-      <path d="M3 11l9-8 9 8" />
-      <path d="M5 10v10h14V10" />
-      <path d="M10 20v-6h4v6" />
-    </svg>
-  );
-}
-function BoxIcon(p) {
-  return (
-    <svg {...iconProps} {...p}>
-      <path d="M21 8l-9-5-9 5 9 5 9-5z" />
-      <path d="M3 8v8l9 5 9-5V8" />
-      <path d="M12 13v8" />
-    </svg>
-  );
-}
-function BagIcon(p) {
-  return (
-    <svg {...iconProps} {...p}>
-      <path d="M6 7h12l-1 13H7L6 7z" />
-      <path d="M9 7V5a3 3 0 016 0v2" />
-    </svg>
-  );
-}
-function FileDownIcon(p) {
-  return (
-    <svg {...iconProps} {...p}>
-      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-      <path d="M14 2v6h6" />
-      <path d="M12 12v6" />
-      <path d="M9 15l3 3 3-3" />
-    </svg>
-  );
-}
-function MailIcon(p) {
-  return (
-    <svg {...iconProps} {...p}>
-      <rect x="3" y="5" width="18" height="14" rx="2" />
-      <path d="M3 7l9 7 9-7" />
-    </svg>
-  );
-}
-function LogoutIcon(p) {
-  return (
-    <svg {...iconProps} {...p}>
-      <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
-      <path d="M16 17l5-5-5-5" />
-      <path d="M21 12H9" />
-    </svg>
-  );
-}
 function ChevronLeftIcon(p) {
   return (
     <svg {...iconProps} {...p}>
