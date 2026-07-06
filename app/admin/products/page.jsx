@@ -349,11 +349,13 @@ function ProductsStyles() {
         background: #fff;
         border: 1px solid rgba(28, 22, 17, 0.08);
         border-radius: 14px;
-        overflow: hidden;
+        overflow-x: auto;
+        overflow-y: hidden;
         margin-bottom: 1.5rem;
       }
       .prods-table {
         width: 100%;
+        min-width: 640px;
         border-collapse: collapse;
       }
       .prods-table thead th {

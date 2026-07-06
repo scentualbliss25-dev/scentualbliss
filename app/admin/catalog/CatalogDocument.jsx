@@ -196,7 +196,8 @@ function CatalogDocumentStyles() {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        gap: 1rem;
+        flex-wrap: wrap;
+        gap: 0.4rem 1rem;
         padding: 0.8rem 1.4rem;
         border-bottom: 2px solid #c09a5a;
         background: #0e0a07;
@@ -209,16 +210,29 @@ function CatalogDocumentStyles() {
         color: #c09a5a;
         white-space: nowrap;
       }
+      @media (max-width: 480px) {
+        .doc-pagehead { padding: 0.7rem 1rem; }
+        .doc-pagehead-logo { height: 30px; }
+        .doc-pagehead-right { font-size: 0.62rem; letter-spacing: 0.08em; }
+      }
 
       .doc tbody td { padding: 0 1.4rem 1.6rem; background: #0e0a07; }
+      @media (max-width: 480px) {
+        .doc tbody td { padding: 0 0.85rem 1.2rem; }
+      }
 
       /* Portada — ocupa toda la página para centrar el contenido en
-         el medio real de la hoja, no solo horizontalmente. */
+         el medio real de la hoja, no solo horizontalmente. En pantallas
+         angostas se reduce: no tiene sentido forzar casi 1 viewport de
+         alto en un preview que se scrollea con el dedo. */
       .doc-cover {
         display: flex;
         justify-content: center;
         min-height: calc(100vh - 6rem);
         padding: 1rem;
+      }
+      @media (max-width: 640px) {
+        .doc-cover { min-height: 0; padding: 2rem 1rem; }
       }
       .doc-cover-center {
         display: flex;
@@ -271,6 +285,13 @@ function CatalogDocumentStyles() {
         text-transform: uppercase;
         color: #c09a5a;
       }
+      @media (max-width: 480px) {
+        .doc-cover-title { font-size: 1.5rem; }
+        .doc-cover-tag { font-size: 0.7rem; letter-spacing: 0.22em; margin-bottom: 1.6rem; }
+        .doc-cover-rule { margin: 1.1rem 0; }
+        .doc-cover-silhouettes { margin-bottom: 1.6rem; }
+        .doc-cover-meta { font-size: 0.76rem; }
+      }
 
       /* Agrupación por marca */
       .doc-brandgroup { margin-bottom: 1.1rem; }
@@ -293,6 +314,7 @@ function CatalogDocumentStyles() {
         gap: 0.9rem;
       }
       @media (max-width: 900px) { .doc-grid { grid-template-columns: repeat(2, 1fr); } }
+      @media (max-width: 460px) { .doc-grid { grid-template-columns: 1fr; } }
 
       .doc-card {
         display: flex;

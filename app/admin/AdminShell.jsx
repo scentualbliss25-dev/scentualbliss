@@ -107,14 +107,13 @@ export default function AdminShell({ children }) {
                         onClick={item.soon ? (e) => e.preventDefault() : undefined}
                         title={collapsed ? item.label : undefined}
                       >
-                        {collapsed ? (
-                          <span className="admin-nav-mono">{item.label[0]}</span>
-                        ) : (
-                          <>
-                            <span className="admin-nav-label">{item.label}</span>
-                            {item.soon && <span className="admin-nav-soon">Próximo</span>}
-                          </>
-                        )}
+                        {/* Los dos se renderizan siempre; qué se ve lo decide el CSS
+                            (según .is-collapsed en desktop, o forzado en mobile) —
+                            así no depende del estado de React para verse bien en
+                            pantallas angostas. */}
+                        <span className="admin-nav-mono" aria-hidden>{item.label[0]}</span>
+                        <span className="admin-nav-label">{item.label}</span>
+                        {item.soon && <span className="admin-nav-soon">Próximo</span>}
                       </Link>
                     </li>
                   );
@@ -132,7 +131,8 @@ export default function AdminShell({ children }) {
             disabled={loggingOut}
             title="Cerrar sesión"
           >
-            {collapsed ? '⏻' : (loggingOut ? 'Saliendo…' : 'Cerrar sesión')}
+            <span className="admin-logout-mono" aria-hidden>⏻</span>
+            <span className="admin-logout-label">{loggingOut ? 'Saliendo…' : 'Cerrar sesión'}</span>
           </button>
         </div>
       </aside>
@@ -325,14 +325,20 @@ export default function AdminShell({ children }) {
           overflow: hidden;
           text-overflow: ellipsis;
         }
+        /* Oculto por default: solo se muestra cuando el sidebar está
+           colapsado (desktop, vía .is-collapsed) o en mobile (forzado
+           por media query más abajo, sin depender del estado de React). */
         .admin-nav-mono {
-          display: block;
+          display: none;
           width: 100%;
           text-align: center;
           font-size: 0.8rem;
           font-weight: 600;
           letter-spacing: 0.02em;
         }
+        .admin-shell.is-collapsed .admin-nav-mono { display: block; }
+        .admin-shell.is-collapsed .admin-nav-label,
+        .admin-shell.is-collapsed .admin-nav-soon { display: none; }
         .admin-nav-soon {
           font-size: 0.58rem;
           padding: 0.12rem 0.45rem;
@@ -377,6 +383,9 @@ export default function AdminShell({ children }) {
           opacity: 0.5;
           cursor: not-allowed;
         }
+        .admin-logout-mono { display: none; width: 100%; text-align: center; }
+        .admin-shell.is-collapsed .admin-logout-mono { display: block; }
+        .admin-shell.is-collapsed .admin-logout-label { display: none; }
 
         .admin-content {
           background: var(--bg-content);
@@ -389,9 +398,7 @@ export default function AdminShell({ children }) {
         }
 
         @media (max-width: 768px) {
-          .admin-shell {
-            grid-template-columns: var(--sidebar-w-collapsed) 1fr;
-          }
+          .admin-shell,
           .admin-shell.is-collapsed {
             grid-template-columns: var(--sidebar-w-collapsed) 1fr;
           }
@@ -399,8 +406,15 @@ export default function AdminShell({ children }) {
           .admin-nav-section-label,
           .admin-nav-label,
           .admin-nav-soon,
-          .admin-logout-btn span {
-            display: none;
+          .admin-logout-label {
+            display: none !important;
+          }
+          /* Forzado independiente del estado de React: en mobile el
+             sidebar SIEMPRE se ve angosto (icon/monograma-only), sin
+             importar si el usuario alcanzó a tocar el toggle. */
+          .admin-nav-mono,
+          .admin-logout-mono {
+            display: block !important;
           }
         }
       `}</style>

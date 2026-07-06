@@ -286,7 +286,15 @@ function CatalogStyles() {
         font-size: 0.83rem;
         color: rgba(28, 22, 17, 0.55);
       }
-      .cat-head-actions { display: flex; gap: 0.6rem; }
+      .cat-head-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+      @media (max-width: 480px) {
+        .cat-head-actions { width: 100%; }
+        .cat-head-actions .cat-link,
+        .cat-head-actions .cat-download {
+          flex: 1 1 auto;
+          justify-content: center;
+        }
+      }
       .cat-share-hint {
         margin: 0 0 1.4rem;
         font-size: 0.78rem;
@@ -341,6 +349,7 @@ function CatalogStyles() {
       }
       @media (max-width: 1000px) { .cat-toolbar { grid-template-columns: repeat(3, 1fr); } }
       @media (max-width: 640px)  { .cat-toolbar { grid-template-columns: repeat(2, 1fr); } }
+      @media (max-width: 420px)  { .cat-toolbar { grid-template-columns: 1fr; } }
 
       .cat-field { display: flex; flex-direction: column; gap: 0.3rem; min-width: 0; }
       .cat-field label,
