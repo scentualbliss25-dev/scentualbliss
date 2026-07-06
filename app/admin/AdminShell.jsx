@@ -68,8 +68,20 @@ export default function AdminShell({ children }) {
   return (
     <div className={`admin-shell ${collapsed ? 'is-collapsed' : ''}`}>
       <aside className="admin-sidebar">
+        <div className="admin-sidebar-glow" aria-hidden />
+
+        <button
+          type="button"
+          className="admin-collapse-btn"
+          onClick={() => setCollapsed(v => !v)}
+          aria-label={collapsed ? 'Expandir sidebar' : 'Colapsar sidebar'}
+          title={collapsed ? 'Expandir' : 'Colapsar'}
+        >
+          {collapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+        </button>
+
         <div className="admin-brand">
-          <span className="admin-brand-mark">SB</span>
+          <BrandMark className="admin-brand-mark" />
           {!collapsed && (
             <div className="admin-brand-text">
               <span className="admin-brand-name">ScentualBliss</span>
@@ -99,7 +111,7 @@ export default function AdminShell({ children }) {
                         {!collapsed && (
                           <>
                             <span className="admin-nav-label">{item.label}</span>
-                            {item.soon && <span className="admin-nav-soon">próximo</span>}
+                            {item.soon && <span className="admin-nav-soon">Próximo</span>}
                           </>
                         )}
                       </Link>
@@ -112,15 +124,6 @@ export default function AdminShell({ children }) {
         </nav>
 
         <div className="admin-sidebar-foot">
-          <button
-            type="button"
-            className="admin-icon-btn"
-            onClick={() => setCollapsed(v => !v)}
-            aria-label={collapsed ? 'Expandir sidebar' : 'Colapsar sidebar'}
-            title={collapsed ? 'Expandir' : 'Colapsar'}
-          >
-            {collapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-          </button>
           <button
             type="button"
             className="admin-logout-btn"
@@ -170,32 +173,62 @@ export default function AdminShell({ children }) {
           flex-direction: column;
           background: var(--bg-side);
           border-right: 1px solid var(--gold-border);
-          padding: 1.25rem 0.75rem 1rem;
-          overflow: hidden;
+          padding: 1.5rem 0.75rem 1rem;
+          overflow: visible;
         }
 
-        .admin-brand {
+        /* Resplandor sutil arriba, mismo lenguaje visual que /admin/login */
+        .admin-sidebar-glow {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 260px;
+          background: radial-gradient(420px 220px at 30% 0%, rgba(192, 154, 90, 0.14), transparent 70%);
+          pointer-events: none;
+          z-index: 0;
+        }
+
+        /* Botón de colapsar: flotante sobre el borde derecho del sidebar,
+           siempre alcanzable sin importar el scroll del nav. */
+        .admin-collapse-btn {
+          position: absolute;
+          top: 1.9rem;
+          right: -12px;
+          z-index: 5;
+          width: 24px;
+          height: 24px;
           display: flex;
           align-items: center;
-          gap: 0.75rem;
+          justify-content: center;
+          background: var(--bg-side);
+          color: rgba(243, 234, 215, 0.65);
+          border: 1px solid var(--gold-border);
+          border-radius: 50%;
+          cursor: pointer;
+          transition: background 0.18s, color 0.18s, border-color 0.18s, transform 0.18s;
+        }
+        .admin-collapse-btn:hover {
+          background: var(--gold-soft);
+          color: var(--ink);
+          border-color: var(--gold);
+          transform: scale(1.08);
+        }
+        .admin-collapse-btn svg { width: 13px; height: 13px; }
+
+        .admin-brand {
+          position: relative;
+          z-index: 1;
+          display: flex;
+          align-items: center;
+          gap: 0.8rem;
           padding: 0.25rem 0.5rem 1.5rem;
           border-bottom: 1px solid var(--gold-border);
           margin-bottom: 1.25rem;
         }
         .admin-brand-mark {
           flex-shrink: 0;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, var(--gold), #8a6936);
-          color: var(--bg-side);
-          font-weight: 700;
-          font-size: 0.85rem;
-          letter-spacing: 0.04em;
-          box-shadow: 0 4px 14px -6px rgba(192, 154, 90, 0.5);
+          filter: drop-shadow(0 4px 10px rgba(192, 154, 90, 0.35));
         }
         .admin-brand-text {
           display: flex;
@@ -203,19 +236,22 @@ export default function AdminShell({ children }) {
           min-width: 0;
         }
         .admin-brand-name {
-          font-size: 0.95rem;
-          font-weight: 500;
-          letter-spacing: 0.04em;
+          font-size: 0.98rem;
+          font-weight: 600;
+          letter-spacing: 0.03em;
           color: var(--ink);
+          white-space: nowrap;
         }
         .admin-brand-sub {
-          font-size: 0.65rem;
-          color: var(--ink-muted);
-          letter-spacing: 0.14em;
+          font-size: 0.64rem;
+          color: var(--gold);
+          letter-spacing: 0.16em;
           text-transform: uppercase;
         }
 
         .admin-nav {
+          position: relative;
+          z-index: 1;
           flex: 1;
           overflow-y: auto;
           overflow-x: hidden;
@@ -258,12 +294,19 @@ export default function AdminShell({ children }) {
           position: relative;
         }
         .admin-nav-link:hover:not(.is-soon) {
-          background: rgba(192, 154, 90, 0.08);
+          background: rgba(192, 154, 90, 0.1);
           color: var(--ink);
         }
+        .admin-nav-link:hover:not(.is-soon) .admin-nav-icon {
+          color: var(--gold);
+        }
         .admin-nav-link.is-active {
-          background: var(--gold-soft);
+          background: linear-gradient(135deg, rgba(192, 154, 90, 0.22), rgba(192, 154, 90, 0.08));
           color: var(--ink);
+          font-weight: 500;
+        }
+        .admin-nav-link.is-active .admin-nav-icon {
+          color: var(--gold);
         }
         .admin-nav-link.is-active::before {
           content: '';
@@ -273,12 +316,17 @@ export default function AdminShell({ children }) {
           transform: translateY(-50%);
           width: 3px;
           height: 60%;
-          background: var(--gold);
+          background: linear-gradient(180deg, #e8cfa0, #a07840);
           border-radius: 0 2px 2px 0;
         }
         .admin-nav-link.is-soon {
           opacity: 0.4;
           cursor: not-allowed;
+        }
+        .admin-nav-icon {
+          flex-shrink: 0;
+          color: rgba(243, 234, 215, 0.5);
+          transition: color 0.18s;
         }
         .admin-nav-label {
           flex: 1;
@@ -287,11 +335,12 @@ export default function AdminShell({ children }) {
           text-overflow: ellipsis;
         }
         .admin-nav-soon {
-          font-size: 0.6rem;
-          padding: 0.1rem 0.4rem;
-          border-radius: 4px;
-          background: rgba(243, 234, 215, 0.08);
-          color: rgba(243, 234, 215, 0.5);
+          font-size: 0.58rem;
+          padding: 0.12rem 0.45rem;
+          border-radius: 99px;
+          background: transparent;
+          border: 1px solid rgba(192, 154, 90, 0.4);
+          color: var(--gold);
           letter-spacing: 0.08em;
           text-transform: uppercase;
         }
@@ -304,7 +353,6 @@ export default function AdminShell({ children }) {
           flex-direction: column;
           gap: 0.4rem;
         }
-        .admin-icon-btn,
         .admin-logout-btn {
           display: flex;
           align-items: center;
@@ -321,7 +369,6 @@ export default function AdminShell({ children }) {
           font-family: inherit;
           text-align: left;
         }
-        .admin-icon-btn:hover,
         .admin-logout-btn:hover:not(:disabled) {
           background: rgba(192, 154, 90, 0.08);
           color: var(--ink);
@@ -330,15 +377,6 @@ export default function AdminShell({ children }) {
         .admin-logout-btn:disabled {
           opacity: 0.5;
           cursor: not-allowed;
-        }
-        .admin-icon-btn {
-          align-self: flex-end;
-          width: auto;
-          justify-content: center;
-        }
-        .admin-shell.is-collapsed .admin-icon-btn {
-          align-self: center;
-          width: 100%;
         }
 
         .admin-content {
@@ -382,6 +420,29 @@ const iconProps = {
   strokeLinecap: 'round',
   strokeLinejoin: 'round',
 };
+
+// Ícono oficial de la marca (mismo trazo que /img/logo-icon.svg) —
+// reemplaza el círculo con iniciales "SB" por la llama/tulipán real.
+function BrandMark({ className }) {
+  return (
+    <svg viewBox="0 0 100 110" width="34" height="37" fill="none" className={className} aria-hidden>
+      <defs>
+        <linearGradient id="brandMarkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#e8cfa0" />
+          <stop offset="50%" stopColor="#c9a96e" />
+          <stop offset="100%" stopColor="#a07840" />
+        </linearGradient>
+      </defs>
+      <path d="M 50 4 Q 40 26, 50 38 Q 60 26, 50 4 Z M 50 12 Q 44 24, 50 32 Q 56 24, 50 12 Z"
+            fill="url(#brandMarkGrad)" stroke="url(#brandMarkGrad)" strokeWidth="1" />
+      <path d="M 50 48 Q 14 48, 10 80 Q 6 102, 28 104 Q 50 104, 50 80 Z"
+            fill="none" stroke="url(#brandMarkGrad)" strokeWidth="4" strokeLinejoin="round" />
+      <path d="M 50 48 Q 86 48, 90 80 Q 94 102, 72 104 Q 50 104, 50 80 Z"
+            fill="none" stroke="url(#brandMarkGrad)" strokeWidth="4" strokeLinejoin="round" />
+      <line x1="50" y1="40" x2="50" y2="80" stroke="url(#brandMarkGrad)" strokeWidth="3" strokeLinecap="round" />
+    </svg>
+  );
+}
 
 function HomeIcon(p) {
   return (
