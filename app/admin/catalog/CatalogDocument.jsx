@@ -1,0 +1,457 @@
+import { formatCOP } from '@/lib/format';
+import { productTypeLabels } from '@/lib/products-constants';
+
+/**
+ * El documento del catálogo en sí (portada + grid de productos), sin la
+ * toolbar de filtros. Componente puro reutilizado por:
+ *   - /admin/catalog (CatalogClient) — preview en vivo + botón "Descargar PDF"
+ *   - /catalogo (página pública)     — enlace compartible de solo lectura
+ *
+ * Ambos lo envuelven en su propio wrapper y disparan window.print() cuando
+ * corresponda; este componente solo dibuja el <table>/<style> reutilizable.
+ */
+export default function CatalogDocument({ products = [], filterSummary = [], todayLabel = '', sort = 'brand' }) {
+  return (
+    <>
+      <table className="doc">
+        <thead>
+          <tr>
+            <td className="doc-pagehead-cell">
+              <div className="doc-pagehead">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/img/logo-transparent.svg" alt="ScentualBliss" className="doc-pagehead-logo" />
+                <span className="doc-pagehead-right">Catálogo de perfumes · {todayLabel}</span>
+              </div>
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              {/* Portada */}
+              <section className="doc-cover">
+                <div className="doc-cover-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/img/logo-transparent.svg" alt="ScentualBliss" className="doc-cover-logo" />
+                  <div className="doc-cover-rule" aria-hidden />
+                  <h2 className="doc-cover-title">Catálogo de Perfumes</h2>
+                  <p className="doc-cover-tag">Perfumería original</p>
+                  <PerfumeSilhouettes />
+                  <p className="doc-cover-meta">
+                    {filterSummary.length ? filterSummary.join('  ·  ') : 'Colección completa'}
+                  </p>
+                  <p className="doc-cover-meta doc-cover-meta--soft">
+                    {products.length} fragancia{products.length !== 1 ? 's' : ''} · {todayLabel}
+                  </p>
+                  <p className="doc-cover-web">scentualbliss.com.co</p>
+                </div>
+              </section>
+
+              {/* Grid de productos, agrupado por marca cuando el orden es por marca */}
+              {sort === 'brand' ? (
+                groupByBrand(products).map(([brand, items]) => (
+                  <div key={brand} className="doc-brandgroup">
+                    <h3 className="doc-brand-heading">{brand}</h3>
+                    <div className="doc-grid">
+                      {items.map((p) => <ProductCard key={p.id} p={p} />)}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="doc-grid">
+                  {products.map((p) => <ProductCard key={p.id} p={p} />)}
+                </div>
+              )}
+
+              {products.length === 0 && (
+                <p className="doc-empty no-print">
+                  Ningún perfume coincide con los filtros. Ajusta los filtros para armar el catálogo.
+                </p>
+              )}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <CatalogDocumentStyles />
+    </>
+  );
+}
+
+// Agrupa una lista ya ordenada (por marca) en [[marca, items[]], ...]
+// preservando el orden — no reordena, solo detecta cambios de marca.
+function groupByBrand(list) {
+  const groups = [];
+  for (const p of list) {
+    const key = p.brand || 'Otras marcas';
+    const last = groups[groups.length - 1];
+    if (last && last[0] === key) last[1].push(p);
+    else groups.push([key, [p]]);
+  }
+  return groups;
+}
+
+function ProductCard({ p }) {
+  return (
+    <article className="doc-card">
+      <div className="doc-card-imgwrap">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={p.thumb} alt={`${p.brand} ${p.name}`} loading="eager" />
+      </div>
+      <div className="doc-card-body">
+        <p className="doc-card-brand">{p.brand || '—'}</p>
+        <h3 className="doc-card-name">{p.name}</h3>
+        <div className="doc-card-meta">
+          {p.conc && <span className="doc-chip doc-chip--gold">{p.conc}</span>}
+          {p.productType && <span className="doc-chip">{productTypeLabels[p.productType] || p.productType}</span>}
+          {p.gender && <span className="doc-chip">{p.gender}</span>}
+        </div>
+        {p.displaySizes.length > 0 ? (
+          <ul className="doc-card-prices">
+            {p.displaySizes.map((s, i) => (
+              <li key={i}>
+                <span className="doc-price-ml">{s.ml || 'Precio'}</span>
+                <span className="doc-price-dots" aria-hidden />
+                <strong className="doc-price-val">{formatCOP(s.price)}</strong>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="doc-card-consult">Consultar precio</p>
+        )}
+      </div>
+    </article>
+  );
+}
+
+// Siluetas genéricas de varios perfumes (sin marca), solo delineado
+// dorado — decoración de portada. Dibujadas a mano en línea, no fotos
+// de productos reales.
+function PerfumeSilhouettes() {
+  return (
+    <svg viewBox="0 0 360 150" className="doc-cover-silhouettes" aria-hidden fill="none">
+      <defs>
+        <linearGradient id="silGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#e8cfa0" />
+          <stop offset="50%" stopColor="#c9a96e" />
+          <stop offset="100%" stopColor="#a07840" />
+        </linearGradient>
+      </defs>
+
+      {/* Frasco 1: clásico, tapa cuadrada */}
+      <g stroke="url(#silGrad)" strokeWidth="1.6" strokeLinejoin="round">
+        <rect x="18" y="42" width="16" height="8" rx="1.5" />
+        <rect x="10" y="50" width="32" height="58" rx="6" />
+        <line x1="16" y1="66" x2="36" y2="66" />
+      </g>
+
+      {/* Frasco 2: atomizador alto */}
+      <g stroke="url(#silGrad)" strokeWidth="1.6" strokeLinejoin="round">
+        <circle cx="98" cy="26" r="6" />
+        <rect x="93" y="34" width="10" height="7" />
+        <path d="M84 41 h28 l-4 12 h-20 z" />
+        <rect x="80" y="53" width="36" height="55" rx="8" />
+      </g>
+
+      {/* Frasco 3: redondo, perfume de mujer */}
+      <g stroke="url(#silGrad)" strokeWidth="1.6" strokeLinejoin="round">
+        <rect x="168" y="38" width="14" height="10" rx="2" />
+        <path d="M154 108 v-38 a21 21 0 0 1 42 0 v38 z" />
+      </g>
+
+      {/* Frasco 4: facetado / nicho */}
+      <g stroke="url(#silGrad)" strokeWidth="1.6" strokeLinejoin="round">
+        <path d="M236 40 h20 l4 8 h-28 z" />
+        <path d="M232 48 h28 v52 l-14 8 l-14 -8 z" />
+        <line x1="232" y1="70" x2="260" y2="70" />
+      </g>
+
+      {/* Frasco 5: cuadrado ancho, tapa redonda grande */}
+      <g stroke="url(#silGrad)" strokeWidth="1.6" strokeLinejoin="round">
+        <circle cx="322" cy="34" r="9" />
+        <rect x="316" y="43" width="12" height="6" />
+        <rect x="300" y="49" width="44" height="59" rx="5" />
+        <line x1="306" y1="64" x2="338" y2="64" />
+        <line x1="306" y1="90" x2="338" y2="90" />
+      </g>
+    </svg>
+  );
+}
+
+function CatalogDocumentStyles() {
+  return (
+    <style>{`
+      /* ── Documento (tema negro + dorado) ────────────────────────── */
+      .doc {
+        width: 100%;
+        border-collapse: collapse;
+        background: #0e0a07;
+        border: 1px solid rgba(192, 154, 90, 0.35);
+        border-radius: 14px;
+        overflow: hidden;
+        font-family: var(--font-montserrat), 'Montserrat', ui-sans-serif, system-ui, sans-serif;
+      }
+      .doc-pagehead-cell { padding: 0; }
+      .doc-pagehead {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.8rem 1.4rem;
+        border-bottom: 2px solid #c09a5a;
+        background: #0e0a07;
+      }
+      .doc-pagehead-logo { height: 40px; width: auto; }
+      .doc-pagehead-right {
+        font-size: 0.7rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #c09a5a;
+        white-space: nowrap;
+      }
+
+      .doc tbody td { padding: 0 1.4rem 1.6rem; background: #0e0a07; }
+
+      /* Portada — ocupa toda la página para centrar el contenido en
+         el medio real de la hoja, no solo horizontalmente. */
+      .doc-cover {
+        display: flex;
+        justify-content: center;
+        min-height: calc(100vh - 6rem);
+        padding: 1rem;
+      }
+      .doc-cover-center {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+      .doc-cover-logo {
+        width: min(540px, 92%);
+        height: auto;
+        margin-bottom: 0.6rem;
+      }
+      .doc-cover-rule {
+        width: 130px;
+        height: 2px;
+        margin: 1.7rem 0;
+        background: linear-gradient(90deg, transparent, #c09a5a, transparent);
+      }
+      .doc-cover-title {
+        margin: 0 0 0.5rem;
+        font-size: 2.3rem;
+        font-weight: 400;
+        letter-spacing: 0.08em;
+        color: #f3ead7;
+        font-family: inherit;
+      }
+      .doc-cover-tag {
+        margin: 0 0 2.4rem;
+        font-size: 0.85rem;
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        color: #c09a5a;
+      }
+      .doc-cover-silhouettes {
+        width: min(420px, 82%);
+        height: auto;
+        margin-bottom: 2.4rem;
+      }
+      .doc-cover-meta {
+        margin: 0 0 0.3rem;
+        font-size: 0.85rem;
+        letter-spacing: 0.06em;
+        color: #f3ead7;
+      }
+      .doc-cover-meta--soft { color: rgba(243, 234, 215, 0.55); font-size: 0.78rem; }
+      .doc-cover-web {
+        margin: 1.7rem 0 0;
+        font-size: 0.75rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: #c09a5a;
+      }
+
+      /* Agrupación por marca */
+      .doc-brandgroup { margin-bottom: 1.1rem; }
+      .doc-brand-heading {
+        margin: 0 0 0.6rem;
+        padding-bottom: 0.35rem;
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #e8cfa0;
+        border-bottom: 1.5px solid #c09a5a;
+        font-family: inherit;
+      }
+
+      /* Grid de cards */
+      .doc-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.9rem;
+      }
+      @media (max-width: 900px) { .doc-grid { grid-template-columns: repeat(2, 1fr); } }
+
+      .doc-card {
+        display: flex;
+        flex-direction: column;
+        border: 1.5px solid #c09a5a;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #14100c;
+      }
+      .doc-card-imgwrap {
+        aspect-ratio: 1 / 1;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+      }
+      .doc-card-imgwrap img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        display: block;
+      }
+      .doc-card-body {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        padding: 0.65rem 0.7rem 0.75rem;
+        border-top: 1.5px solid #c09a5a;
+      }
+      .doc-card-brand {
+        margin: 0 0 0.35rem;
+        font-size: 0.62rem;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #c09a5a;
+      }
+      .doc-card-name {
+        margin: 0 0 0.5rem;
+        padding: 0.35rem 0.55rem;
+        font-size: 0.84rem;
+        font-weight: 700;
+        line-height: 1.25;
+        color: #1c1611;
+        background: linear-gradient(135deg, #e8cfa0, #c09a5a 55%, #a07840);
+        border-radius: 7px;
+        font-family: inherit;
+      }
+      .doc-card-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+        margin-bottom: 0.55rem;
+      }
+      .doc-chip {
+        display: inline-flex;
+        padding: 0.12rem 0.45rem;
+        border-radius: 4px;
+        font-size: 0.6rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        background: rgba(243, 234, 215, 0.08);
+        border: 1px solid rgba(192, 154, 90, 0.3);
+        color: rgba(243, 234, 215, 0.8);
+      }
+      .doc-chip--gold {
+        background: rgba(192, 154, 90, 0.22);
+        color: #e8cfa0;
+        font-weight: 600;
+      }
+      .doc-card-prices {
+        list-style: none;
+        margin: auto 0 0;
+        padding: 0.5rem 0 0;
+        border-top: 1px dashed rgba(192, 154, 90, 0.4);
+        display: flex;
+        flex-direction: column;
+        gap: 0.22rem;
+      }
+      .doc-card-prices li {
+        display: flex;
+        align-items: baseline;
+        gap: 0.4rem;
+        font-size: 0.78rem;
+      }
+      .doc-price-ml { color: rgba(243, 234, 215, 0.65); white-space: nowrap; }
+      .doc-price-dots {
+        flex: 1;
+        border-bottom: 1px dotted rgba(192, 154, 90, 0.45);
+        transform: translateY(-3px);
+      }
+      .doc-price-val { color: #e8cfa0; white-space: nowrap; font-weight: 700; }
+      .doc-card-consult {
+        margin: auto 0 0;
+        padding-top: 0.5rem;
+        border-top: 1px dashed rgba(192, 154, 90, 0.4);
+        font-size: 0.75rem;
+        font-style: italic;
+        color: rgba(243, 234, 215, 0.5);
+      }
+
+      .doc-empty {
+        padding: 3rem 1rem;
+        text-align: center;
+        color: rgba(243, 234, 215, 0.6);
+        font-size: 0.9rem;
+      }
+
+      /* ── Impresión / PDF ────────────────────────────────────────── */
+      @media print {
+        /* Margen 0: el negro llega hasta el borde de la hoja. El aire
+           interior lo dan los paddings del propio documento. */
+        @page { size: A4; margin: 0; }
+
+        * {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+
+        /* Fondo negro pleno en TODAS las páginas (el body pinta el lienzo
+           completo, incluso donde el contenido no llega). */
+        html, body { background: #0e0a07 !important; }
+        /* La textura de ruido del sitio (overlay fijo) se repite en cada
+           página impresa y ensucia el PDF con un velo. */
+        body::after { display: none !important; }
+        .no-print { display: none !important; }
+        .admin-sidebar { display: none !important; }
+        .admin-shell { display: block !important; background: #0e0a07 !important; }
+        .admin-content { background: #0e0a07 !important; }
+        .admin-content-inner { min-height: 0 !important; }
+
+        .cat { padding: 0 !important; max-width: none !important; }
+
+        .doc { border: none; border-radius: 0; }
+        .doc-pagehead { padding: 6mm 8mm 3mm; }
+        .doc tbody td { padding: 4mm 8mm 6mm; }
+
+        /* El centrado con flex/align-items no se respeta de forma fiable
+           dentro de un <td> con salto de página forzado en la impresión
+           de Chromium (probado: min-height y height + margin:auto
+           fallan). Se usa padding calculado a mano para que el bloque
+           de contenido (~185mm de alto) quede centrado en la hoja A4
+           útil (~277mm bajo el encabezado repetido). */
+        .doc-cover {
+          display: block;
+          break-after: page;
+          min-height: 0;
+          padding: 46mm 0 0;
+        }
+
+        .doc-brandgroup { break-before: auto; }
+        .doc-brand-heading { break-after: avoid; }
+        .doc-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 4mm !important; }
+        .doc-card { break-inside: avoid; page-break-inside: avoid; }
+        /* Imagen más compacta en papel → caben 3 filas (9 perfumes) por página */
+        .doc-card-imgwrap { aspect-ratio: auto; height: 36mm; }
+        .doc-card-imgwrap img { max-height: 32mm; }
+      }
+    `}</style>
+  );
+}
