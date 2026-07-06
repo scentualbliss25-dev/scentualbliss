@@ -1,6 +1,5 @@
 import { fetchCatalogProducts, applyCatalogFilters, buildFilterSummary } from '@/lib/catalog';
-import CatalogDocument from '../admin/catalog/CatalogDocument';
-import DownloadButton from './DownloadButton';
+import CatalogSearchClient from './CatalogSearchClient';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -41,12 +40,13 @@ export default async function PublicCatalogPage({ searchParams }) {
 
   return (
     <div className="pubcat">
-      <div className="pubcat-bar no-print">
-        <p>Catálogo compartido de ScentualBliss{error ? ` · Error: ${error}` : ''}</p>
-        <DownloadButton count={list.length} />
-      </div>
-
-      <CatalogDocument products={list} filterSummary={filterSummary} todayLabel={today} sort={sort} />
+      <CatalogSearchClient
+        products={list}
+        filterSummary={filterSummary}
+        todayLabel={today}
+        sort={sort}
+        loadError={error}
+      />
 
       <style>{`
         .pubcat {
