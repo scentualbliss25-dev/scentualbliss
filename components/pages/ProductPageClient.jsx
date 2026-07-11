@@ -217,7 +217,22 @@ export default function ProductPageClient({ product, resolvedImages, related = [
 
           {/* LEFT: GALLERY */}
           <div className="product-gallery" style={{ position: 'sticky', top: '100px' }}>
-            <div className="product-main-img" style={{ position: 'relative', aspectRatio: '4/5', borderRadius: '20px', overflow: 'hidden', background: '#F8F3EA', marginBottom: '12px' }}>
+            <div className="product-media">
+            {/* Thumbnails — columna lateral izquierda (fila abajo en mobile) */}
+            {productImages.length > 1 && (
+              <div className="product-thumbs">
+                {productImages.map((img, i) => (
+                  <button key={i} onClick={() => setImgIdx(i)} className="product-thumb" style={{
+                    borderRadius: '10px', overflow: 'hidden', flexShrink: 0,
+                    border: `2px solid ${imgIdx === i ? 'var(--gold)' : 'var(--dark-4)'}`,
+                    transition: 'border-color .2s', padding: 0, background: 'var(--dark-2)', cursor: 'pointer',
+                  }}>
+                    <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </button>
+                ))}
+              </div>
+            )}
+            <div className="product-main-img" style={{ position: 'relative', aspectRatio: '4/5', borderRadius: '20px', overflow: 'hidden', background: '#F8F3EA', flex: 1, minWidth: 0 }}>
               <img
                 src={productImages[imgIdx]}
                 alt={`${product.name} ${product.brand} perfume`}
@@ -261,20 +276,7 @@ export default function ProductPageClient({ product, resolvedImages, related = [
                 <Heart size={17} fill={wishlisted ? 'currentColor' : 'none'} />
               </button>
             </div>
-            {/* Thumbnails */}
-            {productImages.length > 1 && (
-              <div className="product-thumbs" style={{ display: 'flex', gap: '10px' }}>
-                {productImages.map((img, i) => (
-                  <button key={i} onClick={() => setImgIdx(i)} className="product-thumb" style={{
-                    borderRadius: '10px', overflow: 'hidden', flexShrink: 0,
-                    border: `2px solid ${imgIdx === i ? 'var(--gold)' : 'var(--dark-4)'}`,
-                    transition: 'border-color .2s', padding: 0, background: 'var(--dark-2)',
-                  }}>
-                    <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  </button>
-                ))}
-              </div>
-            )}
+            </div>{/* /.product-media */}
             {/* Social Proof Below Image — solo si hay reseñas reales */}
             {realReviews.length > 0 && (
               <div style={{ marginTop: '20px', display: 'flex', gap: '20px', padding: '16px', background: 'var(--dark-2)', borderRadius: '12px', border: '1px solid var(--dark-4)' }}>
