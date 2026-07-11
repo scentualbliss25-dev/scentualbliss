@@ -17,13 +17,21 @@ const CATEGORY_LABELS = {
   nicho:     { label: 'Nicho',     color: '#9B59B6', bg: 'rgba(155,89,182,.15)' },
   disenador: { label: 'Diseñador', color: '#C9A96E', bg: 'rgba(201,169,110,.15)' },
   arabe:     { label: 'Árabe',     color: '#E8687A', bg: 'rgba(232,104,122,.15)' },
-  // Familias olfativas (category)
+  // Familias olfativas (category) — 6 clásicas
   floral:    { label: 'Floral',    color: '#E8687A', bg: 'rgba(232,104,122,.15)' },
   frutal:    { label: 'Frutal',    color: '#E85D75', bg: 'rgba(232,93,117,.12)' },
   fresco:    { label: 'Fresco',    color: '#4A9B8E', bg: 'rgba(74,155,142,.15)' },
   citrico:   { label: 'Cítrico',   color: '#F5A623', bg: 'rgba(245,166,35,.15)' },
   dulce:     { label: 'Dulce',     color: '#C2A878', bg: 'rgba(194,168,120,.15)' },
   amaderado: { label: 'Amaderado', color: '#8B6914', bg: 'rgba(139,105,20,.15)' },
+  // Familias olfativas nuevas (deben coincidir con lib/products-constants.js)
+  especiado:   { label: 'Especiado',   color: '#A8471E', bg: 'rgba(168,71,30,.15)' },
+  avainillado: { label: 'Avainillado', color: '#B98530', bg: 'rgba(217,164,65,.15)' },
+  aromatico:   { label: 'Aromático',   color: '#5B8C5A', bg: 'rgba(91,140,90,.15)' },
+  ambar:       { label: 'Ámbar',       color: '#C17817', bg: 'rgba(193,120,23,.15)' },
+  marino:      { label: 'Marino',      color: '#3E7CB1', bg: 'rgba(62,124,177,.15)' },
+  tropical:    { label: 'Tropical',    color: '#16A085', bg: 'rgba(22,160,133,.15)' },
+  atalcado:    { label: 'Atalcado',    color: '#9C8977', bg: 'rgba(201,183,166,.18)' },
   // Legacy (por si algún producto aún tiene estas categorías)
   oriental:  { label: 'Oriental',  color: '#C9A96E', bg: 'rgba(201,169,110,.15)' },
   woody:     { label: 'Amaderado', color: '#8B6914', bg: 'rgba(139,105,20,.15)' },
