@@ -1464,7 +1464,11 @@ function NavStyles() {
         overflow: hidden;
         border: 1px solid rgba(212,166,79,.3);
         box-shadow: 0 32px 64px rgba(5,5,5,.35), 0 4px 16px rgba(5,5,5,.2);
-        min-width: 580px;
+        /* Tamaño FIJO: el panel no debe cambiar de ancho ni alto al pasar
+           entre categorías (antes saltaba de Marcas grande a Clima chico,
+           lo que lo hacía "moverse mucho" y cerrarse por flicker). */
+        width: 640px;
+        height: 380px;
       }
       /* Left panel: dark, category list */
       .sb-megamenu-left {
@@ -1514,13 +1518,13 @@ function NavStyles() {
       /* Right panel: gold, items */
       .sb-megamenu-right {
         flex: 1;
+        min-width: 0;           /* el ancho lo fija .sb-megamenu, no el contenido */
         background: #E8C98B;
         padding: 14px;
         display: flex;
         flex-direction: column;
         gap: 3px;
-        min-width: 280px;
-        max-height: 420px;
+        height: 100%;           /* llena la altura fija del panel */
         overflow-y: auto;
       }
       .sb-megamenu-right--brands {
@@ -1528,7 +1532,6 @@ function NavStyles() {
         grid-template-columns: repeat(3, 1fr);
         align-content: flex-start;
         gap: 2px;
-        min-width: 400px;
       }
       .sb-megamenu-item {
         display: flex;
