@@ -1456,7 +1456,15 @@ function NavStyles() {
       .sb-megamenu-wrap {
         left: 0;
         transform: none;
-        animation: sb-drop-fade .22s cubic-bezier(.22,.61,.36,1);
+        /* Animación PROPIA: solo fade + translateY. La del dropdown normal
+           (sb-drop-fade) usa translateX(-50%) porque va centrado; aplicarla
+           aquí hacía que el panel apareciera corrido a la izquierda y al
+           terminar saltara a la derecha ("inestable"). */
+        animation: sb-mega-fade .22s cubic-bezier(.22,.61,.36,1);
+      }
+      @keyframes sb-mega-fade {
+        from { opacity: 0; transform: translateY(-6px); }
+        to   { opacity: 1; transform: translateY(0); }
       }
       .sb-megamenu {
         display: flex;
